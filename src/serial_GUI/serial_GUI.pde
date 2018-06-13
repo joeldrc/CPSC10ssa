@@ -2,9 +2,7 @@
  ******************************************************************************
  * @file    serial dataLogger
  * @author  Joel Daricou  <joel.daricou@cern.ch>
- * @version V1.0.0
- * @date    01-March-2018
- * @brief   serialDatalogger
+ * @brief   serial_GUI
  ******************************************************************************
  *  OS:
  *    - Developped on Windows & Linux
@@ -97,23 +95,6 @@ void setup() {
   frameRate(30);
   
   setupSerial();       
-}
-
-boolean setupSerial(){
-  
-  //println(Serial.list());
-  //println(Serial.list().length);
-  
-  // Verifica ci siano dispositivi connessi;
-  if(Serial.list().length > 0){
-    // get the list of serial ports on the computer
-    serialList = Serial.list()[serialListIndex];    
-    return true; 
-  }
-  else{
-    serialList = "NO DEVICE";
-    return false;  
-  }
 }
 
 void setupScreen(){
@@ -302,27 +283,6 @@ void DrawText(String title, int x, int y, int size){
   textSize(size);
   textAlign(LEFT, CENTER);
   text(title, x, y);  
-}
-
-void serialEvent(Serial myPort) {
-  
-  String inData = myPort.readStringUntil('\n'); 
-        
-  if(inData != null){    
-    connectionStatus = true;      
-    //println(inData);
-    
-    dataString = split(inData, ',');
-    
-    load_save_table_data();
-    
-    //println(dataString[0]);
-    //println(dataString[1]);    
-    //println(dataString.length);
-    
-    connectionStatus = false;   
-    inData = null;
-  }  
 }
 
 int percent(float screenValue, float value){
