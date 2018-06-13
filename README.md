@@ -1,1 +1,1 @@
-# CPSC10ssa
+# CPSC10
