@@ -6,6 +6,21 @@
  ******************************************************************************
 */
 
+#define _DATA_LOGGER
+#define _WATCHDOG
+
+//program define
+#define CORRECTION_ON               true
+#define CORRECTION_OFF              false
+
+//mosfet status code
+#define MOSFET_NOT_SETTED           0             //white
+#define MOSFET_SETUP_OK             1             //green
+#define MOSFET_TEMP_ERROR           2             //yellow
+#define MOSFET_FUSE_ERROR           3             //red
+#define MOSFET_UNABLE_TO_SET        4             //blue
+#define MOSFET_OTHER_ERROR          5             //purple
+
 //vgate
 #define VGATE_DELAY                 100           //<-- time to wait (microseconds)
 #define VGATE_CORRECTION            3             //<-- value to increase and decrease (bit)

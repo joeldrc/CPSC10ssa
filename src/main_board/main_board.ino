@@ -28,35 +28,6 @@
 #include <SPI.h>  //Serial Peripheral Interface library
 #include "CONFIG.h"
 
-#define _DATA_LOGGER
-#define _WATCHDOG
-
-#ifdef _WATCHDOG
-void watchdogSetup() {} //this function has to be present, otherwise watchdog won't work
-#endif
-
-//program define
-#define CORRECTION_ON   true
-#define CORRECTION_OFF  false
-
-//mosfet status code
-#define MOSFET_NOT_SETTED     0 //white
-#define MOSFET_SETUP_OK       1 //green
-#define MOSFET_TEMP_ERROR     2 //yellow
-#define MOSFET_FUSE_ERROR     3 //red
-#define MOSFET_UNABLE_TO_SET  4 //blue
-#define MOSFET_OTHER_ERROR    5 //purple
-
-//MUX software define
-//  #define ENABLE_MUX_1      REG_PIOC_CODR = 0x1 << 29 //digitalWrite(10, LOW);
-//  #define DISABLE_MUX_1     REG_PIOC_SODR = 0x1 << 29 //digitalWrite(10, HIGH);
-//  #define ENABLE_MUX_2      REG_PIOD_CODR = 0x1 << 7  //digitalWrite(11, LOW);
-//  #define DISABLE_MUX_2     REG_PIOD_SODR = 0x1 << 7  //digitalWrite(11, HIGH);
-
-//LED ONBOARD
-//  #define LED_STATUS_ON   REG_PIOB_SODR = 0x1 << 27 //PIO_Set(PIOB,PIO_PB27B_TIOB0);
-//  #define LED_STATUS_OFF  REG_PIOB_CODR = 0x1 << 27 //PIO_Clear(PIOB,PIO_PB27B_TIOB0);
-
 //SPI phisical position
 static const uint8_t CS_MASTER = 23; //phisical pin number
 
@@ -139,9 +110,9 @@ static const uint8_t FIN_PHISICAL_POSITION[FIN_TOTAL_NUMBER] = { 0, 1, 2, 3, 4, 
 
 //GLOBAL VARIABLES
 int32_t vgate_value[VGATE_TOTAL_NUMBER] = {};
-int32_t imon_value[VGATE_TOTAL_NUMBER] = {};       
-int32_t vgate_set_value[VGATE_TOTAL_NUMBER] = {};     
-uint8_t amplifier_status[VGATE_TOTAL_NUMBER] = {};  
+int32_t imon_value[VGATE_TOTAL_NUMBER] = {};
+int32_t vgate_set_value[VGATE_TOTAL_NUMBER] = {};
+uint8_t amplifier_status[VGATE_TOTAL_NUMBER] = {};
 
 //external screen
 uint8_t imon_dvr_channel = 0;
@@ -150,6 +121,10 @@ uint8_t ampTemp_channel = 0;
 
 //button interrupt
 volatile uint8_t btn_val = 0;
+
+#ifdef _WATCHDOG
+void watchdogSetup() {} //this function has to be present, otherwise watchdog won't work
+#endif
 
 void setup() {
   SerialUSB.begin(115200);  //opens serial port, sets data rate to 115200 bps (Arduino due max speed (2000000)
@@ -270,131 +245,131 @@ void setup() {
 }
 
 void loop() {
-  static uint8_t programIndex = 0;  
+  static uint8_t programIndex = 0;
   static uint8_t fin_cnt = 0;
   static bool cell_status = false;
 
   switch (programIndex) {
     case 0: {
-      //set all Vgate CTL to OFF
-      for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-        analogWrite_external_dac(i, VGATE_MIN);
-      }      
-      set_external_dac_output();      //enable the value on dac out  
-         
-      digitalWrite(RLY_CTL, LOW);     //set RLY CTL to CLOSED      
-      digitalWrite(SEL_CTL, LOW);     //set SEL CTL to 0V      
-      digitalWrite(CELL_ST_OK, LOW);  //set CELL ST to OFF      
-      digitalWrite(RF_CTL, LOW);      //set RF CTL to OFF      
-      digitalWrite(BIAS_RDY, LOW);    //set BIAS RDY to OFF      
-      digitalWrite(MEASURE_SEL, LOW); //set MEASURE SEL to OFF
-      digitalWrite(CARD_ST_OK, HIGH); //set CARD STATUS to OK
-      /*
-        //check if CELL is OFF
-        if(digitalRead(CELL_OFF_CMD == LOW)) {
-        programIndex++;
+        //set all Vgate CTL to OFF
+        for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+          analogWrite_external_dac(i, VGATE_MIN);
         }
-      */        
-      programIndex++;
-    }
-    break;
-    case 1: { 
-      //set all Vgate CTL to MIN
-      for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-        vgate_set_value[i] = VGATE_MIN;
-        analogWrite_external_dac(i, vgate_set_value[i]);
-      }       
-      set_external_dac_output();  //enable the value on dac out
-      
-      //reset amplifier status
-      for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-        amplifier_status[i] = MOSFET_NOT_SETTED;
-      }
-      
-      //setup front pannel leds
-      digitalWrite(LED_C, true);  //Card operational
-      digitalWrite(LED_B, false); //Bias ready
-      digitalWrite(LED_A, false);
-      //  digitalWrite(LED_E, false);
-      digitalWrite(LED_F, false); 
-      digitalWrite(LED_D, false); 
-            
-      if (check_errors_routine() == 0) {                     
-        programIndex++;
-      }
-      else {
-        //  SerialUSB.print("Error: ");
-        //  SerialUSB.println(init_check_errors);
-      }
-    }
-    break;
-    case 2: {      
-      if (check_errors_routine() == 0) {
-        if ((bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0) && (bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0)) {
-          amplifier_status[DVR_PHISICAL_POSITION[0]] = MOSFET_SETUP_OK;  //set mosfet ok 
-          amplifier_status[DVR_PHISICAL_POSITION[1]] = MOSFET_SETUP_OK;  //set mosfet ok 
+        set_external_dac_output();      //enable the value on dac out
 
-          fin_cnt = 0;
-          programIndex ++;
+        digitalWrite(RLY_CTL, LOW);     //set RLY CTL to CLOSED
+        digitalWrite(SEL_CTL, LOW);     //set SEL CTL to 0V
+        digitalWrite(CELL_ST_OK, LOW);  //set CELL ST to OFF
+        digitalWrite(RF_CTL, LOW);      //set RF CTL to OFF
+        digitalWrite(BIAS_RDY, LOW);    //set BIAS RDY to OFF
+        digitalWrite(MEASURE_SEL, LOW); //set MEASURE SEL to OFF
+        digitalWrite(CARD_ST_OK, HIGH); //set CARD STATUS to OK
+        /*
+          //check if CELL is OFF
+          if(digitalRead(CELL_OFF_CMD == LOW)) {
+          programIndex++;
+          }
+        */
+        programIndex++;
+      }
+      break;
+    case 1: {
+        //set all Vgate CTL to MIN
+        for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+          vgate_set_value[i] = VGATE_MIN;
+          analogWrite_external_dac(i, vgate_set_value[i]);
+        }
+        set_external_dac_output();  //enable the value on dac out
+
+        //reset amplifier status
+        for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+          amplifier_status[i] = MOSFET_NOT_SETTED;
+        }
+
+        //setup front pannel leds
+        digitalWrite(LED_C, true);  //Card operational
+        digitalWrite(LED_B, false); //Bias ready
+        digitalWrite(LED_A, false);
+        //  digitalWrite(LED_E, false);
+        digitalWrite(LED_F, false);
+        digitalWrite(LED_D, false);
+
+        if (check_errors_routine() == 0) {
+          programIndex++;
+        }
+        else {
+          //  SerialUSB.print("Error: ");
+          //  SerialUSB.println(init_check_errors);
         }
       }
-      else {
-        //  SerialUSB.print("DVR Error: ");
-        //  SerialUSB.println(check_errors_routine());
-        programIndex = 1;
-      }      
-    }
-    break;
+      break;
+    case 2: {
+        if (check_errors_routine() == 0) {
+          if ((bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0) && (bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0)) {
+            amplifier_status[DVR_PHISICAL_POSITION[0]] = MOSFET_SETUP_OK;  //set mosfet ok
+            amplifier_status[DVR_PHISICAL_POSITION[1]] = MOSFET_SETUP_OK;  //set mosfet ok
+
+            fin_cnt = 0;
+            programIndex ++;
+          }
+        }
+        else {
+          //  SerialUSB.print("DVR Error: ");
+          //  SerialUSB.println(check_errors_routine());
+          programIndex = 1;
+        }
+      }
+      break;
     case 3: {
-      if (check_errors_routine() == 0) {        
-        if (bias_setting_routine(FIN_PHISICAL_POSITION[fin_cnt], IFIN_REF, IFIN_DELTA, CORRECTION_ON) == 0) {
-          amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]] = MOSFET_SETUP_OK;  //set mosfet ok  
-        }
-        delayMicroseconds(VGATE_DELAY); //delay untill current is stabilized 
-       
-        switch (amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]]) { 
-          case MOSFET_OTHER_ERROR:                
-          case MOSFET_UNABLE_TO_SET: 
-          case MOSFET_FUSE_ERROR: 
-          case MOSFET_TEMP_ERROR: {
-            vgate_off (FIN_PHISICAL_POSITION[fin_cnt]);
+        if (check_errors_routine() == 0) {
+          if (bias_setting_routine(FIN_PHISICAL_POSITION[fin_cnt], IFIN_REF, IFIN_DELTA, CORRECTION_ON) == 0) {
+            amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]] = MOSFET_SETUP_OK;  //set mosfet ok
           }
-          case MOSFET_SETUP_OK: {
-            if (fin_cnt == (FIN_TOTAL_NUMBER - 1)) {
-              //set all Vgate CTL to OFF
-              for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-                analogWrite_external_dac(i, VGATE_MIN);
-              }            
-              set_external_dac_output();  //enable the value on dac out
-  
-              digitalWrite(BIAS_RDY, HIGH);
-              digitalWrite(LED_B, true);  //Bias ready                       
-              cell_status = false;
-              
-              programIndex ++;
-            }
-            else { 
-              fin_cnt ++;                      
-            }  
-          }
-          break;
-        }
-      }
-      else {  
-        //  SerialUSB.print("FIN Error: ");
-        //  SerialUSB.println(check_errors_routine());     
-        programIndex = 1;
-      }
-    }
-    break;
-    case 4: {      
-//      if (digitalRead(CELL_OFF_CMD == LOW)) {
+          delayMicroseconds(VGATE_DELAY); //delay untill current is stabilized
 
-        bool trigger_val = external_trigger();                   
-        digitalWrite(LED_D, !trigger_val); //trigger  
-        
-        if ((trigger_val == true) && (cell_status == false)) {   
-                 
+          switch (amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]]) {
+            case MOSFET_OTHER_ERROR:
+            case MOSFET_UNABLE_TO_SET:
+            case MOSFET_FUSE_ERROR:
+            case MOSFET_TEMP_ERROR: {
+                vgate_off (FIN_PHISICAL_POSITION[fin_cnt]);
+              }
+            case MOSFET_SETUP_OK: {
+                if (fin_cnt == (FIN_TOTAL_NUMBER - 1)) {
+                  //set all Vgate CTL to OFF
+                  for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+                    analogWrite_external_dac(i, VGATE_MIN);
+                  }
+                  set_external_dac_output();  //enable the value on dac out
+
+                  digitalWrite(BIAS_RDY, HIGH);
+                  digitalWrite(LED_B, true);  //Bias ready
+                  cell_status = false;
+
+                  programIndex ++;
+                }
+                else {
+                  fin_cnt ++;
+                }
+              }
+              break;
+          }
+        }
+        else {
+          //  SerialUSB.print("FIN Error: ");
+          //  SerialUSB.println(check_errors_routine());
+          programIndex = 1;
+        }
+      }
+      break;
+    case 4: {
+        //      if (digitalRead(CELL_OFF_CMD == LOW)) {
+
+        bool trigger_val = external_trigger();
+        digitalWrite(LED_D, !trigger_val); //trigger
+
+        if ((trigger_val == true) && (cell_status == false)) {
+
           if (check_errors_routine() == 0) {
             for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
               bias_setting_routine(FIN_PHISICAL_POSITION[i], IFIN_REF, IFIN_DELTA, CORRECTION_OFF);
@@ -402,8 +377,8 @@ void loop() {
             for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i++) {
               bias_setting_routine(DVR_PHISICAL_POSITION[i], IDVR_REF, IDVR_DELTA, CORRECTION_OFF);
             }
-          }  
-                                    
+          }
+
           if (check_errors_routine() == 0) {
             for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
               bias_setting_routine(FIN_PHISICAL_POSITION[i], IFIN_REF, IFIN_DELTA, CORRECTION_ON);
@@ -416,57 +391,57 @@ void loop() {
             //set all Vgate CTL to OFF
             for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
               analogWrite_external_dac(i, VGATE_MIN);
-            }            
+            }
             set_external_dac_output();  //enable the value on dac out
-          } 
-          
+          }
+
           //  if(digitalRead(RLY_CTL == HIGH)) {
           //    digitalWrite(RF_CTL, HIGH);
           //    cell_status = true;
-          //  }  
-          
+          //  }
+
           cell_status = true; //bypass cell_status
         }
-        else if ((trigger_val == false) && (cell_status == true)) {  
+        else if ((trigger_val == false) && (cell_status == true)) {
 
 #ifdef _DATA_LOGGER
           //store vgate & imon value for USB sending
           float vgate_stored_value[VGATE_TOTAL_NUMBER];
           float imon_stored_value[VGATE_TOTAL_NUMBER];
           copyArray(vgate_value, vgate_stored_value, VGATE_TOTAL_NUMBER, VGATE_CONVERTION_VALUE);
-          copyArray(imon_value, imon_stored_value, VGATE_TOTAL_NUMBER, IMON_CONVERTION_VALUE);        
-#endif  
-          
+          copyArray(imon_value, imon_stored_value, VGATE_TOTAL_NUMBER, IMON_CONVERTION_VALUE);
+#endif
+
           //set all Vgate CTL to OFF
           for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
             analogWrite_external_dac(i, VGATE_MIN);
-          }  
+          }
           set_external_dac_output();  //enable the value on dac out
 
           //refresh current value
           imon_measure_routine();
-                           
-          digitalWrite(RF_CTL, LOW); 
+
+          digitalWrite(RF_CTL, LOW);
           cell_status = false;
 
 #ifdef _DATA_LOGGER
           send_usb_data(vgate_stored_value, imon_stored_value, VGATE_TOTAL_NUMBER);
 #endif
         }
-        else if(otherThread1(CHECK_ERRORS_THREAD) == 0) {
+        else if (otherThread1(CHECK_ERRORS_THREAD) == 0) {
           if (check_errors_routine() != 0) {
             programIndex = 1;
-          } 
+          }
         }
         else {
-          imon_measure_routine();  
+          imon_measure_routine();
         }
-//      }
-//    else {
-//      programIndex = 0;
-//    }
-    }
-    break;
+        //      }
+        //    else {
+        //      programIndex = 0;
+        //    }
+      }
+      break;
   }
 
   //CONTINUOS LOOP HIGH FREQUENCY
@@ -487,9 +462,9 @@ void otherThread(uint32_t mSeconds) {
   static uint32_t previusMillis = 0;
   uint32_t currentMillis = millis();
   if (currentMillis - previusMillis > mSeconds) {
-    previusMillis = currentMillis;        
-    enable = !enable;    
-    digitalWrite(LED_BUILTIN, enable);  //blink led on the board           
+    previusMillis = currentMillis;
+    enable = !enable;
+    digitalWrite(LED_BUILTIN, enable);  //blink led on the board
     send_lcd_data();  //control and verify if btn status is changed & display on lcd screen the mosfet status
   }
 }
@@ -498,7 +473,7 @@ uint8_t otherThread1(uint32_t mSeconds) {
   static uint32_t previusMillis = 0;
   uint32_t currentMillis = millis();
   if (currentMillis - previusMillis > mSeconds) {
-    previusMillis = currentMillis; 
+    previusMillis = currentMillis;
     return 0;
   }
   else {
@@ -507,8 +482,8 @@ uint8_t otherThread1(uint32_t mSeconds) {
 }
 
 void copyArray(int32_t *from, float *to, uint16_t sizeOf, float correction) {
-  for(uint8_t i = 0; i < sizeOf; i++) {
-    to[i] = from[i] * correction;    
+  for (uint8_t i = 0; i < sizeOf; i++) {
+    to[i] = from[i] * correction;
   }
 }
 

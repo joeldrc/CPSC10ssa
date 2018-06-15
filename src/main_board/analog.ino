@@ -48,9 +48,9 @@ void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead) { //uint3
   while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  //wait the end of conversion
   adc_get_latest_value(ADC);
 
-  for (uint8_t i = 0; i < MUX_MAX_CHANNEL; i++) {    
+  for (uint8_t i = 0; i < MUX_MAX_CHANNEL; i++) {
     REG_PIOC_SODR = i << MUX_PORT_ADDRESS;  //write value to port 21 until port 24 (port 21 to 24 = pin 9 to pin 6)
-    
+
     //wait untill the signal is stabilized
     asm volatile(".rept 10\n\tNOP\n\t.endr");  //10 NOP cycle (20ns cycle)
 
@@ -58,11 +58,11 @@ void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead) { //uint3
     adc_start(ADC);
     while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  //wait the end of conversion
     adc_get_latest_value(ADC);
-    
+
     adc_start(ADC); //ADC start reading
     while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  //wait the end of conversion
     valueRead[i] = adc_get_latest_value(ADC);
-    
+
     REG_PIOC_CODR = i << MUX_PORT_ADDRESS;    //delete value to port 21 until port 24 (port 21 to 24 = pin 9 to pin 6)
 
     //wait untill the signal is stabilized
@@ -134,10 +134,10 @@ void analogWrite_external_dac(uint8_t num, uint16_t value) {
     case 12:
     case 14:
     case 16: {
-      data = value | dac_channel_A; //create command to send at dac (value (OR) dac_ch_setup)
-    }
-    break;
-        
+        data = value | dac_channel_A; //create command to send at dac (value (OR) dac_ch_setup)
+      }
+      break;
+
     case 1:
     case 3:
     case 5:
@@ -147,9 +147,9 @@ void analogWrite_external_dac(uint8_t num, uint16_t value) {
     case 13:
     case 15:
     case 17: {
-      data = value | dac_channel_B; //create command to send at dac (value (OR) dac_ch_setup)
-    }
-    break;
+        data = value | dac_channel_B; //create command to send at dac (value (OR) dac_ch_setup)
+      }
+      break;
   }
 
   digitalWrite(csPin, LOW);     //enable CS
