@@ -21,15 +21,13 @@
     - 4D Systems Iod-09 module Documentation:     https://www.4dsystems.com.au/productpages/IoD-09/downloads/IOD-09_datasheet_R_1_2.pdf 
 
  ******************************************************************************
-   Copyright (c) 2018 CERN.  All right reserved.
- ******************************************************************************
-*/
+ */
 
 #include "GFX4dIoD9.h"
 
 GFX4dIoD9 gfx = GFX4dIoD9();
 
-//Global variables
+/* Global variables. */
 char cmdReceived = ' ';
 String ampDvrSelected = "0";
 String ampFinSelected = "0";
@@ -71,7 +69,7 @@ void logo(int color) {
  */
 void setup() {
   Serial.begin(115200); //start serial COM
-  //while(!Serial);     // Wait until connection is established
+  //	while(!Serial);     // Wait until connection is established
 
   //Set pin out
   pinMode(2, INPUT_PULLUP);
