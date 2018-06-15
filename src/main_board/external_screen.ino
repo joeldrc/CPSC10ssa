@@ -2,8 +2,6 @@
  ******************************************************************************
    @file    external screen
    @author  Joel Daricou  <joel.daricou@cern.ch>
-   @version V1.0.0
-   @date    01-March-2018
    @brief   external screen
  ******************************************************************************
 */
@@ -20,7 +18,7 @@ void btn_dwn() {
   btn_val = 3;
 }
 
-void sendLcdData() {
+void send_lcd_data() {
   static const uint8_t CNT_RESET_MENU = 150; //second x 2
   static uint8_t cntCycle = 0;
   static uint8_t menu_val = 0;

@@ -2,8 +2,6 @@
  ******************************************************************************
    @file    routines
    @author  Joel Daricou  <joel.daricou@cern.ch>
-   @version V1.0.0
-   @date    01-March-2018
    @brief   provide PS routines
  ******************************************************************************
 */
@@ -12,7 +10,7 @@ uint8_t ps_status_routine() {
   uint32_t ps_vdvr = analogRead_single_channel(ADC_CHANNEL_4);  //Read A2 = ADC3 //25V     
   uint32_t ps_vfin = analogRead_single_channel(ADC_CHANNEL_5);  //Read A3 = ADC4 //40V 
         
-  //  SerialUSB.print("25 Volt: "); SerialUSB.println(PS_Vdvr); SerialUSB.print("40 Volt: "); SerialUSB.println(PS_Vfin);     
+  //  SerialUSB.print("25 V: "); SerialUSB.println(PS_Vdvr); SerialUSB.print("40 V: "); SerialUSB.println(PS_Vfin);     
      
   if ((ps_vdvr < PS_VDVR_MIN) || (ps_vdvr > PS_VDVR_MAX)) {
     return 1;

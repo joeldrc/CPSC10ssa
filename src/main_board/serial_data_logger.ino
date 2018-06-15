@@ -2,13 +2,11 @@
  ******************************************************************************
    @file    serial data logger
    @author  Joel Daricou  <joel.daricou@cern.ch>
-   @version V1.0.0
-   @date    01-June-2018
    @brief   send data on serial USB port
  ******************************************************************************
 */
 
-void sendUSB_data(float *v_value, float *i_value, uint32_t sizeOf) { 
+void send_usb_data(float *v_value, float *i_value, uint32_t sizeOf) { 
   float val; 
   for(uint8_t i = 0; i < sizeOf; i++) {
     val = v_value[i];
