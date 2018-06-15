@@ -33,6 +33,21 @@ void copyArray(int32_t *from, float *to, uint16_t sizeOf, float correction) {
   }
 }
 
+void send_usb_data(float *v_value, float *i_value, uint32_t sizeOf) {
+  float val;
+  for (uint8_t i = 0; i < sizeOf; i++) {
+    val = v_value[i];
+    SerialUSB.print(val);
+    SerialUSB.print(',');
+  }
+  for (uint8_t i = 0; i < sizeOf; i++) {
+    val = i_value[i];
+    SerialUSB.print(val);
+    SerialUSB.print(',');
+  }
+  SerialUSB.println();
+}
+
 bool inputEvent() {
   char commandData = 0;
   SerialUSB.println("y/n to continue...");
