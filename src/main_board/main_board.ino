@@ -28,10 +28,10 @@
 #include <SPI.h>  //Serial Peripheral Interface library
 #include "CONFIG.h"
 
-#define _DATA_LOGGER_
-#define _WATCHDOG_
+#define _DATA_LOGGER
+#define _WATCHDOG
 
-#ifdef _WATCHDOG_
+#ifdef _WATCHDOG
 void watchdogSetup() {} //this function has to be present, otherwise watchdog won't work
 #endif
 
@@ -155,7 +155,7 @@ void setup() {
   SerialUSB.begin(115200);  //opens serial port, sets data rate to 115200 bps (Arduino due max speed (2000000)
   Serial3.begin(115200);    //Initialize Serial USART 3 (For LCD Display)
 
-#ifdef _WATCHDOG_
+#ifdef _WATCHDOG
   watchdogEnable(WATCHDOG_TIMER); //Initialize watchdog timer
 #endif
 
@@ -429,7 +429,7 @@ void loop() {
         }
         else if ((trigger_val == false) && (cell_status == true)) {  
 
-#ifdef _DATA_LOGGER_
+#ifdef _DATA_LOGGER
           //store vgate & imon value for USB sending
           float vgate_stored_value[VGATE_TOTAL_NUMBER];
           float imon_stored_value[VGATE_TOTAL_NUMBER];
@@ -449,7 +449,7 @@ void loop() {
           digitalWrite(RF_CTL, LOW); 
           cell_status = false;
 
-#ifdef _DATA_LOGGER_
+#ifdef _DATA_LOGGER
           send_usb_data(vgate_stored_value, imon_stored_value, VGATE_TOTAL_NUMBER);
 #endif
         }
@@ -472,7 +472,7 @@ void loop() {
   //CONTINUOS LOOP HIGH FREQUENCY
   otherThread(LCD_SCREEN_REFRESH); //do some other instructions
 
-#ifdef _WATCHDOG_
+#ifdef _WATCHDOG
   watchdogReset();  //RESET watchdog timer
 #endif
 }
