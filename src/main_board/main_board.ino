@@ -25,108 +25,127 @@
  ******************************************************************************
 */
 
-#include <SPI.h>  //Serial Peripheral Interface library
+#include "SPI.h"
 #include "CONFIG.h"
 
-//SPI phisical position
+/* -------------------- Defines pin I/O -------------------- */
+
+/* SPI phisical position. */
 static const uint8_t CS_MASTER = 23; //phisical pin number
 
-//ADC phisical position
-static const uint8_t ADC_1 = A0;  //phisical pin number
-static const uint8_t ADC_2 = A1;  //phisical pin number
-static const uint8_t ADC_3 = A2;  //phisical pin number
-static const uint8_t ADC_4 = A3;  //phisical pin number
-static const uint8_t ADC_5 = A4;  //phisical pin number
-static const uint8_t ADC_6 = A5;  //phisical pin number
-static const uint8_t ADC_7 = A6;  //phisical pin number
-static const uint8_t ADC_8 = A7;  //phisical pin number
-static const uint8_t ADC_9 = A8;  //phisical pin number
-static const uint8_t ADC_10 = A9; //phisical pin number
+/* ADC phisical position. */
+static const uint8_t ADC_1 = A0;  
+static const uint8_t ADC_2 = A1; 
+static const uint8_t ADC_3 = A2;
+static const uint8_t ADC_4 = A3;
+static const uint8_t ADC_5 = A4;
+static const uint8_t ADC_6 = A5;
+static const uint8_t ADC_7 = A6;
+static const uint8_t ADC_8 = A7;
+static const uint8_t ADC_9 = A8; 
+static const uint8_t ADC_10 = A9;
 
-//DAC internal phisical position
-static const uint8_t DAC_0 = DAC0;  //Onboard DAC
-static const uint8_t DAC_1 = DAC1;  //Onboard DAC
+/* DAC internal phisical position. */
+static const uint8_t DAC_0 = DAC0;
+static const uint8_t DAC_1 = DAC1;
 
-//DAC external phisical position & setting
-static const uint8_t TOTAL_DAC_NUMBER = 9;                                                //phisical number of devices
-static const uint8_t CS_DAC[TOTAL_DAC_NUMBER] = { 25, 27, 29, 31, 33, 35, 37, 39, 41 };   //phisical pin number of Control Select Pins
-static const uint8_t LDAC = 30;                                                           //phisical pin number
-static const uint8_t SHDN_DAC = 32;                                                       //phisical pin number
+/* DAC external phisical position & setting. */
+static const uint8_t TOTAL_DAC_NUMBER = 9;                                               
+static const uint8_t CS_DAC[TOTAL_DAC_NUMBER] = { 25, 27, 29, 31, 33, 35, 37, 39, 41 };  
+static const uint8_t LDAC = 30;                                                           
+static const uint8_t SHDN_DAC = 32;                                                      
 
-//BUTTON phisical position
-static const uint8_t BUTTON_A = 19; //phisical pin number
-static const uint8_t BUTTON_B = 18; //phisical pin number
-static const uint8_t BUTTON_C = 22; //phisical pin number
+/* BUTTON phisical position. */
+static const uint8_t BUTTON_A = 19; 
+static const uint8_t BUTTON_B = 18; 
+static const uint8_t BUTTON_C = 22; 
 
-//LED phisical position
-static const uint8_t LED_A = 12;  //phisical pin number
-static const uint8_t LED_B = 3;   //phisical pin number
-static const uint8_t LED_C = 4;   //phisical pin number
-static const uint8_t LED_D = 5;   //phisical pin number
-static const uint8_t LED_E = 24;  //phisical pin number
-static const uint8_t LED_F = 26;  //phisical pin number
+/* LED phisical position. */
+static const uint8_t LED_A = 12;  
+static const uint8_t LED_B = 3;   
+static const uint8_t LED_C = 4;   
+static const uint8_t LED_D = 5;  
+static const uint8_t LED_E = 24; 
+static const uint8_t LED_F = 26;
 
-//DIGITAL INPUT phisical position
-static const uint8_t  LOC_BIAS_ON_FRONT_NEGATIVE = 36;  //phisical pin number
-static const uint8_t  LOC_BIAS_ON_FRONT_POSITIVE = 38;  //phisical pin number
-static const uint8_t  OPEN_RLY_CMD = 40;                //phisical pin number
-static const uint8_t  RLY_ST = 42;                      //phisical pin number
-static const uint8_t  BIAS_ON_CMD = 43;                 //phisical pin number
-static const uint8_t  CELL_OFF_CMD = 52;                //phisical pin number
+/* DIGITAL INPUT phisical position. */
+static const uint8_t  LOC_BIAS_ON_FRONT_NEGATIVE = 36;
+static const uint8_t  LOC_BIAS_ON_FRONT_POSITIVE = 38;
+static const uint8_t  OPEN_RLY_CMD = 40;                
+static const uint8_t  RLY_ST = 42;                      
+static const uint8_t  BIAS_ON_CMD = 43;                 
+static const uint8_t  CELL_OFF_CMD = 52;                
 
-//DIGITAL OUTPUT phisical position
-static const uint8_t  CELL_ST_OK = 44;  //phisical pin number
-static const uint8_t  CARD_ST_OK = 45;  //phisical pin number
-static const uint8_t  BIAS_RDY = 46;    //phisical pin number
-static const uint8_t  RF_CTL = 47;      //phisical pin number
-static const uint8_t  RLY_CTL = 50;     //phisical pin number
-static const uint8_t  SEL_CTL = 51;     //phisical pin number
-static const uint8_t  MEASURE_SEL = 53; //phisical pin number
+/* DIGITAL OUTPUT phisical position. */
+static const uint8_t  CELL_ST_OK = 44;  
+static const uint8_t  CARD_ST_OK = 45;  
+static const uint8_t  BIAS_RDY = 46;    
+static const uint8_t  RF_CTL = 47;      
+static const uint8_t  RLY_CTL = 50;     
+static const uint8_t  SEL_CTL = 51;     
+static const uint8_t  MEASURE_SEL = 53; 
 
-//LCD phisical position
-static const uint8_t LCD1 = 28;     //phisical pin number
-static const uint8_t RESET_LCD = 2; //phisical pin number
+/* LCD phisical position. */
+static const uint8_t LCD1 = 28;     
+static const uint8_t RESET_LCD = 2; 
 
-//MUX phisical position
-static const uint8_t MUX_S0 = 9;    //phisical pin number
-static const uint8_t MUX_S1 = 8;    //phisical pin number
-static const uint8_t MUX_S2 = 7;    //phisical pin number
-static const uint8_t MUX_S3 = 6;    //phisical pin number
-static const uint8_t MUX_EN1 = 10;  //phisical pin number
-static const uint8_t MUX_EN2 = 11;  //phisical pin number
+/* MUX phisical position. */
+static const uint8_t MUX_S0 = 9;
+static const uint8_t MUX_S1 = 8; 
+static const uint8_t MUX_S2 = 7;   
+static const uint8_t MUX_S3 = 6;    
+static const uint8_t MUX_EN1 = 10;  
+static const uint8_t MUX_EN2 = 11;  
 
-//MUX port & channel
-static const uint8_t MUX_MAX_CHANNEL = 16;  //mux phisical channel number
+/* MUX port & channel. */
+static const uint8_t MUX_MAX_CHANNEL = 16;
 static const uint8_t MUX_PORT_ADDRESS = 21; //PORT name value: (port 21 to 24 = pin 9 to pin 6)
 
-//SOFTWARE CONSTANT for the setup
+/* -------------------- End defines pin I/O -------------------- */
+
+
+/* -------------------- Defines software constant -------------------- */
+
+/* SOFTWARE CONSTANT for the setup. */
 static const uint8_t VGATE_TOTAL_NUMBER = 18; //(!don't modify this value!) max phisical number of single mosfets to regulate bias
 
-static const uint8_t DVR_TOTAL_NUMBER = 2;    //<-- max number of driver used (min value is 2)
-static const uint8_t DVR_PHISICAL_POSITION[DVR_TOTAL_NUMBER] = { 16, 17 };                //<-- use 16 and 17
+static const uint8_t DVR_TOTAL_NUMBER = 2;  //<-- max number of driver used (min value is 2)
+static const uint8_t DVR_PHISICAL_POSITION[DVR_TOTAL_NUMBER] = { 16, 17 };  //<-- use 16 and 17
 
-static const uint8_t FIN_TOTAL_NUMBER = 16;   //<-- max number of final used
-static const uint8_t FIN_PHISICAL_POSITION[FIN_TOTAL_NUMBER] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };   //<-- use 0 to 15
+static const uint8_t FIN_TOTAL_NUMBER = 16; //<-- max number of final used
+static const uint8_t FIN_PHISICAL_POSITION[FIN_TOTAL_NUMBER] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };  //<-- use 0 to 15
 
-//GLOBAL VARIABLES
+/* -------------------- End defines software constant -------------------- */
+
+
+/* -------------------- Defines global variables -------------------- */
+
 int32_t vgate_value[VGATE_TOTAL_NUMBER] = {};
 int32_t imon_value[VGATE_TOTAL_NUMBER] = {};
 int32_t vgate_set_value[VGATE_TOTAL_NUMBER] = {};
 uint8_t amplifier_status[VGATE_TOTAL_NUMBER] = {};
 
-//external screen
+/* External screen. */
 uint8_t imon_dvr_channel = 0;
 uint8_t imon_fin_channel = 0;
 uint8_t ampTemp_channel = 0;
 
-//button interrupt
+/* button interrupt */
 volatile uint8_t btn_val = 0;
+
+/* -------------------- End defines global variables -------------------- */
+
+
+/* -------------------- Whatchdog function -------------------- */
 
 #ifdef _WATCHDOG
 void watchdogSetup() {} //this function has to be present, otherwise watchdog won't work
 #endif
 
+/* -------------------- Setup -------------------- */
+
 void setup() {
+  /* Initialize serials interfaces. */
   SerialUSB.begin(115200);  //opens serial port, sets data rate to 115200 bps (Arduino due max speed (2000000)
   Serial3.begin(115200);    //Initialize Serial USART 3 (For LCD Display)
 
@@ -134,15 +153,16 @@ void setup() {
   watchdogEnable(WATCHDOG_TIMER); //Initialize watchdog timer
 #endif
 
-  //INITIALIZE SPI interface
+  /* Initialize SPI interface. */
   SPI.begin();
-  SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); //20 Mhz freq. max MCP4922 (frequency in Hz, bit order, spi MODE)
+  /* 20 Mhz freq. max MCP4922 (frequency in Hz, bit order, spi MODE) */
+  SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); 
   SPI.beginTransaction(settingA);
 
-  //INITIALIZE SPI pin
+  /* Initialize SPI pin. */
   pinMode(CS_MASTER, INPUT_PULLUP);
 
-  //INITIALIZE ADC'S pin's
+  /* Initialize adcs pins. */
   pinMode(ADC_1, INPUT);
   pinMode(ADC_2, INPUT);
   pinMode(ADC_3, INPUT);
@@ -154,17 +174,17 @@ void setup() {
   pinMode(ADC_9, INPUT);
   pinMode(ADC_10, INPUT);
 
-  //INITIALIZE Onboard ADC'S REGISTERS (1Msps)
+  /* Initialize onboard adc registers (1Msps). */
   adc_init_setup();
 
-  //INITIALIZE Onboard DAC'S (1Msps)
-  analogWriteResolution(12);  // set 12 bits resolution
+  /* Initialize internals dacs (1Msps). */
+  analogWriteResolution(12);
   pinMode(DAC_0, OUTPUT);
   pinMode(DAC_1, OUTPUT);
-  analogWrite(DAC_0, 0);      // Enables DAC0
-  analogWrite(DAC_1, 0);      // Enables DAC0
+  analogWrite(DAC_0, 0);
+  analogWrite(DAC_1, 0);
 
-  //INITIALIZE External DAC'S pins
+  /* Initialize externals dac pins. */
   for (uint8_t i = 0; i < TOTAL_DAC_NUMBER; i++) {
     pinMode(CS_DAC[i], OUTPUT);     //set pin as output
     digitalWrite(CS_DAC[i], HIGH);  //set all Control Select HIGH for unable all
@@ -174,7 +194,7 @@ void setup() {
   digitalWrite(LDAC, HIGH);         //DAC disabled
   digitalWrite(SHDN_DAC, HIGH);     //DAC OUT off
 
-  //INITIALIZE MUX pin I/O
+  /* Initialize multiplexers pins I/O. */
   pinMode(MUX_S0, OUTPUT);
   pinMode(MUX_S1, OUTPUT);
   pinMode(MUX_S2, OUTPUT);
@@ -188,13 +208,13 @@ void setup() {
   digitalWrite(MUX_EN1, LOW);  //mux enabled
   digitalWrite(MUX_EN2, LOW);  //mux enabled
 
-  //INITIALIZE LCD pins
+  /* Initialize lcd pins. */
   pinMode(LCD1, OUTPUT);
   pinMode(RESET_LCD, OUTPUT);
   digitalWrite(LCD1, LOW);        //aux connection to lcd screen (unused)
   digitalWrite(RESET_LCD, HIGH);  //lcd screen hardware reset (unused)
 
-  //INITIALIZE External BUTTONS
+  /* Initialize external buttons. */
   pinMode(BUTTON_A, INPUT_PULLUP);
   pinMode(BUTTON_B, INPUT_PULLUP);
   pinMode(BUTTON_C, INPUT_PULLUP);
@@ -202,7 +222,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(BUTTON_B), btn_ent, FALLING); //Interrupt pin
   attachInterrupt(digitalPinToInterrupt(BUTTON_C), btn_dwn, FALLING); //Interrupt pin
 
-  //INITIALIZE Insulated DIGITAL inputs
+  /* Initialize insulated inputs pins. */
   pinMode(LOC_BIAS_ON_FRONT_NEGATIVE, INPUT_PULLUP);
   pinMode(LOC_BIAS_ON_FRONT_POSITIVE, INPUT_PULLUP);
   pinMode(BIAS_ON_CMD, INPUT_PULLUP);
@@ -211,7 +231,7 @@ void setup() {
   pinMode(CELL_OFF_CMD, INPUT_PULLUP);
   pinMode(RLY_ST, INPUT_PULLUP);
 
-  //INITIALIZE DIGITAL outputs
+  /* Initialize digital output pins. */
   pinMode(MEASURE_SEL, OUTPUT);
   pinMode(RLY_CTL, OUTPUT);
   pinMode(SEL_CTL, OUTPUT);
@@ -227,8 +247,8 @@ void setup() {
   digitalWrite(CELL_ST_OK, LOW);    //set CELL ST to OFF
   digitalWrite(CARD_ST_OK, LOW);    //set CARD_ST_OK to OFF
 
-  //INITIALIZE LED'S
-  pinMode(LED_BUILTIN, OUTPUT);   //led onboard
+  /* Initialize leds. */
+  pinMode(LED_BUILTIN, OUTPUT);
   pinMode(LED_A, OUTPUT);
   pinMode(LED_B, OUTPUT);
   pinMode(LED_C, OUTPUT);
@@ -243,6 +263,10 @@ void setup() {
   digitalWrite(LED_E, LOW);
   digitalWrite(LED_F, LOW);
 }
+
+/* -------------------- End setup -------------------- */
+
+/* -------------------- Loop -------------------- */
 
 void loop() {
   static uint8_t programIndex = 0;
@@ -274,14 +298,14 @@ void loop() {
       }
       break;
     case 1: {
-        //set all Vgate CTL to MIN
+        /* Set all Vgate CTL to MIN. */
         for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
           vgate_set_value[i] = VGATE_MIN;
           analogWrite_external_dac(i, vgate_set_value[i]);
         }
         set_external_dac_output();  //enable the value on dac out
 
-        //reset amplifier status
+        /* Reset amplifier status. */
         for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
           amplifier_status[i] = MOSFET_NOT_SETTED;
         }
@@ -336,7 +360,7 @@ void loop() {
               }
             case MOSFET_SETUP_OK: {
                 if (fin_cnt == (FIN_TOTAL_NUMBER - 1)) {
-                  //set all Vgate CTL to OFF
+                  /* set all Vgate CTL to OFF. */
                   for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
                     analogWrite_external_dac(i, VGATE_MIN);
                   }
@@ -388,7 +412,7 @@ void loop() {
             }
           }
           else {
-            //set all Vgate CTL to OFF
+            /* Set all Vgate CTL to OFF. */
             for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
               analogWrite_external_dac(i, VGATE_MIN);
             }
@@ -405,20 +429,20 @@ void loop() {
         else if ((trigger_val == false) && (cell_status == true)) {
 
 #ifdef _DATA_LOGGER
-          //store vgate & imon value for USB sending
+          /* Store vgate & imon value for USB sending */
           float vgate_stored_value[VGATE_TOTAL_NUMBER];
           float imon_stored_value[VGATE_TOTAL_NUMBER];
           copyArray(vgate_value, vgate_stored_value, VGATE_TOTAL_NUMBER, VGATE_CONVERTION_VALUE);
           copyArray(imon_value, imon_stored_value, VGATE_TOTAL_NUMBER, IMON_CONVERTION_VALUE);
 #endif
 
-          //set all Vgate CTL to OFF
+          /* Set all Vgate CTL to OFF. */
           for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
             analogWrite_external_dac(i, VGATE_MIN);
           }
           set_external_dac_output();  //enable the value on dac out
 
-          //refresh current value
+          /* Refresh current value. */
           imon_measure_routine();
 
           digitalWrite(RF_CTL, LOW);
@@ -444,62 +468,23 @@ void loop() {
       break;
   }
 
-  //CONTINUOS LOOP HIGH FREQUENCY
-  otherThread(LCD_SCREEN_REFRESH); //do some other instructions
+  /* Do some other instructions in parallel. */ 
+  if (otherThread(LCD_SCREEN_REFRESH)) {
+    static bool enable = false;
+        
+    /* Blink led on the board. */
+    enable = !enable;
+    digitalWrite(LED_BUILTIN, enable); 
+
+    /* Control and verify if btn status is changed & display on lcd screen the mosfet status. */
+    send_lcd_data();                   
+  }
 
 #ifdef _WATCHDOG
-  watchdogReset();  //RESET watchdog timer
+  /* Reset watchdog timer. */
+  watchdogReset();
 #endif
 }
 
-/**
-   \brief FUNCTION: create another thread to do operations in parallel
-   \param void
-   \return void
-*/
-void otherThread(uint32_t mSeconds) {
-  static bool enable = false;
-  static uint32_t previusMillis = 0;
-  uint32_t currentMillis = millis();
-  if (currentMillis - previusMillis > mSeconds) {
-    previusMillis = currentMillis;
-    enable = !enable;
-    digitalWrite(LED_BUILTIN, enable);  //blink led on the board
-    send_lcd_data();  //control and verify if btn status is changed & display on lcd screen the mosfet status
-  }
-}
+/* -------------------- End loop -------------------- */
 
-uint8_t otherThread1(uint32_t mSeconds) {
-  static uint32_t previusMillis = 0;
-  uint32_t currentMillis = millis();
-  if (currentMillis - previusMillis > mSeconds) {
-    previusMillis = currentMillis;
-    return 0;
-  }
-  else {
-    return 1;
-  }
-}
-
-void copyArray(int32_t *from, float *to, uint16_t sizeOf, float correction) {
-  for (uint8_t i = 0; i < sizeOf; i++) {
-    to[i] = from[i] * correction;
-  }
-}
-
-bool inputEvent() {
-  char commandData = 0;
-  SerialUSB.println("y/n to continue...");
-  //wait for command
-  while (1) {
-    if (SerialUSB.available()) {
-      commandData = SerialUSB.read();
-    }
-    if (((commandData == 'y') || (commandData == 'Y'))) {
-      return true;
-    }
-    else if (((commandData == 'n') || (commandData == 'N'))) {
-      return false;
-    }
-  }
-}

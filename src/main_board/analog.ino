@@ -7,7 +7,7 @@
 */
 
 void adc_init_setup() {
-  //Initialize onboard adc's registers (1Msps)
+  /* Initialize onboard adc's registers (1Msps). */
   pmc_enable_periph_clk(ID_ADC);                                  //power management controller told to turn on adc
   adc_init(ADC, SystemCoreClock, ADC_FREQ_MAX, ADC_STARTUP_FAST); //initialize, set maximum posibble speed
   adc_configure_timing(ADC, 0, ADC_SETTLING_TIME_3, 1);           //set timings - standard values
@@ -51,10 +51,10 @@ void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead) { //uint3
   for (uint8_t i = 0; i < MUX_MAX_CHANNEL; i++) {
     REG_PIOC_SODR = i << MUX_PORT_ADDRESS;  //write value to port 21 until port 24 (port 21 to 24 = pin 9 to pin 6)
 
-    //wait untill the signal is stabilized
+    /* Wait untill the signal is stabilized. */
     asm volatile(".rept 10\n\tNOP\n\t.endr");  //10 NOP cycle (20ns cycle)
 
-    //first measurement is used to stabilize the value
+    /* First measurement is used to stabilize the value. */
     adc_start(ADC);
     while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  //wait the end of conversion
     adc_get_latest_value(ADC);
@@ -65,7 +65,7 @@ void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead) { //uint3
 
     REG_PIOC_CODR = i << MUX_PORT_ADDRESS;    //delete value to port 21 until port 24 (port 21 to 24 = pin 9 to pin 6)
 
-    //wait untill the signal is stabilized
+    /* Wait untill the signal is stabilized. */
     asm volatile(".rept 10\n\tNOP\n\t.endr"); //10 NOP cycle (20ns cycle)
   }
 
@@ -117,7 +117,7 @@ void analogWrite_external_dac(uint8_t num, uint16_t value) {
 
       0b0111XXXXXXXXXXXX where X is the 12 bits to be written to the active channel.
       bit 11 down to bit 0
-
+      
   */
 
   static const uint16_t dac_channel_A = 0b0111000000000000, dac_channel_B = 0b1111000000000000;
