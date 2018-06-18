@@ -2,16 +2,25 @@
    \brief FUNCTION: create another thread to do operations in parallel
    \param void
    \return void
-*/
-uint8_t otherThread(uint32_t mSeconds) { 
+ */
+void otherThread(uint32_t mSeconds) {
+  static bool enable = false;
   static uint32_t previusMillis = 0;
   uint32_t currentMillis = millis();
   if (currentMillis - previusMillis > mSeconds) {
-    previusMillis = currentMillis;
-    return 0;
-  }
-  else {
-    return 1;
+    previusMillis = currentMillis; 
+       
+    enable = !enable;    
+    digitalWrite(LED_BUILTIN, enable);  //blink led on the board   
+
+    /* Control and verify if btn status is changed & display on lcd screen the mosfet status. */
+    send_lcd_data();  
+
+#ifdef _DEBUG_
+    if (external_trigger() == true) {
+      debug(enable);
+    }
+#endif
   }
 }
 

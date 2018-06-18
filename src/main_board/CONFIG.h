@@ -4,7 +4,7 @@
    @author  Joel Daricou  <joel.daricou@cern.ch>
    @brief   CONFIG
  ******************************************************************************
-*/
+ */
 
 /* Comment if you want to disable. */
 #define _DATA_LOGGER

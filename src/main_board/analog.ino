@@ -4,7 +4,7 @@
    @author  Joel Daricou  <joel.daricou@cern.ch>
    @brief   provide analog services (ADC + DAC)
  ******************************************************************************
-*/
+ */
 
 void adc_init_setup() {
   /* Initialize onboard adc's registers (1Msps). */

@@ -23,7 +23,7 @@
     - Arduino Due Pin Mapping:                            http://www.robgray.com/temp/Due-pinout.pdf
 
  ******************************************************************************
-*/
+ */
 
 #include "SPI.h"
 #include "CONFIG.h"
@@ -469,16 +469,7 @@ void loop() {
   }
 
   /* Do some other instructions in parallel. */ 
-  if (otherThread(LCD_SCREEN_REFRESH)) {
-    static bool enable = false;
-        
-    /* Blink led on the board. */
-    enable = !enable;
-    digitalWrite(LED_BUILTIN, enable); 
-
-    /* Control and verify if btn status is changed & display on lcd screen the mosfet status. */
-    send_lcd_data();                   
-  }
+  otherThread(LCD_SCREEN_REFRESH);
 
 #ifdef _WATCHDOG
   /* Reset watchdog timer. */

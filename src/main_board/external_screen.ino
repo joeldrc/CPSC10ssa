@@ -4,7 +4,7 @@
    @author  Joel Daricou  <joel.daricou@cern.ch>
    @brief   external screen
  ******************************************************************************
-*/
+ */
 
 void btn_up() {
   btn_val = 1;
@@ -114,7 +114,7 @@ void send_lcd_data() {
   }
   btn_val = 0; //reset interrupt variable
 
-  //start to send data
+  /* Start to sending data. */
   switch (menu_val) {
     case 1: {
         Serial3.print('a');
@@ -143,11 +143,11 @@ void send_lcd_data() {
       break;
   }
 
-  //send temp value (float)
+  /* Send temp value (float). */
   Serial3.print('d');
   Serial3.println(float(cntCycle)); //<-- to add more code
 
-  //send to LCD screen amplifiers status (0: WHITE, 1: GREEN, 2: YELLOW, 3: RED, 4: BLUE, 5: VIOLET)
+  /* Send to LCD screen amplifiers status (0: WHITE, 1: GREEN, 2: YELLOW, 3: RED, 4: BLUE, 5: VIOLET). */
   Serial3.print('e');
   for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
     Serial3.print(amplifier_status[FIN_PHISICAL_POSITION[i]], DEC);

@@ -4,7 +4,7 @@
    @author  Joel Daricou  <joel.daricou@cern.ch>
    @brief   provide PS routines
  ******************************************************************************
-*/
+ */
 
 uint8_t ps_status_routine() {
   uint32_t ps_vdvr = analogRead_single_channel(ADC_CHANNEL_4);  //Read A2 = ADC3 //25V
