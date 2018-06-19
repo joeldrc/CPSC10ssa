@@ -23,9 +23,11 @@
  ******************************************************************************
  */
 
+
 #include "GFX4dIoD9.h"
 
 GFX4dIoD9 gfx = GFX4dIoD9();
+
 
 /* Global variables. */
 char cmdReceived = ' ';
@@ -35,6 +37,7 @@ String ampTmpSelected = "0";
 String tempValue = "0.00";
 String amplifierInfo = "";
 String ampInfoDisplayColor = "";
+
 
 /*
  * \brief FUNCTION: first screen logo
@@ -52,6 +55,7 @@ void displayLogo() {
   }
 }
 
+
 void logo(int color) {
   gfx.TextColor(color);
   gfx.Font(2); 
@@ -63,6 +67,7 @@ void logo(int color) {
   gfx.MoveTo(40,105);
   gfx.print("RF");  
 }
+
 
 /*
  * \brief setup
@@ -79,7 +84,7 @@ void setup() {
   pinMode(12, INPUT_PULLUP);
   pinMode(16, INPUT_PULLUP);
 
-  //Initialize the display
+  /* Initialize the display. */
   gfx.begin(); 
   gfx.Cls(BLACK);
   gfx.ScrollEnable(false);
@@ -89,10 +94,10 @@ void setup() {
 
   displayLogo();
 
-  //Clean screen
+  /* Clean screen. */
   gfx.Cls(BLACK); 
 
-  //display only one time
+  /* Display only one time. */
   gfx.Line(0, 60, 80, 60, VIOLET);
   ampSelDisplay(5, 64, "DVR", VIOLET, ampDvrSelected, false);
   gfx.Line(0, 84, 80, 84, YELLOW);
@@ -102,6 +107,7 @@ void setup() {
   tempDisplay(5, 130, tempValue); 
 }
 
+
 /*
  * \brief Infinite loop
  */
@@ -110,6 +116,7 @@ void loop() {
     displayScreen(); 
   }
 }
+
 
 /*
  * \brief FUNCTION: display screen
@@ -194,6 +201,7 @@ void displayScreen() {
   }
 }
 
+
 /**
  * \brief FUNCTION: serial COM 
  */ 
@@ -236,6 +244,7 @@ boolean readSerialValue() {
   }
 }
 
+
 /**
  * \brief FUNCTION: button & label
  */ 
@@ -247,6 +256,7 @@ void ledDisplay(uint8_t x, uint8_t y, String txt, int color, int colorFill) {
   gfx.MoveTo(x + 20, y - 6);
   gfx.print(txt);   
 }
+
 
 void ampSelDisplay(uint8_t x, uint8_t y, String txt, int color, String number, boolean sel) {
   gfx.TextColor(WHITE, BLACK);
@@ -266,12 +276,14 @@ void ampSelDisplay(uint8_t x, uint8_t y, String txt, int color, String number, b
   gfx.print(number);
 }
 
+
 void tempDisplay(uint8_t x, uint8_t y, String value) {
   gfx.TextColor(WHITE, BLACK);
   gfx.TextSize(2);
   gfx.MoveTo(x, y); 
   gfx.print(value);   
 }
+
 
 void ampInfoDisplay(char number, int color) {
   gfx.TextColor(color, BLACK);

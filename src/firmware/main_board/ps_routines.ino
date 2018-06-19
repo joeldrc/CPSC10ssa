@@ -6,6 +6,7 @@
  ******************************************************************************
  */
 
+
 uint8_t ps_status_routine() {
   uint32_t ps_vdvr = analogRead_single_channel(ADC_CHANNEL_4);  //Read A2 = ADC3 //25V
   uint32_t ps_vfin = analogRead_single_channel(ADC_CHANNEL_5);  //Read A3 = ADC4 //40V
@@ -22,6 +23,7 @@ uint8_t ps_status_routine() {
     return 0;
   }
 }
+
 
 void vgate_measure_routine() {
   analogRead_mux(ADC_CHANNEL_11, vgate_value);                  //Read 16 final value
@@ -57,6 +59,7 @@ void vgate_measure_routine() {
     }
   }
 }
+
 
 void imon_measure_routine() {
   uint32_t imon_fin_total_val = 0;
@@ -96,6 +99,7 @@ void imon_measure_routine() {
   }
 }
 
+
 uint8_t check_errors_routine() {
   uint8_t val_ps_status_routine = ps_status_routine();  //check ps_status_routine
   if ((val_ps_status_routine != 0)) {
@@ -119,11 +123,13 @@ uint8_t check_errors_routine() {
   return 0;
 }
 
+
 void vgate_off(uint8_t i) {
   vgate_set_value[i] = VGATE_MIN;
   analogWrite_external_dac(i, vgate_set_value[i]);
   set_external_dac_output();
 }
+
 
 uint8_t bias_setting_routine(uint8_t i, uint16_t ref_value, uint16_t delta_value, bool correction_enabled) {
 
@@ -149,6 +155,7 @@ uint8_t bias_setting_routine(uint8_t i, uint16_t ref_value, uint16_t delta_value
   set_external_dac_output();  //enable the value on dac out
   return 2;
 }
+
 
 bool external_trigger() {
   if (digitalRead(LOC_BIAS_ON_FRONT_NEGATIVE) == LOW) {

@@ -25,8 +25,27 @@
  ******************************************************************************
  */
 
+
 #include "SPI.h"
 #include "CONFIG.h"
+
+
+/* -------------------- Defines -------------------- */
+
+/* Program defines. */
+#define CORRECTION_ON               true
+#define CORRECTION_OFF              false
+
+/* Mosfet status code. */
+#define MOSFET_NOT_SETTED           0             //white
+#define MOSFET_SETUP_OK             1             //green
+#define MOSFET_TEMP_ERROR           2             //yellow
+#define MOSFET_FUSE_ERROR           3             //red
+#define MOSFET_UNABLE_TO_SET        4             //blue
+#define MOSFET_OTHER_ERROR          5             //purple
+
+/* -------------------- End Defines -------------------- */
+
 
 /* -------------------- Defines pin I/O -------------------- */
 
@@ -104,6 +123,7 @@ static const uint8_t MUX_PORT_ADDRESS = 21; //PORT name value: (port 21 to 24 = 
 /* -------------------- End defines pin I/O -------------------- */
 
 
+
 /* -------------------- Defines software constant -------------------- */
 
 /* SOFTWARE CONSTANT for the setup. */
@@ -116,6 +136,7 @@ static const uint8_t FIN_TOTAL_NUMBER = 16; //<-- max number of final used
 static const uint8_t FIN_PHISICAL_POSITION[FIN_TOTAL_NUMBER] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };  //<-- use 0 to 15
 
 /* -------------------- End defines software constant -------------------- */
+
 
 
 /* -------------------- Defines global variables -------------------- */
@@ -136,11 +157,10 @@ volatile uint8_t btn_val = 0;
 /* -------------------- End defines global variables -------------------- */
 
 
-/* -------------------- Whatchdog function -------------------- */
-
 #ifdef _WATCHDOG
 void watchdogSetup() {} //this function has to be present, otherwise watchdog won't work
 #endif
+
 
 /* -------------------- Setup -------------------- */
 
@@ -265,6 +285,7 @@ void setup() {
 }
 
 /* -------------------- End setup -------------------- */
+
 
 /* -------------------- Loop -------------------- */
 
@@ -452,7 +473,7 @@ void loop() {
           send_usb_data(vgate_stored_value, imon_stored_value, VGATE_TOTAL_NUMBER);
 #endif
         }
-        else if (softwareDelay(CHECK_ERRORS_THREAD) == 0) {
+        else if (softwareDelay(CHECK_ERRORS_TIMER) == 0) {
           if (check_errors_routine() != 0) {
             programIndex = 1;
           }

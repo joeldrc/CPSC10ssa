@@ -6,17 +6,21 @@
  ******************************************************************************
  */
 
+
 void btn_up() {
   btn_val = 1;
 }
+
 
 void btn_ent() {
   btn_val = 2;
 }
 
+
 void btn_dwn() {
   btn_val = 3;
 }
+
 
 void send_lcd_data() {
   static const uint8_t CNT_RESET_MENU = 150; //second x 2
@@ -159,3 +163,4 @@ void send_lcd_data() {
   }
   Serial3.println();
 }
+

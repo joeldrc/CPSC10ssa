@@ -6,6 +6,7 @@
  ******************************************************************************
  */
 
+
 void adc_init_setup() {
   /* Initialize onboard adc's registers (1Msps). */
   pmc_enable_periph_clk(ID_ADC);                                  //power management controller told to turn on adc
@@ -38,6 +39,7 @@ void adc_init_setup() {
 
   adc_start(ADC);
 }
+
 
 void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead) { //uint32_t analogValue[] is the same
 
@@ -72,6 +74,7 @@ void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead) { //uint3
   adc_disable_channel(ADC, adc_ch); //disable adc selected
 }
 
+
 uint32_t analogRead_single_channel(enum adc_channel_num_t adc_ch) {
 
   //  adc_disable_all_channel(ADC); //to remove if you want more speed
@@ -91,6 +94,7 @@ uint32_t analogRead_single_channel(enum adc_channel_num_t adc_ch) {
 
   return valueRead;
 }
+
 
 void analogWrite_external_dac(uint8_t num, uint16_t value) {
   /**
@@ -158,11 +162,13 @@ void analogWrite_external_dac(uint8_t num, uint16_t value) {
   digitalWrite(csPin, HIGH);    //disable CS
 }
 
+
 void set_external_dac_output() {
   //enable dac out (LDAC)
   digitalWrite(LDAC, LOW);  //enable the buffer to set the output on LDAC
   digitalWrite(LDAC, HIGH); //disable the buffer LDAC
 }
+
 
 void analogWrite_internal_dac(uint8_t num, uint32_t value) {
   dacc_set_channel_selection(DACC_INTERFACE, num);
