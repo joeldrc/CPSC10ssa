@@ -3,28 +3,21 @@
    \param void
    \return void
  */
-void otherThread(uint32_t mSeconds) {
+void otherThread (uint32_t mSeconds) {
   static bool enable = false;
   static uint32_t previusMillis = 0;
   uint32_t currentMillis = millis();
   if (currentMillis - previusMillis > mSeconds) {
-    previusMillis = currentMillis; 
-       
-    enable = !enable;    
-    digitalWrite(LED_BUILTIN, enable);  //blink led on the board   
-
+    previusMillis = currentMillis;
+    /* Blink the led on the board. */
+    enable = !enable;
+    digitalWrite(LED_BUILTIN, enable);
     /* Control and verify if btn status is changed & display on lcd screen the mosfet status. */
-    send_lcd_data();  
-
-#ifdef _DEBUG_
-    if (external_trigger() == true) {
-      debug(enable);
-    }
-#endif
+    send_lcd_data();
   }
 }
 
-uint8_t otherThread1(uint32_t mSeconds) {
+uint8_t softwareDelay (uint32_t mSeconds) {
   static uint32_t previusMillis = 0;
   uint32_t currentMillis = millis();
   if (currentMillis - previusMillis > mSeconds) {
@@ -36,13 +29,13 @@ uint8_t otherThread1(uint32_t mSeconds) {
   }
 }
 
-void copyArray(int32_t *from, float *to, uint16_t sizeOf, float correction) {
+void copyArray (int32_t *from, float *to, uint16_t sizeOf, float correction) {
   for (uint8_t i = 0; i < sizeOf; i++) {
     to[i] = from[i] * correction;
   }
 }
 
-void send_usb_data(float *v_value, float *i_value, uint32_t sizeOf) {
+void send_usb_data (float *v_value, float *i_value, uint32_t sizeOf) {
   float val;
   for (uint8_t i = 0; i < sizeOf; i++) {
     val = v_value[i];
@@ -57,10 +50,10 @@ void send_usb_data(float *v_value, float *i_value, uint32_t sizeOf) {
   SerialUSB.println();
 }
 
-bool inputEvent() {
+bool inputEvent () {
   char commandData = 0;
   SerialUSB.println("y/n to continue...");
-  //wait for command
+  /* Wait for serial command. */
   while (1) {
     if (SerialUSB.available()) {
       commandData = SerialUSB.read();

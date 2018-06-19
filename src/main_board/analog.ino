@@ -55,9 +55,9 @@ void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead) { //uint3
     asm volatile(".rept 10\n\tNOP\n\t.endr");  //10 NOP cycle (20ns cycle)
 
     /* First measurement is used to stabilize the value. */
-    adc_start(ADC);
-    while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  //wait the end of conversion
-    adc_get_latest_value(ADC);
+    //  adc_start(ADC);
+    //  while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  //wait the end of conversion
+    //  adc_get_latest_value(ADC);
 
     adc_start(ADC); //ADC start reading
     while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  //wait the end of conversion

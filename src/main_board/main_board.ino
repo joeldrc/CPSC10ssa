@@ -452,7 +452,7 @@ void loop() {
           send_usb_data(vgate_stored_value, imon_stored_value, VGATE_TOTAL_NUMBER);
 #endif
         }
-        else if (otherThread1(CHECK_ERRORS_THREAD) == 0) {
+        else if (softwareDelay(CHECK_ERRORS_THREAD) == 0) {
           if (check_errors_routine() != 0) {
             programIndex = 1;
           }
