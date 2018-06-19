@@ -26,17 +26,6 @@
 GFX4dIoD9 gfx = GFX4dIoD9();
 
 
-/* Global variables. */
-static const uint16_t ROW[10] = { 10, 20, 30, 40, 50, 60, 70, 80 };
-
-String ampDvrSelected = "0";
-String ampFinSelected = "0";
-String ampTmpSelected = "0";
-String tempValue = "0.00";
-String amplifierInfo = "";
-String ampInfoDisplayColor = "";
-
-
 /*
  * \brief FUNCTION: first screen logo
  */
@@ -67,9 +56,6 @@ void logo(int color) {
 }
 
 
-/*
- * \brief setup
- */
 void setup() {
   Serial.begin(115200); //start serial COM
   //  while(!Serial);     // Wait until connection is established
@@ -96,15 +82,101 @@ void setup() {
   gfx.Cls(BLACK); 
 }
 
-/*
- * \brief Infinite loop
- */
+
 void loop() {
   if (Serial.available() > 0) {
-    gfx.MoveTo(0, 0);    
-    gfx.TextColor(WHITE);
-    gfx.Font(2); 
-    gfx.TextSize(1);
-    gfx.print(Serial.readStringUntil('\n'));
+    
+    String receivedData = Serial.readStringUntil('\n');
+    
+    char cmdReceived = receivedData.charAt(0);
+    String stringData = receivedData.substring(1, receivedData.length());
+
+    switch (cmdReceived) {
+      case 'a': {
+
+        uint8_t num;
+        int txtColor;
+                      
+        for(uint8_t i = 0; i < stringData.length(); i++) {
+                 
+          switch (stringData.charAt(i)) {
+            case '0': {
+              txtColor = WHITE;  
+            }
+            break;
+            case '1': {
+              txtColor = LIME;  
+            }
+            break;
+            case '2': {
+              txtColor = YELLOW;  
+            }
+            break;
+            case '3': {
+              txtColor = RED;  
+            }
+            break;
+            case '4': {
+              txtColor = BLUE;  
+            }
+            break;
+            case '5': {
+              txtColor = VIOLET;  
+            }
+            break;
+            default: {
+              txtColor = BLACK;  
+            }
+            break;
+          }  
+          
+          if (i > 0xF) {
+            num = i - 0x10;
+          }
+          else {
+            num = i;
+          }
+          
+          gfx.TextColor(txtColor, BLACK);
+          gfx.Font(2);
+          gfx.TextSize(1);                   
+          gfx.print(num, HEX); 
+        }
+      }
+      break;
+      case 'b': {
+        
+      }
+      break;
+      case 'c': {
+          
+      }
+      break;
+      case 'd': {
+        gfx.TextColor(WHITE, BLACK);
+        gfx.Font(2);
+        gfx.TextSize(1);                   
+        gfx.print(stringData);  
+      }
+      break;
+      case 'e': {
+        gfx.TextColor(WHITE, BLACK);
+        gfx.Font(2);
+        gfx.TextSize(1);
+        gfx.println(stringData);   
+      }
+      break;
+      case 'f': {
+        gfx.Cls(BLACK);  
+      }
+      break;
+      case 'g': {
+        gfx.MoveTo(0,0);  
+      }
+      break;
+    }
+  }
+  else {
+    //     
   }
 }
