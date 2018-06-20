@@ -2,8 +2,7 @@
  ******************************************************************************
    @file    lcd screen
    @author  Joel Daricou  <joel.daricou@cern.ch>
-   @version V 1.0.0
-   @date    01-March-2018
+   @date    June 2018
    @brief   lcd screen
  ******************************************************************************
    Board:
@@ -26,9 +25,9 @@
 GFX4dIoD9 gfx = GFX4dIoD9();
 
 
-/*
- * \brief FUNCTION: first screen logo
- */
+#define MARGIN  5
+
+
 void displayLogo() {  
   for (int i = 0; i < 30; i++) {    
     logo (BLACK + i);
@@ -96,6 +95,8 @@ void loop() {
 
         uint8_t num;
         int txtColor;
+
+        gfx.MoveTo(0,0);
                       
         for(uint8_t i = 0; i < stringData.length(); i++) {
                  
@@ -130,7 +131,7 @@ void loop() {
             break;
           }  
           
-          if (i > 0xF) {
+          if (i >= 0x10) {
             num = i - 0x10;
           }
           else {
@@ -145,11 +146,23 @@ void loop() {
       }
       break;
       case 'b': {
+        gfx.TextColor(WHITE, BLACK);
+        gfx.Font(2);
+        gfx.TextSize(1);
+        gfx.println("");
         
+        gfx.MoveTo(gfx.getX(), gfx.getY() + MARGIN);
+        gfx.Line(0, gfx.getY(), 80, gfx.getY(), VIOLET); 
+        gfx.MoveTo(gfx.getX(), gfx.getY() + MARGIN);
+                          
+        gfx.print(stringData);             
       }
       break;
       case 'c': {
-          
+        gfx.TextColor(WHITE, BLACK);
+        gfx.Font(2);
+        gfx.TextSize(2);                   
+        gfx.print(stringData.substring(0,4));          
       }
       break;
       case 'd': {
@@ -163,20 +176,14 @@ void loop() {
         gfx.TextColor(WHITE, BLACK);
         gfx.Font(2);
         gfx.TextSize(1);
-        gfx.println(stringData);   
+        gfx.println("");
+        gfx.print(stringData);   
       }
       break;
       case 'f': {
-        gfx.Cls(BLACK);  
-      }
-      break;
-      case 'g': {
-        gfx.MoveTo(0,0);  
+        gfx.Cls(BLACK); 
       }
       break;
     }
-  }
-  else {
-    //     
   }
 }

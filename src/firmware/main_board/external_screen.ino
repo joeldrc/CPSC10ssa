@@ -119,48 +119,70 @@ void send_lcd_data() {
   btn_val = 0; //reset interrupt variable
 
   /* Start to sending data. */
-  switch (menu_val) {
-    case 1: {
-        Serial3.print('a');
-        if (imon_dvr_channel < DVR_TOTAL_NUMBER) {
-          Serial3.println(imon_dvr_channel);
-        }
-        else {
-          Serial3.println("AL");
-        }
-      }
-      break;
-    case 2: {
-        Serial3.print('b');
-        if (imon_fin_channel < FIN_TOTAL_NUMBER) {
-          Serial3.println(imon_fin_channel);
-        }
-        else {
-          Serial3.println("AL");
-        }
-      }
-      break;
-    case 3: {
-        Serial3.print('c');
-        Serial3.println(ampTemp_channel);
-      }
-      break;
-  }
-
-  /* Send temp value (float). */
-  Serial3.print('d');
-  Serial3.println(float(cntCycle)); //<-- to add more code
-
+  
   /* Send to LCD screen amplifiers status (0: WHITE, 1: GREEN, 2: YELLOW, 3: RED, 4: BLUE, 5: VIOLET). */
-  Serial3.print('e');
-  for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
-    Serial3.print(amplifier_status[FIN_PHISICAL_POSITION[i]], DEC);
+  Serial3.print('a');
+  for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+    Serial3.print(amplifier_status[i], DEC);
+  } 
+  Serial3.println("_____");
+
+
+  Serial3.print('b');
+  if (menu_val == 1) {
+    Serial3.print("DVR>N:");  
   }
-  Serial3.println();
-  Serial3.print('f');
-  for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i++) {
-    Serial3.print(amplifier_status[DVR_PHISICAL_POSITION[i]], DEC);
+  else {
+    Serial3.print("DVR N:");  
+  } 
+  if (imon_dvr_channel < DVR_TOTAL_NUMBER) {
+    Serial3.print(imon_dvr_channel);
+    if(imon_dvr_channel < 10) {
+      Serial3.print(" ");   
+    }
   }
-  Serial3.println();
+  else {
+    Serial3.print("AL");
+  }
+  Serial3.println("");
+
+
+  Serial3.print('b');
+  if (menu_val == 2) {
+    Serial3.print("FIN>N:");  
+  }
+  else {
+    Serial3.print("FIN N:");  
+  }  
+  if (imon_fin_channel < FIN_TOTAL_NUMBER) {
+    Serial3.print(imon_fin_channel);
+    if(imon_fin_channel < 10) {
+      Serial3.print(" ");   
+    }
+  }
+  else {
+    Serial3.print("AL");
+  }
+  Serial3.println("");
+
+  
+  Serial3.print('b');
+  if (menu_val == 3) {
+    Serial3.print("TMP>N:");  
+  }
+  else {
+    Serial3.print("TMP N:");  
+  }   
+  Serial3.print(ampTemp_channel);
+  if(ampTemp_channel < 10){
+    Serial3.print(" ");   
+  }
+  Serial3.println("");
+
+
+//  /* Send temp value (float). */
+//  Serial3.print('c');
+//  Serial3.print(float(cntCycle)); //<-- to add more code
+//  Serial3.println("");
 }
 
