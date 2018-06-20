@@ -25,7 +25,7 @@
 GFX4dIoD9 gfx = GFX4dIoD9();
 
 
-#define MARGIN  5
+#define MARGIN  5 // Screen space untill two lines
 
 
 void displayLogo() {  
@@ -56,9 +56,6 @@ void logo(int color) {
 
 
 void setup() {
-  Serial.begin(115200); //start serial COM
-  //  while(!Serial);     // Wait until connection is established
-
   /* Set pin out. */
   pinMode(2, INPUT_PULLUP);
   pinMode(13, INPUT_PULLUP);
@@ -78,7 +75,11 @@ void setup() {
   displayLogo();
 
   /* Clean screen. */
-  gfx.Cls(BLACK); 
+  gfx.Cls(BLACK);
+
+  /* start serial COM */
+  Serial.begin(115200); 
+  //  while(!Serial);     // Wait until connection is established
 }
 
 

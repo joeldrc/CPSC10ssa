@@ -179,10 +179,10 @@ void send_lcd_data() {
   }
   Serial3.println("");
 
-
-//  /* Send temp value (float). */
-//  Serial3.print('c');
-//  Serial3.print(float(cntCycle)); //<-- to add more code
-//  Serial3.println("");
+ 
+  /* Send temp value (float). */
+  Serial3.print('c');
+  Serial3.print(float(cntCycle)); //<-- to add more code
+  Serial3.println("");
 }
 
