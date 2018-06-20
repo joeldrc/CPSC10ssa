@@ -24,6 +24,7 @@ void btn_dwn() {
   btnDwn = true;
 }
 
+
 bool ctrl_button() {
   static bool value = false;
   
@@ -206,7 +207,49 @@ void default_menu (bool enable) {
   Serial3.println(float(cntCycle)); //<-- to add more code
 }
 
+
 void setup_menu(bool enable) { 
+  static const uint8_t CNT_RESET_MENU = 150; //second x 2
+  static uint8_t cntCycle = 0;
+  static uint8_t menu_val = 0;
+
+  switch (btn_val) {
+    case 1: {
+        
+      }
+      break;
+    case 2: {
+        if (menu_val < 3) {
+          menu_val ++;
+        }
+        else {
+          menu_val = 1;
+        }
+      }
+      break;
+    case 3: {
+        
+      }
+      break;
+    default: {
+        if (cntCycle < CNT_RESET_MENU) {
+          cntCycle ++;
+        }
+        else {
+          cntCycle = 0;
+          menu_val = 0;
+        }
+      }
+      break;
+  }
+
+  if (btn_val != 0) {
+    cntCycle = 0; //reset cnt variable
+  }
+  btn_val = 0; //reset interrupt variable
+
+
+  /* Start to sending data. */
   Serial3.println('g'); //reset screen position
    
   Serial3.print('d');
