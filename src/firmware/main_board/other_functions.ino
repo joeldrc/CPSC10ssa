@@ -21,8 +21,14 @@ void otherThread (uint32_t mSeconds) {
     /* Blink the led on the board. */
     enable = !enable;
     digitalWrite(LED_BUILTIN, enable);
-    /* Control and verify if btn status is changed & display on lcd screen the mosfet status. */
-    send_lcd_data();
+
+    if (ctrl_button() == true) {
+      setup_menu(enable);  
+    }
+    else {
+      /* Control and verify if btn status is changed & display on lcd screen the mosfet status. */
+      default_menu(enable);  
+    }
   }
 }
 

@@ -185,6 +185,10 @@ void loop() {
         gfx.Cls(BLACK); 
       }
       break;
+      case 'g': {
+        gfx.MoveTo(0,0); 
+      }
+      break;
     }
   }
 }

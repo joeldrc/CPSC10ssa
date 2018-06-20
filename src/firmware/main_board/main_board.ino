@@ -154,6 +154,10 @@ uint8_t ampTemp_channel = 0;
 /* button interrupt */
 volatile uint8_t btn_val = 0;
 
+volatile bool btnUp = false;
+volatile bool btnEnt = false;
+volatile bool btnDwn = false;
+
 /* -------------------- End defines global variables -------------------- */
 
 

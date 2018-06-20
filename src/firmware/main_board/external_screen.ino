@@ -9,20 +9,39 @@
 
 void btn_up() {
   btn_val = 1;
+  btnUp = true;
 }
 
 
 void btn_ent() {
   btn_val = 2;
+  btnEnt = true;
 }
 
 
 void btn_dwn() {
   btn_val = 3;
+  btnDwn = true;
+}
+
+bool ctrl_button() {
+  static bool value = false;
+  
+  if((btnUp == true) && (btnEnt == true) && (btnDwn == true)) {
+    value = !value;
+    SerialUSB.println("ciao");
+    Serial3.println('f'); //clear screen
+  }
+
+  btnUp = false;
+  btnEnt = false;
+  btnDwn = false;
+
+  return value;
 }
 
 
-void send_lcd_data() {
+void default_menu (bool enable) {
   static const uint8_t CNT_RESET_MENU = 150; //second x 2
   static uint8_t cntCycle = 0;
   static uint8_t menu_val = 0;
@@ -118,7 +137,9 @@ void send_lcd_data() {
   }
   btn_val = 0; //reset interrupt variable
 
+
   /* Start to sending data. */
+
   
   /* Send to LCD screen amplifiers status (0: WHITE, 1: GREEN, 2: YELLOW, 3: RED, 4: BLUE, 5: VIOLET). */
   Serial3.print('a');
@@ -129,7 +150,7 @@ void send_lcd_data() {
 
 
   Serial3.print('b');
-  if (menu_val == 1) {
+  if (menu_val == 1  && enable) {
     Serial3.print("DVR>N:");  
   }
   else {
@@ -148,7 +169,7 @@ void send_lcd_data() {
 
 
   Serial3.print('b');
-  if (menu_val == 2) {
+  if (menu_val == 2 && enable) {
     Serial3.print("FIN>N:");  
   }
   else {
@@ -167,7 +188,7 @@ void send_lcd_data() {
 
   
   Serial3.print('b');
-  if (menu_val == 3) {
+  if (menu_val == 3 && enable) {
     Serial3.print("TMP>N:");  
   }
   else {
@@ -182,7 +203,22 @@ void send_lcd_data() {
  
   /* Send temp value (float). */
   Serial3.print('c');
-  Serial3.print(float(cntCycle)); //<-- to add more code
-  Serial3.println("");
+  Serial3.println(float(cntCycle)); //<-- to add more code
+}
+
+void setup_menu(bool enable) { 
+  Serial3.println('g'); //reset screen position
+   
+  Serial3.print('d');
+  Serial3.println("SETUP   ");
+
+  Serial3.print('d');
+  Serial3.println("SETUP1  ");
+
+  Serial3.print('d');
+  Serial3.println("SETUP2  ");
+
+  Serial3.print('d');
+  Serial3.println("SETUP2  ");
 }
 
