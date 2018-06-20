@@ -34,8 +34,8 @@
 /* Convertion bit to V & bit to A. */
 #define VGATE_CONVERTION_VALUE      0.00537 / 3   // Vgate                            5.37 mV/bit / 3 (Voltage divider on board)
 #define IMON_CONVERTION_VALUE       0.00488 * 2   // Imon                             4.88 mA/bit
-#define IMON_TOT_SCALING            0.06          // Scaling for DAC out              (6 A/V to 100 A/V)
-#define IMON_SCALING                0.6           // Scaling for DAC out              (6 A/V to 10 A/V)
+#define IMON_TOT_SCALING            0.06    * 2   // Scaling for DAC out              (6 A/V to 100 A/V)
+#define IMON_SCALING                0.6     * 2   // Scaling for DAC out              (6 A/V to 10 A/V)
 
 /* Microprocessor constants. */
 #define WATCHDOG_TIMER              1000          // Time to wait                     (1 to 10000 [milliSeconds])

@@ -415,7 +415,7 @@ void loop() {
         //      if (digitalRead(CELL_OFF_CMD == LOW)) {
 
         bool trigger_val = external_trigger();
-        digitalWrite(LED_D, !trigger_val); //trigger
+        digitalWrite(LED_D, trigger_val);
 
         if ((trigger_val == true) && (cell_status == false)) {
 
