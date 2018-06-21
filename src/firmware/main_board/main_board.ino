@@ -300,7 +300,7 @@ void loop() {
 
   switch (programIndex) {
     case 0: {
-        //set all Vgate CTL to OFF
+        /* Set all Vgate CTL to MIN. */
         for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
           analogWrite_external_dac(i, VGATE_MIN);
         }
@@ -313,6 +313,7 @@ void loop() {
         digitalWrite(BIAS_RDY, LOW);    //set BIAS RDY to OFF
         digitalWrite(MEASURE_SEL, LOW); //set MEASURE SEL to OFF
         digitalWrite(CARD_ST_OK, HIGH); //set CARD STATUS to OK
+        
         /*
           //check if CELL is OFF
           if(digitalRead(CELL_OFF_CMD == LOW)) {
