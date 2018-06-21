@@ -30,7 +30,6 @@ bool ctrl_button() {
   
   if((btnUp == true) && (btnEnt == true) && (btnDwn == true)) {
     value = !value;
-    SerialUSB.println("ciao");
     Serial3.println('f'); //clear screen
   }
 
