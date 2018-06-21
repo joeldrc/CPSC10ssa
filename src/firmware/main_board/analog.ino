@@ -54,21 +54,22 @@ void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead) { //uint3
     REG_PIOC_SODR = i << MUX_PORT_ADDRESS;  //write value to port 21 until port 24 (port 21 to 24 = pin 9 to pin 6)
 
     /* Wait untill the signal is stabilized. */
-    asm volatile(".rept 10\n\tNOP\n\t.endr");  //10 NOP cycle (20ns cycle)
+    //  asm volatile(".rept 10\n\tNOP\n\t.endr");  //10 NOP cycle (20ns cycle)
 
     /* First measurement is used to stabilize the value. */
-    //  adc_start(ADC);
-    //  while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  //wait the end of conversion
-    //  adc_get_latest_value(ADC);
+    adc_start(ADC);
+    while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  //wait the end of conversion
+    adc_get_latest_value(ADC);
 
-    adc_start(ADC); //ADC start reading
+    /* ADC start reading value. */
+    adc_start(ADC);
     while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  //wait the end of conversion
     valueRead[i] = adc_get_latest_value(ADC);
 
     REG_PIOC_CODR = i << MUX_PORT_ADDRESS;    //delete value to port 21 until port 24 (port 21 to 24 = pin 9 to pin 6)
 
     /* Wait untill the signal is stabilized. */
-    asm volatile(".rept 10\n\tNOP\n\t.endr"); //10 NOP cycle (20ns cycle)
+    //  asm volatile(".rept 10\n\tNOP\n\t.endr"); //10 NOP cycle (20ns cycle)
   }
 
   adc_disable_channel(ADC, adc_ch); //disable adc selected
