@@ -261,6 +261,6 @@ void setup_menu(bool enable) {
   Serial3.println("SETUP2  ");
 
   Serial3.print('d');
-  Serial3.println("SETUP2  ");
+  Serial3.println(SerialUSB);
 }
 
