@@ -170,11 +170,11 @@ void watchdogSetup() {} //this function has to be present, otherwise watchdog wo
 
 void setup() {
   /* Initialize serials interfaces. */
-  SerialUSB.begin(115200);  //opens serial port, sets data rate to 115200 bps (Arduino due max speed (2000000)
-  Serial3.begin(115200);    //Initialize Serial USART 3 (For LCD Display)
+  SerialUSB.begin(115200);  // Open serial port, sets data rate to 115200 bps (Arduino due max speed (2000000)
+  Serial3.begin(115200);    // Initialize Serial USART 3 (For LCD Display)
 
 #ifdef _WATCHDOG
-  watchdogEnable(WATCHDOG_TIMER); //Initialize watchdog timer
+  watchdogEnable(WATCHDOG_TIMER); // Initialize watchdog timer
 #endif
 
   /* Initialize SPI interface. */
@@ -210,13 +210,13 @@ void setup() {
 
   /* Initialize externals dac pins. */
   for (uint8_t i = 0; i < TOTAL_DAC_NUMBER; i++) {
-    pinMode(CS_DAC[i], OUTPUT);     //set pin as output
-    digitalWrite(CS_DAC[i], HIGH);  //set all Control Select HIGH for unable all
+    pinMode(CS_DAC[i], OUTPUT);     // Set pin as output
+    digitalWrite(CS_DAC[i], HIGH);  // Set all Control Select HIGH for unable all
   }
   pinMode(LDAC, OUTPUT);
   pinMode(SHDN_DAC, OUTPUT);
-  digitalWrite(LDAC, HIGH);         //DAC disabled
-  digitalWrite(SHDN_DAC, HIGH);     //DAC OUT off
+  digitalWrite(LDAC, HIGH);         // DAC disabled
+  digitalWrite(SHDN_DAC, HIGH);     // DAC OUT off
 
   /* Initialize multiplexers pins I/O. */
   pinMode(MUX_S0, OUTPUT);
@@ -229,22 +229,22 @@ void setup() {
   digitalWrite(MUX_S1, LOW);
   digitalWrite(MUX_S2, LOW);
   digitalWrite(MUX_S3, LOW);
-  digitalWrite(MUX_EN1, LOW);  //mux enabled
-  digitalWrite(MUX_EN2, LOW);  //mux enabled
+  digitalWrite(MUX_EN1, LOW);  // Mux enabled
+  digitalWrite(MUX_EN2, LOW);  // Mux enabled
 
   /* Initialize lcd pins. */
   pinMode(LCD1, OUTPUT);
   pinMode(RESET_LCD, OUTPUT);
-  digitalWrite(LCD1, LOW);        //aux connection to lcd screen (unused)
-  digitalWrite(RESET_LCD, HIGH);  //lcd screen hardware reset (unused)
+  digitalWrite(LCD1, LOW);        // Aux connection to lcd screen (unused)
+  digitalWrite(RESET_LCD, HIGH);  // Lcd screen hardware reset (unused)
 
   /* Initialize external buttons. */
   pinMode(BUTTON_A, INPUT_PULLUP);
   pinMode(BUTTON_B, INPUT_PULLUP);
   pinMode(BUTTON_C, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(BUTTON_A), btn_up, FALLING);  //interrupt pin
-  attachInterrupt(digitalPinToInterrupt(BUTTON_B), btn_ent, FALLING); //Interrupt pin
-  attachInterrupt(digitalPinToInterrupt(BUTTON_C), btn_dwn, FALLING); //Interrupt pin
+  attachInterrupt(digitalPinToInterrupt(BUTTON_A), btn_up, FALLING);  // Interrupt pin
+  attachInterrupt(digitalPinToInterrupt(BUTTON_B), btn_ent, FALLING); // Interrupt pin
+  attachInterrupt(digitalPinToInterrupt(BUTTON_C), btn_dwn, FALLING); // Interrupt pin
 
   /* Initialize insulated inputs pins. */
   pinMode(LOC_BIAS_ON_FRONT_NEGATIVE, INPUT_PULLUP);
@@ -264,12 +264,12 @@ void setup() {
   pinMode(CELL_ST_OK, OUTPUT);
   pinMode(CARD_ST_OK, OUTPUT);
   digitalWrite(MEASURE_SEL, LOW);
-  digitalWrite(RLY_CTL, LOW);       //set RLY CTL to CLOSED
-  digitalWrite(SEL_CTL, LOW);       //set SEL CTL to 0V
-  digitalWrite(BIAS_RDY, LOW);      //set BIAS RDY to OFF
-  digitalWrite(RF_CTL, LOW);        //set RF CTL to OFF
-  digitalWrite(CELL_ST_OK, LOW);    //set CELL ST to OFF
-  digitalWrite(CARD_ST_OK, LOW);    //set CARD_ST_OK to OFF
+  digitalWrite(RLY_CTL, LOW);       // Set RLY CTL to CLOSED
+  digitalWrite(SEL_CTL, LOW);       // Set SEL CTL to 0V
+  digitalWrite(BIAS_RDY, LOW);      // Set BIAS RDY to OFF
+  digitalWrite(RF_CTL, LOW);        // Set RF CTL to OFF
+  digitalWrite(CELL_ST_OK, LOW);    // Set CELL ST to OFF
+  digitalWrite(CARD_ST_OK, LOW);    // Set CARD_ST_OK to OFF
 
   /* Initialize leds. */
   pinMode(LED_BUILTIN, OUTPUT);
@@ -304,15 +304,15 @@ void loop() {
         for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
           analogWrite_external_dac(i, VGATE_MIN);
         }
-        set_external_dac_output();      //enable the value on dac out
+        set_external_dac_output();      // Enable the value on dac out
 
-        digitalWrite(RLY_CTL, LOW);     //set RLY CTL to CLOSED
-        digitalWrite(SEL_CTL, LOW);     //set SEL CTL to 0V
-        digitalWrite(CELL_ST_OK, LOW);  //set CELL ST to OFF
-        digitalWrite(RF_CTL, LOW);      //set RF CTL to OFF
-        digitalWrite(BIAS_RDY, LOW);    //set BIAS RDY to OFF
-        digitalWrite(MEASURE_SEL, LOW); //set MEASURE SEL to OFF
-        digitalWrite(CARD_ST_OK, HIGH); //set CARD STATUS to OK
+        digitalWrite(RLY_CTL, LOW);     // Set RLY CTL to CLOSED
+        digitalWrite(SEL_CTL, LOW);     // Set SEL CTL to 0V
+        digitalWrite(CELL_ST_OK, LOW);  // Set CELL ST to OFF
+        digitalWrite(RF_CTL, LOW);      // Set RF CTL to OFF
+        digitalWrite(BIAS_RDY, LOW);    // Set BIAS RDY to OFF
+        digitalWrite(MEASURE_SEL, LOW); // Set MEASURE SEL to OFF
+        digitalWrite(CARD_ST_OK, HIGH); // Set CARD STATUS to OK
 
         /*
           //check if CELL is OFF
@@ -329,18 +329,18 @@ void loop() {
           vgate_set_value[i] = VGATE_MIN;
           analogWrite_external_dac(i, vgate_set_value[i]);
         }
-        set_external_dac_output();  //enable the value on dac out
+        set_external_dac_output();  // Enable the value on dac out
 
         /* Reset amplifier status. */
         for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
           amplifier_status[i] = MOSFET_NOT_SETTED;
         }
 
-        //setup front pannel leds
-        digitalWrite(LED_C, true);  //Card operational
-        digitalWrite(LED_B, false); //Bias ready
+        /* Setup front pannel leds. */
+        digitalWrite(LED_C, true);  // Card operational
+        digitalWrite(LED_B, false); // Bias ready
         digitalWrite(LED_A, false);
-        //  digitalWrite(LED_E, false);
+        //digitalWrite(LED_E, false);
         digitalWrite(LED_F, false);
         digitalWrite(LED_D, false);
 
@@ -348,35 +348,39 @@ void loop() {
           programIndex++;
         }
         else {
-          //  SerialUSB.print("Error: ");
-          //  SerialUSB.println(init_check_errors);
+          //SerialUSB.print("Error: "); SerialUSB.println(init_check_errors);
         }
       }
       break;
     case 2: {
         if (check_errors_routine() == 0) {
-          if ((bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0) && (bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0)) {
-            amplifier_status[DVR_PHISICAL_POSITION[0]] = MOSFET_SETUP_OK;  //set mosfet ok
-            amplifier_status[DVR_PHISICAL_POSITION[1]] = MOSFET_SETUP_OK;  //set mosfet ok
+          /* Start setup of the DRIVER bias current. */
+          if ((bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0) && (bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0)) {            
+            /* If the procedure was successful. */
+            amplifier_status[DVR_PHISICAL_POSITION[0]] = MOSFET_SETUP_OK;  // set mosfet ok
+            amplifier_status[DVR_PHISICAL_POSITION[1]] = MOSFET_SETUP_OK;  // set mosfet ok
 
             fin_cnt = 0;
             programIndex ++;
           }
         }
         else {
-          //  SerialUSB.print("DVR Error: ");
-          //  SerialUSB.println(check_errors_routine());
+          //SerialUSB.print("DVR Error: "); SerialUSB.println(check_errors_routine());
           programIndex = 1;
         }
       }
       break;
     case 3: {
         if (check_errors_routine() == 0) {
+          /* Start setting the FINAL bias currents. */
           if (bias_setting_routine(FIN_PHISICAL_POSITION[fin_cnt], IFIN_REF, IFIN_DELTA, CORRECTION_ON) == 0) {
-            amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]] = MOSFET_SETUP_OK;  //set mosfet ok
+            /* If the procedure was successful. */
+            amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]] = MOSFET_SETUP_OK;  // Set mosfet ok
           }
-          delayMicroseconds(VGATE_DELAY); //delay untill current is stabilized
+          /* Wait untill current is stabilized. */
+          delayMicroseconds(VGATE_DELAY); 
 
+          /* Check if any errors have occurred, if not, proceed. */
           switch (amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]]) {
             case MOSFET_OTHER_ERROR:
             case MOSFET_UNABLE_TO_SET:
@@ -390,10 +394,10 @@ void loop() {
                   for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
                     analogWrite_external_dac(i, VGATE_MIN);
                   }
-                  set_external_dac_output();  //enable the value on dac out
+                  set_external_dac_output();  // Enable the value on dac out
 
                   digitalWrite(BIAS_RDY, HIGH);
-                  digitalWrite(LED_B, true);  //Bias ready
+                  digitalWrite(LED_B, true);  // Bias ready
                   cell_status = false;
 
                   programIndex ++;
@@ -406,20 +410,19 @@ void loop() {
           }
         }
         else {
-          //  SerialUSB.print("FIN Error: ");
-          //  SerialUSB.println(check_errors_routine());
+          //SerialUSB.print("FIN Error: "); SerialUSB.println(check_errors_routine());
           programIndex = 1;
         }
       }
       break;
     case 4: {
-        //      if (digitalRead(CELL_OFF_CMD == LOW)) {
+        //if (digitalRead(CELL_OFF_CMD == LOW)) {
 
         bool trigger_val = external_trigger();
         digitalWrite(LED_D, trigger_val);
 
         if ((trigger_val == true) && (cell_status == false)) {
-
+          /* Set the bias voltage for the first time, without correcting it. */
           if (check_errors_routine() == 0) {
             for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
               bias_setting_routine(FIN_PHISICAL_POSITION[i], IFIN_REF, IFIN_DELTA, CORRECTION_OFF);
@@ -428,7 +431,7 @@ void loop() {
               bias_setting_routine(DVR_PHISICAL_POSITION[i], IDVR_REF, IDVR_DELTA, CORRECTION_OFF);
             }
           }
-
+          /* Set the bias voltage and make the correction. */
           if (check_errors_routine() == 0) {
             for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
               bias_setting_routine(FIN_PHISICAL_POSITION[i], IFIN_REF, IFIN_DELTA, CORRECTION_ON);
@@ -445,12 +448,12 @@ void loop() {
             set_external_dac_output();  //enable the value on dac out
           }
 
-          //  if(digitalRead(RLY_CTL == HIGH)) {
-          //    digitalWrite(RF_CTL, HIGH);
-          //    cell_status = true;
-          //  }
+          //if (digitalRead(RLY_CTL == HIGH)) {
+          //  digitalWrite(RF_CTL, HIGH);
+          //  cell_status = true;
+          //}
 
-          cell_status = true; //bypass cell_status
+          cell_status = true; // Bypass cell_status
         }
         else if ((trigger_val == false) && (cell_status == true)) {
 
@@ -486,10 +489,10 @@ void loop() {
         else {
           imon_measure_routine();
         }
-        //      }
-        //    else {
-        //      programIndex = 0;
-        //    }
+        //}
+        //else {
+        //  programIndex = 0;
+        //}
       }
       break;
   }
