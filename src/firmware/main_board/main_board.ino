@@ -31,7 +31,7 @@
 
 
 /* -------------------- Defines -------------------- */
- 
+
 /* Program defines. */
 #define CORRECTION_ON               true
 #define CORRECTION_OFF              false
@@ -355,7 +355,7 @@ void loop() {
     case 2: {
         if (check_errors_routine() == 0) {
           /* Start setup of the DRIVER bias current. */
-          if ((bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0) && (bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0)) {            
+          if ((bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0) && (bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0)) {
             /* If the procedure was successful. */
             amplifier_status[DVR_PHISICAL_POSITION[0]] = MOSFET_SETUP_OK;  // set mosfet ok
             amplifier_status[DVR_PHISICAL_POSITION[1]] = MOSFET_SETUP_OK;  // set mosfet ok
@@ -378,7 +378,7 @@ void loop() {
             amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]] = MOSFET_SETUP_OK;  // Set mosfet ok
           }
           /* Wait untill current is stabilized. */
-          delayMicroseconds(VGATE_DELAY); 
+          delayMicroseconds(VGATE_DELAY);
 
           /* Check if any errors have occurred, if not, proceed. */
           switch (amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]]) {

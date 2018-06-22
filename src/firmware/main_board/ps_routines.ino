@@ -8,10 +8,10 @@
 
 
 uint8_t ps_status_routine() {
-  uint32_t ps_vdvr = analogRead_single_channel(ADC_CHANNEL_4);  //Read A2 = ADC3 //25V
-  uint32_t ps_vfin = analogRead_single_channel(ADC_CHANNEL_5);  //Read A3 = ADC4 //40V
+  uint32_t ps_vdvr = analogRead_single_channel(ADC_CHANNEL_4);  // Read A2 = ADC3 //25V
+  uint32_t ps_vfin = analogRead_single_channel(ADC_CHANNEL_5);  // Read A3 = ADC4 //40V
 
-  //  SerialUSB.print("25 V: "); SerialUSB.println(PS_Vdvr); SerialUSB.print("40 V: "); SerialUSB.println(PS_Vfin);
+  //SerialUSB.print("25 V: "); SerialUSB.println(PS_Vdvr); SerialUSB.print("40 V: "); SerialUSB.println(PS_Vfin);
 
   if ((ps_vdvr < PS_VDVR_MIN) || (ps_vdvr > PS_VDVR_MAX)) {
     return 1;
@@ -26,14 +26,14 @@ uint8_t ps_status_routine() {
 
 
 void vgate_measure_routine() {
-  analogRead_mux(ADC_CHANNEL_11, vgate_value);                  //Read 16 final value
-  vgate_value[16] = analogRead_single_channel(ADC_CHANNEL_0);   //Read drivers value
-  vgate_value[17] = analogRead_single_channel(ADC_CHANNEL_10);  //Read drivers value
+  analogRead_mux(ADC_CHANNEL_11, vgate_value);                  // Read 16 final value
+  vgate_value[16] = analogRead_single_channel(ADC_CHANNEL_0);   // Read drivers value
+  vgate_value[17] = analogRead_single_channel(ADC_CHANNEL_10);  // Read drivers value
 
-  //  for(uint8_t i=0; i < VGATE_TOTAL_NUMBER; i++) {
-  //    SerialUSB.print("Vgate N: "); SerialUSB.print(i); SerialUSB.print(" Value: ");  SerialUSB.println(Vgate_value[i]);
-  //  }
-  //  SerialUSB.println("");
+  //for(uint8_t i=0; i < VGATE_TOTAL_NUMBER; i++) {
+  //  SerialUSB.print("Vgate N: "); SerialUSB.print(i); SerialUSB.print(" Value: ");  SerialUSB.println(Vgate_value[i]);
+  //}
+  //SerialUSB.println("");
 
   for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
     if (vgate_value[FIN_PHISICAL_POSITION[i]] < VGATE_FUSE_REF) {
@@ -65,14 +65,14 @@ void imon_measure_routine() {
   uint32_t imon_fin_total_val = 0;
   uint32_t imon_dvr_total_val = 0;
 
-  analogRead_mux(ADC_CHANNEL_1, imon_value);                  //Read 16 final value
-  imon_value[16] = analogRead_single_channel(ADC_CHANNEL_3);  //Read drivers value
-  imon_value[17] = analogRead_single_channel(ADC_CHANNEL_2);  //Read drivers value
+  analogRead_mux(ADC_CHANNEL_1, imon_value);                  // Read 16 final value
+  imon_value[16] = analogRead_single_channel(ADC_CHANNEL_3);  // Read drivers value
+  imon_value[17] = analogRead_single_channel(ADC_CHANNEL_2);  // Read drivers value
 
-  //  for(uint8_t i=0; i < VGATE_TOTAL_NUMBER; i++) {
-  //    SerialUSB.print("Imon N: ");  SerialUSB.print(i); SerialUSB.print(" Value: ");  SerialUSB.println(Imon_value[i]);
-  //  }
-  //  SerialUSB.println("");
+  //for(uint8_t i=0; i < VGATE_TOTAL_NUMBER; i++) {
+  //  SerialUSB.print("Imon N: ");  SerialUSB.print(i); SerialUSB.print(" Value: ");  SerialUSB.println(Imon_value[i]);
+  //}
+  //SerialUSB.println("");
 
   for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i ++) {
     imon_dvr_total_val += imon_value[DVR_PHISICAL_POSITION[i]];
@@ -85,23 +85,23 @@ void imon_measure_routine() {
   imon_fin_total_val = uint16_t(imon_fin_total_val * IMON_TOT_SCALING);
 
   if (imon_dvr_channel < DVR_TOTAL_NUMBER) {
-    analogWrite_internal_dac(0, uint16_t(imon_value[DVR_PHISICAL_POSITION[imon_dvr_channel]] * IMON_SCALING)); //write on DAC 0
+    analogWrite_internal_dac(0, uint16_t(imon_value[DVR_PHISICAL_POSITION[imon_dvr_channel]] * IMON_SCALING)); // Write on DAC 0
   }
   else {
-    analogWrite_internal_dac(0, imon_dvr_total_val);  //write on DAC 0
+    analogWrite_internal_dac(0, imon_dvr_total_val);  // Write on DAC 0
   }
 
   if (imon_fin_channel < FIN_TOTAL_NUMBER) {
-    analogWrite_internal_dac(1, uint16_t(imon_value[FIN_PHISICAL_POSITION[imon_fin_channel]] * IMON_SCALING)); //write on DAC 1
+    analogWrite_internal_dac(1, uint16_t(imon_value[FIN_PHISICAL_POSITION[imon_fin_channel]] * IMON_SCALING)); // Write on DAC 1
   }
   else {
-    analogWrite_internal_dac(1, imon_fin_total_val);  //write on DAC 1
+    analogWrite_internal_dac(1, imon_fin_total_val);  // Write on DAC 1
   }
 }
 
 
 uint8_t check_errors_routine() {
-  uint8_t val_ps_status_routine = ps_status_routine();  //check ps_status_routine
+  uint8_t val_ps_status_routine = ps_status_routine();
   if ((val_ps_status_routine != 0)) {
     return val_ps_status_routine;
   }
@@ -133,7 +133,7 @@ void vgate_off(uint8_t i) {
 
 uint8_t bias_setting_routine(uint8_t i, uint16_t ref_value, uint16_t delta_value, bool correction_enabled) {
 
-  //  SerialUSB.print(i);  SerialUSB.print(" Imon: ");  SerialUSB.println(imon_value[i]);
+  //SerialUSB.print(i);  SerialUSB.print(" Imon: ");  SerialUSB.println(imon_value[i]);
 
   if (correction_enabled == true) {
     if (imon_value[i] < (ref_value - delta_value)) {
@@ -146,13 +146,13 @@ uint8_t bias_setting_routine(uint8_t i, uint16_t ref_value, uint16_t delta_value
       return 0;
     }
     if ((vgate_set_value[i] < 0) || (vgate_set_value[i] > 4095)) {
-      amplifier_status[i] = MOSFET_UNABLE_TO_SET;  //if is impossible to setup the mosfet
+      amplifier_status[i] = MOSFET_UNABLE_TO_SET;  // If is impossible to setup the mosfet
       vgate_off(i);
       return 1;
     }
   }
   analogWrite_external_dac(i, vgate_set_value[i]);
-  set_external_dac_output();  //enable the value on dac out
+  set_external_dac_output();  // Enable the value on dac out
   return 2;
 }
 

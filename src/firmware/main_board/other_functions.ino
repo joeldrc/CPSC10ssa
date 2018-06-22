@@ -8,9 +8,9 @@
 
 
 /**
-   \brief FUNCTION: create another thread to do operations in parallel
-   \param void
-   \return void
+  @brief FUNCTION: create another thread to do operations in parallel
+  @param void
+  @return void
 */
 void otherThread (uint32_t mSeconds) {
   static bool enable = false;

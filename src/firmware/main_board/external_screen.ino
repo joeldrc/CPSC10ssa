@@ -30,7 +30,7 @@ bool ctrl_button() {
 
   if ((btnUp == true) && (btnEnt == true) && (btnDwn == true)) {
     value = !value;
-    Serial3.println('f'); //clear screen
+    Serial3.println('f'); // Clear screen
   }
 
   btnUp = false;
@@ -42,7 +42,7 @@ bool ctrl_button() {
 
 
 void default_menu (bool enable) {
-  static const uint8_t CNT_RESET_MENU = 150; //second x 2
+  static const uint8_t CNT_RESET_MENU = 150; // Second x 2
   static uint8_t cntCycle = 0;
   static uint8_t menu_val = 0;
 
@@ -133,12 +133,9 @@ void default_menu (bool enable) {
   }
 
   if (btn_val != 0) {
-    cntCycle = 0; //reset cnt variable
+    cntCycle = 0; // Reset cnt variable
   }
-  btn_val = 0; //reset interrupt variable
-
-
-  /* Start to sending data. */
+  btn_val = 0; // Reset interrupt variable
 
 
   /* Send to LCD screen amplifiers status (0: WHITE, 1: GREEN, 2: YELLOW, 3: RED, 4: BLUE, 5: VIOLET). */
@@ -203,12 +200,12 @@ void default_menu (bool enable) {
 
   /* Send temp value (float). */
   Serial3.print('c');
-  Serial3.println(float(cntCycle)); //<-- to add more code
+  Serial3.println(float(cntCycle)); // <-- To add more code
 }
 
 
 void setup_menu(bool enable) {
-  static const uint8_t CNT_RESET_MENU = 150; //second x 2
+  static const uint8_t CNT_RESET_MENU = 150; // Second x 2
   static uint8_t cntCycle = 0;
   static uint8_t menu_val = 0;
 
@@ -243,13 +240,13 @@ void setup_menu(bool enable) {
   }
 
   if (btn_val != 0) {
-    cntCycle = 0; //reset cnt variable
+    cntCycle = 0; // Reset cnt variable
   }
-  btn_val = 0; //reset interrupt variable
+  btn_val = 0; // Reset interrupt variable
 
 
   /* Start to sending data. */
-  Serial3.println('g'); //reset screen position
+  Serial3.println('g'); // Reset screen position
 
   Serial3.print('d');
   Serial3.println("SETUP   ");
