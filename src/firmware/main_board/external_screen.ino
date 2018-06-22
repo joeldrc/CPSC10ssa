@@ -252,12 +252,20 @@ void setup_menu(bool enable) {
   Serial3.println("SETUP   ");
 
   Serial3.print('d');
-  Serial3.println("SETUP1  ");
+  Serial3.print("SETUP1  ");
+  Serial3.println(VGATE_FUSE_REF);
 
-  Serial3.print('d');
-  Serial3.println("SETUP2  ");
+  Serial3.print('e');
+  Serial3.print("SETUP2  ");
+  Serial3.println(VGATE_TEMP_REF);
 
-  Serial3.print('d');
-  Serial3.println(SerialUSB);
+  Serial3.print('e');
+  Serial3.print("SETUP3  ");
+  Serial3.println(IDVR_REF);
+
+  Serial3.print('e');
+  Serial3.print("SETUP4  ");
+  Serial3.println(IFIN_REF);
+
 }
 

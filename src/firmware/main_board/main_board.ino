@@ -27,30 +27,37 @@
 
 
 #include "SPI.h"
-#include "CONFIG.h"
+
+
+/* -------------------- Comment to disable. -------------------- */
+
+#define _DATA_LOGGER
+#define _WATCHDOG               1000    // Time to wait (1 to 10000) (milliSeconds)
+
+/* -------------------- End comment to disable. -------------------- */
 
 
 /* -------------------- Defines -------------------- */
 
 /* Program defines. */
-#define CORRECTION_ON               true
-#define CORRECTION_OFF              false
+#define CORRECTION_ON           true
+#define CORRECTION_OFF          false
 
 /* Mosfet status code. */
-#define MOSFET_NOT_SETTED           0             //white
-#define MOSFET_SETUP_OK             1             //green
-#define MOSFET_TEMP_ERROR           2             //yellow
-#define MOSFET_FUSE_ERROR           3             //red
-#define MOSFET_UNABLE_TO_SET        4             //blue
-#define MOSFET_OTHER_ERROR          5             //purple
+#define MOSFET_NOT_SETTED       0       // White
+#define MOSFET_SETUP_OK         1       // Green
+#define MOSFET_TEMP_ERROR       2       // Yellow
+#define MOSFET_FUSE_ERROR       3       // Red
+#define MOSFET_UNABLE_TO_SET    4       // Blue
+#define MOSFET_OTHER_ERROR      5       // Purple
 
 /* -------------------- End Defines -------------------- */
 
 
-/* -------------------- Defines pin I/O -------------------- */
+/* -------------------- I/O pin assignment -------------------- */
 
 /* SPI phisical position. */
-static const uint8_t CS_MASTER = 23; //phisical pin number
+static const uint8_t CS_MASTER = 23;
 
 /* ADC phisical position. */
 static const uint8_t ADC_1 = A0;
@@ -118,47 +125,78 @@ static const uint8_t MUX_EN2 = 11;
 
 /* MUX port & channel. */
 static const uint8_t MUX_MAX_CHANNEL = 16;
-static const uint8_t MUX_PORT_ADDRESS = 21; //PORT name value: (port 21 to 24 = pin 9 to pin 6)
+static const uint8_t MUX_PORT_ADDRESS = 21;               // PORT name value: (port 21 to 24 = pin 9 to pin 6)
 
-/* -------------------- End defines pin I/O -------------------- */
+/* -------------------- End I/O pin assignment -------------------- */
 
 
-
-/* -------------------- Defines software constant -------------------- */
+/* -------------------- Software constant -------------------- */
 
 /* SOFTWARE CONSTANT for the setup. */
-static const uint8_t VGATE_TOTAL_NUMBER = 18; //(!don't modify this value!) max phisical number of single mosfets to regulate bias
+static const uint8_t VGATE_TOTAL_NUMBER = 18;             // Max phisical number of single mosfets to regulate bias (!do not change this value!)
+static const uint8_t DVR_TOTAL_NUMBER = 2;                // Max number of DVR channels (2 is the minimum value)
+static const uint8_t FIN_TOTAL_NUMBER = 16;               // Max number of FIN channels
 
-static const uint8_t DVR_TOTAL_NUMBER = 2;  //<-- max number of driver used (min value is 2)
-static const uint8_t DVR_PHISICAL_POSITION[DVR_TOTAL_NUMBER] = { 16, 17 };  //<-- use 16 and 17
+static const uint8_t DVR_PHISICAL_POSITION[DVR_TOTAL_NUMBER] = { 16, 17 };                                                // Use 16 and 17
+static const uint8_t FIN_PHISICAL_POSITION[FIN_TOTAL_NUMBER] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };  // Use 0 to 15
 
-static const uint8_t FIN_TOTAL_NUMBER = 16; //<-- max number of final used
-static const uint8_t FIN_PHISICAL_POSITION[FIN_TOTAL_NUMBER] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };  //<-- use 0 to 15
+/* Vgate reference. */
+static const uint16_t VGATE_MIN = 2000;                   // Vgate minumum value    (0 to 4095 [bit])
+static const uint16_t VGATE_CORRECTION = 3;               // Value to increase and decrease   (0 to 4095 [bit])
 
-/* -------------------- End defines software constant -------------------- */
+/* Imon reference. */
+static const uint16_t IDVR_DELTA = 1 * 3;                 // Idrv delta (0 to 4095 [bit])
+static const uint16_t IFIN_DELTA = 1 * 3;                 // Ifin delta (0 to 4095 [bit])
+
+/* Alimentation. */
+static const uint16_t PS_VDVR_MIN = 2460;                 // Vdrv min (0 to 4095 [bit]) (0.0122 V/bit)
+static const uint16_t PS_VDVR_MAX = 3673;                 // Vdrv max (0 to 4095 [bit]) (0.0122 V/bit)
+static const uint16_t PS_VFIN_MIN = 2460;                 // Vfin min (0 to 4095 [bit]) (0.0122 V/bit)
+static const uint16_t PS_VFIN_MAX = 3673;                 // Vfin max (0 to 4095 [bit]) (0.0122 V/bit)
+
+/* Convertion bit to V & bit to A. */
+static const float VGATE_CONVERTION_VALUE = 0.00537 / 3;  // Vgate (5.37 mV/bit / 3) (Voltage divider on board)
+static const float IMON_CONVERTION_VALUE = 0.00488 * 2;   // Imon (4.88 mA/bit)
+static const float IMON_TOT_SCALING = 0.06 * 2;           // Scaling for DAC out (6 A/V to 100 A/V)
+static const float IMON_SCALING = 0.6 * 2;                // Scaling for DAC out (6 A/V to 10 A/V)
+
+/* Software delay. */
+static const uint32_t VGATE_DELAY = 100;                  // Time to wait (1 to 4095) (microSeconds])
+static const uint32_t LCD_SCREEN_REFRESH = 1000;          // Time to wait (1 to 4095) (milliSeconds])
+static const uint32_t CHECK_ERRORS_TIMER = 10;            // Time to wait (1 to 4095) (milliSeconds])
+
+/* -------------------- End software constant -------------------- */
 
 
+/* -------------------- Global variables -------------------- */
 
-/* -------------------- Defines global variables -------------------- */
-
+/* Ps routines. */
 int32_t vgate_value[VGATE_TOTAL_NUMBER] = {};
 int32_t imon_value[VGATE_TOTAL_NUMBER] = {};
 int32_t vgate_set_value[VGATE_TOTAL_NUMBER] = {};
 uint8_t amplifier_status[VGATE_TOTAL_NUMBER] = {};
+
+/* Vgate. */
+uint16_t VGATE_FUSE_REF = 80;                             // Fuse reference (0,1V) (0 to 4095 [bit]) (5.37 mV/bit)
+uint16_t VGATE_TEMP_REF = 200;                            // Temp reference (1,2V)  (0 to 4095 [bit]) (5.37 mV/bit)
+
+/* Imon. */
+uint16_t IDVR_REF = 210 / 2;                              // Idrv ref (0 to 4095 [bit]) (6 A/V)
+uint16_t IFIN_REF = 210 / 2;                              // Ifin ref (0 to 4095 [bit]) (6 A/V)
 
 /* External screen. */
 uint8_t imon_dvr_channel = 0;
 uint8_t imon_fin_channel = 0;
 uint8_t ampTemp_channel = 0;
 
-/* button interrupt */
+/* Button interrupt */
 volatile uint8_t btn_val = 0;
 
 volatile bool btnUp = false;
 volatile bool btnEnt = false;
 volatile bool btnDwn = false;
 
-/* -------------------- End defines global variables -------------------- */
+/* -------------------- End Global variables -------------------- */
 
 
 #ifdef _WATCHDOG
@@ -166,15 +204,13 @@ void watchdogSetup() {} //this function has to be present, otherwise watchdog wo
 #endif
 
 
-/* -------------------- Setup -------------------- */
-
 void setup() {
   /* Initialize serials interfaces. */
-  SerialUSB.begin(115200);  // Open serial port, sets data rate to 115200 bps (Arduino due max speed (2000000)
-  Serial3.begin(115200);    // Initialize Serial USART 3 (For LCD Display)
+  SerialUSB.begin(115200);    // Open serial port, sets data rate to 115200 bps (Arduino due max speed (2000000)
+  Serial3.begin(115200);      // Initialize Serial USART 3 (For LCD Display)
 
 #ifdef _WATCHDOG
-  watchdogEnable(WATCHDOG_TIMER); // Initialize watchdog timer
+  watchdogEnable(_WATCHDOG);  // Initialize watchdog timer
 #endif
 
   /* Initialize SPI interface. */
@@ -288,10 +324,6 @@ void setup() {
   digitalWrite(LED_F, LOW);
 }
 
-/* -------------------- End setup -------------------- */
-
-
-/* -------------------- Loop -------------------- */
 
 void loop() {
   static uint8_t programIndex = 0;
