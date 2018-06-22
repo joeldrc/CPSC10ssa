@@ -1,10 +1,10 @@
 /**
  ******************************************************************************
-   @file    external screen
-   @author  Joel Daricou  <joel.daricou@cern.ch>
-   @brief   external screen
+  @file    external screen
+  @author  Joel Daricou  <joel.daricou@cern.ch>
+  @brief   external screen
  ******************************************************************************
- */
+*/
 
 
 void btn_up() {
@@ -27,8 +27,8 @@ void btn_dwn() {
 
 bool ctrl_button() {
   static bool value = false;
-  
-  if((btnUp == true) && (btnEnt == true) && (btnDwn == true)) {
+
+  if ((btnUp == true) && (btnEnt == true) && (btnDwn == true)) {
     value = !value;
     Serial3.println('f'); //clear screen
   }
@@ -140,26 +140,26 @@ void default_menu (bool enable) {
 
   /* Start to sending data. */
 
-  
+
   /* Send to LCD screen amplifiers status (0: WHITE, 1: GREEN, 2: YELLOW, 3: RED, 4: BLUE, 5: VIOLET). */
   Serial3.print('a');
   for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
     Serial3.print(amplifier_status[i], DEC);
-  } 
+  }
   Serial3.println("_____");
 
 
   Serial3.print('b');
   if (menu_val == 1  && enable) {
-    Serial3.print("DVR>N:");  
+    Serial3.print("DVR>N:");
   }
   else {
-    Serial3.print("DVR N:");  
-  } 
+    Serial3.print("DVR N:");
+  }
   if (imon_dvr_channel < DVR_TOTAL_NUMBER) {
     Serial3.print(imon_dvr_channel);
-    if(imon_dvr_channel < 10) {
-      Serial3.print(" ");   
+    if (imon_dvr_channel < 10) {
+      Serial3.print(" ");
     }
   }
   else {
@@ -170,15 +170,15 @@ void default_menu (bool enable) {
 
   Serial3.print('b');
   if (menu_val == 2 && enable) {
-    Serial3.print("FIN>N:");  
+    Serial3.print("FIN>N:");
   }
   else {
-    Serial3.print("FIN N:");  
-  }  
+    Serial3.print("FIN N:");
+  }
   if (imon_fin_channel < FIN_TOTAL_NUMBER) {
     Serial3.print(imon_fin_channel);
-    if(imon_fin_channel < 10) {
-      Serial3.print(" ");   
+    if (imon_fin_channel < 10) {
+      Serial3.print(" ");
     }
   }
   else {
@@ -186,35 +186,35 @@ void default_menu (bool enable) {
   }
   Serial3.println("");
 
-  
+
   Serial3.print('b');
   if (menu_val == 3 && enable) {
-    Serial3.print("TMP>N:");  
+    Serial3.print("TMP>N:");
   }
   else {
-    Serial3.print("TMP N:");  
-  }   
+    Serial3.print("TMP N:");
+  }
   Serial3.print(ampTemp_channel);
-  if(ampTemp_channel < 10){
-    Serial3.print(" ");   
+  if (ampTemp_channel < 10) {
+    Serial3.print(" ");
   }
   Serial3.println("");
 
- 
+
   /* Send temp value (float). */
   Serial3.print('c');
   Serial3.println(float(cntCycle)); //<-- to add more code
 }
 
 
-void setup_menu(bool enable) { 
+void setup_menu(bool enable) {
   static const uint8_t CNT_RESET_MENU = 150; //second x 2
   static uint8_t cntCycle = 0;
   static uint8_t menu_val = 0;
 
   switch (btn_val) {
     case 1: {
-        
+
       }
       break;
     case 2: {
@@ -227,7 +227,7 @@ void setup_menu(bool enable) {
       }
       break;
     case 3: {
-        
+
       }
       break;
     default: {
@@ -250,7 +250,7 @@ void setup_menu(bool enable) {
 
   /* Start to sending data. */
   Serial3.println('g'); //reset screen position
-   
+
   Serial3.print('d');
   Serial3.println("SETUP   ");
 

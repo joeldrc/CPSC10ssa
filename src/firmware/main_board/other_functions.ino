@@ -1,17 +1,17 @@
 /**
  ******************************************************************************
-   @file    other functions
-   @author  Joel Daricou  <joel.daricou@cern.ch>
-   @brief   all other functions
+  @file    other functions
+  @author  Joel Daricou  <joel.daricou@cern.ch>
+  @brief   all other functions
  ******************************************************************************
- */
+*/
 
- 
+
 /**
    \brief FUNCTION: create another thread to do operations in parallel
    \param void
    \return void
- */
+*/
 void otherThread (uint32_t mSeconds) {
   static bool enable = false;
   static uint32_t previusMillis = 0;
@@ -23,11 +23,11 @@ void otherThread (uint32_t mSeconds) {
     digitalWrite(LED_BUILTIN, enable);
 
     if (ctrl_button() == true) {
-      setup_menu(enable);  
+      setup_menu(enable);
     }
     else {
       /* Control and verify if btn status is changed & display on lcd screen the mosfet status. */
-      default_menu(enable);  
+      default_menu(enable);
     }
   }
 }
@@ -54,7 +54,7 @@ void copyArray (int32_t *from, float *to, uint16_t sizeOf, float correction) {
 
 
 void send_usb_data (float *v_value, float *i_value, uint32_t sizeOf) {
-  float val;  
+  float val;
   for (uint8_t i = 0; i < sizeOf; i++) {
     val = v_value[i];
     SerialUSB.print(val);
@@ -85,3 +85,4 @@ bool inputEvent () {
     }
   }
 }
+

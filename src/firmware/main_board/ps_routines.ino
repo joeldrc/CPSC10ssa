@@ -1,10 +1,10 @@
 /**
  ******************************************************************************
-   @file    routines
-   @author  Joel Daricou  <joel.daricou@cern.ch>
-   @brief   provide PS routines
+  @file    routines
+  @author  Joel Daricou  <joel.daricou@cern.ch>
+  @brief   provide PS routines
  ******************************************************************************
- */
+*/
 
 
 uint8_t ps_status_routine() {
@@ -171,3 +171,4 @@ bool external_trigger() {
     return false;
   }
 }
+

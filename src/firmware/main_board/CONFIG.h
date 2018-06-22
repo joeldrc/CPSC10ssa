@@ -1,10 +1,10 @@
 /**
  ******************************************************************************
-   @file    CONFIG
-   @author  Joel Daricou  <joel.daricou@cern.ch>
-   @brief   CONFIG
+  @file    CONFIG
+  @author  Joel Daricou  <joel.daricou@cern.ch>
+  @brief   CONFIG
  ******************************************************************************
- */
+*/
 
 
 /* Comment to disable. */

@@ -1,10 +1,10 @@
 /**
  ******************************************************************************
-   @file    analog
-   @author  Joel Daricou  <joel.daricou@cern.ch>
-   @brief   provide analog services (ADC + DAC)
+  @file    analog
+  @author  Joel Daricou  <joel.daricou@cern.ch>
+  @brief   provide analog services (ADC + DAC)
  ******************************************************************************
- */
+*/
 
 
 void adc_init_setup() {
@@ -81,10 +81,10 @@ uint32_t analogRead_single_channel(enum adc_channel_num_t adc_ch) {
   //  adc_disable_all_channel(ADC); //to remove if you want more speed
   adc_enable_channel(ADC, adc_ch);  //ADC start reading
 
-    /* First measurement is used to stabilize the value. */
-//    adc_start(ADC);
-//    while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  //wait the end of conversion
-//    adc_get_latest_value(ADC);
+  /* First measurement is used to stabilize the value. */
+  //    adc_start(ADC);
+  //    while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  //wait the end of conversion
+  //    adc_get_latest_value(ADC);
 
   //read value
   adc_start(ADC);
@@ -122,7 +122,7 @@ void analogWrite_external_dac(uint8_t num, uint16_t value) {
 
       0b0111XXXXXXXXXXXX where X is the 12 bits to be written to the active channel.
       bit 11 down to bit 0
-      
+
   */
 
   static const uint16_t dac_channel_A = 0b0111000000000000, dac_channel_B = 0b1111000000000000;
