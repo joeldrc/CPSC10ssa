@@ -352,7 +352,12 @@ void loop() {
           programIndex++;
           }
         */
-        programIndex++;
+
+        /* Press enter to start the program */
+        if (btnEnt == true) {
+          Serial3.println('f'); // Clear screen
+          programIndex++;
+        }
       }
       break;
     case 1: {
@@ -513,7 +518,7 @@ void loop() {
           send_usb_data(vgate_stored_value, imon_stored_value, VGATE_TOTAL_NUMBER);
 #endif
         }
-        else if (softwareDelay(CHECK_ERRORS_TIMER) == 0) {
+        else if (softwareDelay(CHECK_ERRORS_TIMER) == true) {
           if (check_errors_routine() != 0) {
             programIndex = 1;
           }
@@ -530,7 +535,22 @@ void loop() {
   }
 
   /* Do some other instructions in parallel. */
-  otherThread(LCD_SCREEN_REFRESH);
+  if (otherThread(LCD_SCREEN_REFRESH) == true) {
+    static bool enable = false;
+    enable = !enable;
+    digitalWrite(LED_BUILTIN, enable);
+
+    if (ctrl_button() == true) {
+      setup_menu(enable);
+    }
+    else if (programIndex == 0) {
+      start_menu(enable);
+    }
+    else {
+      /* Control and verify if btn status is changed & display on lcd screen the mosfet status. */
+      default_menu(enable);
+    }
+  }
 
 #ifdef _WATCHDOG
   /* Reset watchdog timer. */

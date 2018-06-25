@@ -12,36 +12,28 @@
   @param void
   @return void
 */
-void otherThread (uint32_t mSeconds) {
-  static bool enable = false;
+bool otherThread (uint32_t mSeconds) {
   static uint32_t previusMillis = 0;
   uint32_t currentMillis = millis();
   if (currentMillis - previusMillis > mSeconds) {
     previusMillis = currentMillis;
-    /* Blink the led on the board. */
-    enable = !enable;
-    digitalWrite(LED_BUILTIN, enable);
-
-    if (ctrl_button() == true) {
-      setup_menu(enable);
-    }
-    else {
-      /* Control and verify if btn status is changed & display on lcd screen the mosfet status. */
-      default_menu(enable);
-    }
+    return true;
+  }
+  else {
+    return false;
   }
 }
 
 
-uint8_t softwareDelay (uint32_t mSeconds) {
+bool softwareDelay (uint32_t mSeconds) {
   static uint32_t previusMillis = 0;
   uint32_t currentMillis = millis();
   if (currentMillis - previusMillis > mSeconds) {
     previusMillis = currentMillis;
-    return 0;
+    return true;
   }
   else {
-    return 1;
+    return false;
   }
 }
 

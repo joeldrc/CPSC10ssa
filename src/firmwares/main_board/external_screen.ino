@@ -41,6 +41,24 @@ bool ctrl_button() {
 }
 
 
+void start_menu (bool enable) {
+  Serial3.println('f'); // Clear screen
+  Serial3.println('g'); // Reset screen position
+
+  Serial3.print('e');
+  Serial3.println("  PRESS ");
+
+  Serial3.print('e');
+  Serial3.println("  ENTER ");
+
+  Serial3.print('e');
+  Serial3.println("   TO   ");
+
+  Serial3.print('e');
+  Serial3.println("  START ");
+}
+
+
 void default_menu (bool enable) {
   static const uint8_t CNT_RESET_MENU = 150; // Second x 2
   static uint8_t cntCycle = 0;
@@ -249,23 +267,22 @@ void setup_menu(bool enable) {
   Serial3.println('g'); // Reset screen position
 
   Serial3.print('d');
-  Serial3.println("SETUP   ");
+  Serial3.println("#SETUP  ");
 
-  Serial3.print('d');
-  Serial3.print("SETUP1  ");
+  Serial3.print('b');
+  Serial3.print("VFR:");
   Serial3.println(VGATE_FUSE_REF);
 
   Serial3.print('e');
-  Serial3.print("SETUP2  ");
+  Serial3.print("VTR:");
   Serial3.println(VGATE_TEMP_REF);
 
   Serial3.print('e');
-  Serial3.print("SETUP3  ");
+  Serial3.print("IDR:");
   Serial3.println(IDVR_REF);
 
   Serial3.print('e');
-  Serial3.print("SETUP4  ");
+  Serial3.print("IFR:");
   Serial3.println(IFIN_REF);
-
 }
 
