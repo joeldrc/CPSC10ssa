@@ -43,12 +43,6 @@
 #define CORRECTION_ON           true
 #define CORRECTION_OFF          false
 
-/* External screen. */
-#define SCREEN_PRINT            'd'
-#define SCREEN_PRINT_LN         'e'
-#define CLEAR_SCREEN            'f'     // Clear screen
-#define RESET_SCREEN_POSITION   'g'     // Reset screen position
-
 /* Mosfet status code. */
 #define MOSFET_NOT_SETTED       0       // White
 #define MOSFET_SETUP_OK         1       // Green
@@ -56,6 +50,12 @@
 #define MOSFET_FUSE_ERROR       3       // Red
 #define MOSFET_UNABLE_TO_SET    4       // Blue
 #define MOSFET_OTHER_ERROR      5       // Purple
+
+/* External screen. */
+#define SCREEN_PRINT            'd'
+#define SCREEN_PRINT_LN         'e'
+#define CLEAR_SCREEN            'f'     // Clear screen
+#define RESET_SCREEN_POSITION   'g'     // Reset screen position
 
 /* -------------------- End Defines -------------------- */
 
