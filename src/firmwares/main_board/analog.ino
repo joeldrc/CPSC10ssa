@@ -25,23 +25,23 @@ void adc_init_setup() {
   adc_disable_ts(ADC);                                            // Disable temperature sensor
   adc_disable_all_channel(ADC);                                   // Disable all channels
 
-  //adc_enable_channel(ADC, ADC_CHANNEL_7);   // Channel enabled A0
-  //adc_enable_channel(ADC, ADC_CHANNEL_6);   // Channel enabled A1
-  //adc_enable_channel(ADC, ADC_CHANNEL_5);   // Channel enabled A2
-  //adc_enable_channel(ADC, ADC_CHANNEL_4);   // Channel enabled A3
-  //adc_enable_channel(ADC, ADC_CHANNEL_3);   // Channel enabled A4
-  //adc_enable_channel(ADC, ADC_CHANNEL_2);   // Channel enabled A5
-  //adc_enable_channel(ADC, ADC_CHANNEL_1);   // Channel enabled A6
-  //adc_enable_channel(ADC, ADC_CHANNEL_0);   // Channel enabled A7
-  //adc_enable_channel(ADC, ADC_CHANNEL_10);  // Channel enabled A8
-  //adc_enable_channel(ADC, ADC_CHANNEL_11);  // Channel enabled A9
-  //adc_enable_channel(ADC, ADC_CHANNEL_12);  // Channel enabled A10
+  //adc_enable_channel(ADC, ADC_CHANNEL_7);                       // Channel enabled A0
+  //adc_enable_channel(ADC, ADC_CHANNEL_6);                       // Channel enabled A1
+  //adc_enable_channel(ADC, ADC_CHANNEL_5);                       // Channel enabled A2
+  //adc_enable_channel(ADC, ADC_CHANNEL_4);                       // Channel enabled A3
+  //adc_enable_channel(ADC, ADC_CHANNEL_3);                       // Channel enabled A4
+  //adc_enable_channel(ADC, ADC_CHANNEL_2);                       // Channel enabled A5
+  //adc_enable_channel(ADC, ADC_CHANNEL_1);                       // Channel enabled A6
+  //adc_enable_channel(ADC, ADC_CHANNEL_0);                       // Channel enabled A7
+  //adc_enable_channel(ADC, ADC_CHANNEL_10);                      // Channel enabled A8
+  //adc_enable_channel(ADC, ADC_CHANNEL_11);                      // Channel enabled A9
+  //adc_enable_channel(ADC, ADC_CHANNEL_12);                      // Channel enabled A10
 
   adc_start(ADC);
 }
 
 
-void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead) { //uint32_t analogValue[] is the same
+void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead) {
 
   //adc_disable_all_channel(ADC);   // To comment if you want more speed
   adc_enable_channel(ADC, adc_ch);  // Enable adc channel

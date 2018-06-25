@@ -133,9 +133,9 @@ void default_menu (bool enable) {
   }
 
   if (btn_val != 0) {
-    cntCycle = 0; // Reset cnt variable
+    cntCycle = 0;     // Reset cnt variable
   }
-  btn_val = 0; // Reset interrupt variable
+  btn_val = 0;        // Reset interrupt variable
 
 
   /* Send to LCD screen amplifiers status (0: WHITE, 1: GREEN, 2: YELLOW, 3: RED, 4: BLUE, 5: VIOLET). */
@@ -240,9 +240,9 @@ void setup_menu(bool enable) {
   }
 
   if (btn_val != 0) {
-    cntCycle = 0; // Reset cnt variable
+    cntCycle = 0;     // Reset cnt variable
   }
-  btn_val = 0; // Reset interrupt variable
+  btn_val = 0;        // Reset interrupt variable
 
 
   /* Start to sending data. */
