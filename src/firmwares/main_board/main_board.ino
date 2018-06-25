@@ -43,6 +43,12 @@
 #define CORRECTION_ON           true
 #define CORRECTION_OFF          false
 
+/* External screen. */
+#define SCREEN_PRINT            'd'
+#define SCREEN_PRINT_LN         'e'
+#define CLEAR_SCREEN            'f'     // Clear screen
+#define RESET_SCREEN_POSITION   'g'     // Reset screen position
+
 /* Mosfet status code. */
 #define MOSFET_NOT_SETTED       0       // White
 #define MOSFET_SETUP_OK         1       // Green
@@ -222,6 +228,16 @@ void setup() {
   /* Initialize SPI pin. */
   pinMode(CS_MASTER, INPUT_PULLUP);
 
+  /* Initialize externals dac pins. */
+  for (uint8_t i = 0; i < TOTAL_DAC_NUMBER; i++) {
+    pinMode(CS_DAC[i], OUTPUT);     // Set pin as output
+    digitalWrite(CS_DAC[i], HIGH);  // Set all Control Select HIGH for unable all
+  }
+  pinMode(LDAC, OUTPUT);
+  pinMode(SHDN_DAC, OUTPUT);
+  digitalWrite(LDAC, HIGH);         // DAC disabled
+  digitalWrite(SHDN_DAC, HIGH);     // DAC OUT off
+
   /* Initialize adcs pins. */
   pinMode(ADC_1, INPUT);
   pinMode(ADC_2, INPUT);
@@ -243,16 +259,6 @@ void setup() {
   pinMode(DAC_1, OUTPUT);
   analogWrite(DAC_0, 0);
   analogWrite(DAC_1, 0);
-
-  /* Initialize externals dac pins. */
-  for (uint8_t i = 0; i < TOTAL_DAC_NUMBER; i++) {
-    pinMode(CS_DAC[i], OUTPUT);     // Set pin as output
-    digitalWrite(CS_DAC[i], HIGH);  // Set all Control Select HIGH for unable all
-  }
-  pinMode(LDAC, OUTPUT);
-  pinMode(SHDN_DAC, OUTPUT);
-  digitalWrite(LDAC, HIGH);         // DAC disabled
-  digitalWrite(SHDN_DAC, HIGH);     // DAC OUT off
 
   /* Initialize multiplexers pins I/O. */
   pinMode(MUX_S0, OUTPUT);
@@ -355,7 +361,7 @@ void loop() {
 
         /* Press enter to start the program */
         if (btnEnt == true) {
-          Serial3.println('f'); // Clear screen
+          Serial3.println(CLEAR_SCREEN);
           programIndex++;
         }
       }
@@ -528,6 +534,7 @@ void loop() {
         }
         //}
         //else {
+        //  Serial3.println(CLEAR_SCREEN);
         //  programIndex = 0;
         //}
       }
@@ -544,7 +551,7 @@ void loop() {
       setup_menu(enable);
     }
     else if (programIndex == 0) {
-      start_menu(enable);
+      start_menu();
     }
     else {
       /* Control and verify if btn status is changed & display on lcd screen the mosfet status. */

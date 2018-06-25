@@ -60,21 +60,3 @@ void send_usb_data (float *v_value, float *i_value, uint32_t sizeOf) {
   SerialUSB.println();
 }
 
-
-bool inputEvent () {
-  char commandData = 0;
-  SerialUSB.println("y/n to continue...");
-  /* Wait for serial command. */
-  while (1) {
-    if (SerialUSB.available()) {
-      commandData = SerialUSB.read();
-    }
-    if (((commandData == 'y') || (commandData == 'Y'))) {
-      return true;
-    }
-    else if (((commandData == 'n') || (commandData == 'N'))) {
-      return false;
-    }
-  }
-}
-

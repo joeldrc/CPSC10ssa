@@ -30,7 +30,7 @@ bool ctrl_button() {
 
   if ((btnUp == true) && (btnEnt == true) && (btnDwn == true)) {
     value = !value;
-    Serial3.println('f'); // Clear screen
+    Serial3.println(CLEAR_SCREEN);
   }
 
   btnUp = false;
@@ -41,9 +41,9 @@ bool ctrl_button() {
 }
 
 
-void start_menu (bool enable) {
-  Serial3.println('f'); // Clear screen
-  Serial3.println('g'); // Reset screen position
+void start_menu () {
+  //Serial3.println(CLEAR_SCREEN);
+  Serial3.println(RESET_SCREEN_POSITION);
 
   Serial3.print('e');
   Serial3.println("  PRESS ");
@@ -55,7 +55,7 @@ void start_menu (bool enable) {
   Serial3.println("   TO   ");
 
   Serial3.print('e');
-  Serial3.println("  START ");
+  Serial3.println(" PWR ON ");
 }
 
 
@@ -161,7 +161,7 @@ void default_menu (bool enable) {
   for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
     Serial3.print(amplifier_status[i], DEC);
   }
-  Serial3.println("_____");
+  Serial3.println("     ");
 
 
   Serial3.print('b');
@@ -264,25 +264,25 @@ void setup_menu(bool enable) {
 
 
   /* Start to sending data. */
-  Serial3.println('g'); // Reset screen position
+  Serial3.println(RESET_SCREEN_POSITION);
 
   Serial3.print('d');
-  Serial3.println("#SETUP  ");
+  Serial3.println("SETTINGS");
 
   Serial3.print('b');
-  Serial3.print("VFR:");
+  Serial3.print("VFR ");
   Serial3.println(VGATE_FUSE_REF);
 
   Serial3.print('e');
-  Serial3.print("VTR:");
+  Serial3.print("VTR ");
   Serial3.println(VGATE_TEMP_REF);
 
   Serial3.print('e');
-  Serial3.print("IDR:");
+  Serial3.print("IDR ");
   Serial3.println(IDVR_REF);
 
   Serial3.print('e');
-  Serial3.print("IFR:");
+  Serial3.print("IFR ");
   Serial3.println(IFIN_REF);
 }
 
