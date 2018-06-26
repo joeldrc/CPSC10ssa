@@ -45,17 +45,10 @@ void start_menu () {
   //Serial3.println(CLEAR_SCREEN);
   Serial3.println(RESET_SCREEN_POSITION);
 
-  Serial3.print('e');
-  Serial3.println("  PRESS ");
-
-  Serial3.print('e');
-  Serial3.println("  ENTER ");
-
-  Serial3.print('e');
-  Serial3.println("   TO   ");
-
-  Serial3.print('e');
-  Serial3.println(" PWR ON ");
+  Serial3.print(SCREEN_PRINT_LN); Serial3.println("  PRESS ");
+  Serial3.print(SCREEN_PRINT_LN); Serial3.println("  ENTER ");
+  Serial3.print(SCREEN_PRINT_LN); Serial3.println("   TO   ");
+  Serial3.print(SCREEN_PRINT_LN); Serial3.println(" PWR ON ");
 }
 
 
@@ -157,14 +150,14 @@ void default_menu (bool enable) {
 
 
   /* Send to LCD screen amplifiers status (0: WHITE, 1: GREEN, 2: YELLOW, 3: RED, 4: BLUE, 5: VIOLET). */
-  Serial3.print('a');
+  Serial3.print(SCREEN_PRINT_SERIAL);
   for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
     Serial3.print(amplifier_status[i], DEC);
   }
   Serial3.println("     ");
 
 
-  Serial3.print('b');
+  Serial3.print(SCREEN_PRINT_COLOR);
   if (menu_val == 1  && enable) {
     Serial3.print("DVR>N:");
   }
@@ -183,7 +176,7 @@ void default_menu (bool enable) {
   Serial3.println("");
 
 
-  Serial3.print('b');
+  Serial3.print(SCREEN_PRINT_COLOR);
   if (menu_val == 2 && enable) {
     Serial3.print("FIN>N:");
   }
@@ -202,7 +195,7 @@ void default_menu (bool enable) {
   Serial3.println("");
 
 
-  Serial3.print('b');
+  Serial3.print(SCREEN_PRINT_COLOR);
   if (menu_val == 3 && enable) {
     Serial3.print("TMP>N:");
   }
@@ -217,7 +210,7 @@ void default_menu (bool enable) {
 
 
   /* Send temp value (float). */
-  Serial3.print('c');
+  Serial3.print(SCREEN_PRINT_BIG);
   Serial3.println(float(cntCycle)); // <-- To add more code
 }
 
@@ -266,23 +259,11 @@ void setup_menu(bool enable) {
   /* Start to sending data. */
   Serial3.println(RESET_SCREEN_POSITION);
 
-  Serial3.print('d');
-  Serial3.println("SETTINGS");
+  Serial3.print(SCREEN_PRINT); Serial3.println("SETTINGS");
 
-  Serial3.print('b');
-  Serial3.print("VFR ");
-  Serial3.println(VGATE_FUSE_REF);
-
-  Serial3.print('e');
-  Serial3.print("VTR ");
-  Serial3.println(VGATE_TEMP_REF);
-
-  Serial3.print('e');
-  Serial3.print("IDR ");
-  Serial3.println(IDVR_REF);
-
-  Serial3.print('e');
-  Serial3.print("IFR ");
-  Serial3.println(IFIN_REF);
+  Serial3.print(SCREEN_PRINT_COLOR); Serial3.print("VFR ");  Serial3.println(VGATE_FUSE_REF);
+  Serial3.print(SCREEN_PRINT_LN); Serial3.print("VTR ");  Serial3.println(VGATE_TEMP_REF);
+  Serial3.print(SCREEN_PRINT_LN); Serial3.print("IDR ");  Serial3.println(IDVR_REF);
+  Serial3.print(SCREEN_PRINT_LN); Serial3.print("IFR ");  Serial3.println(IFIN_REF);
 }
 

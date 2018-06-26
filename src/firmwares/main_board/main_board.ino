@@ -39,9 +39,16 @@
 
 /* -------------------- Defines -------------------- */
 
-/* Program defines. */
+/* Global defines. */
 #define CORRECTION_ON           true
 #define CORRECTION_OFF          false
+
+/* ProgramIndex. */
+#define SETUP_PROGRAM           0
+#define PWR_ON_SYSTEM           1
+#define SETUP_DVR               2
+#define SETUP_FIN               3
+#define BIAS_LOOP               4
 
 /* Mosfet status code. */
 #define MOSFET_NOT_SETTED       0       // White
@@ -52,6 +59,9 @@
 #define MOSFET_OTHER_ERROR      5       // Purple
 
 /* External screen. */
+#define SCREEN_PRINT_SERIAL     'a'
+#define SCREEN_PRINT_COLOR      'b'
+#define SCREEN_PRINT_BIG        'c'
 #define SCREEN_PRINT            'd'
 #define SCREEN_PRINT_LN         'e'
 #define CLEAR_SCREEN            'f'     // Clear screen
@@ -332,12 +342,14 @@ void setup() {
 
 
 void loop() {
-  static uint8_t programIndex = 0;
+  static uint8_t programIndex = SETUP_PROGRAM;
   static uint8_t fin_cnt = 0;
   static bool cell_status = false;
 
   switch (programIndex) {
-    case 0: {
+
+    case SETUP_PROGRAM: {
+
         /* Set all Vgate CTL to MIN. */
         for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
           analogWrite_external_dac(i, VGATE_MIN);
@@ -353,20 +365,22 @@ void loop() {
         digitalWrite(CARD_ST_OK, HIGH); // Set CARD STATUS to OK
 
         /*
-          //check if CELL is OFF
+          // Check if CELL is OFF
           if(digitalRead(CELL_OFF_CMD == LOW)) {
-          programIndex++;
+            programIndex = PWR_ON_SYSTEM;
           }
         */
 
         /* Press enter to start the program */
         if (btnEnt == true) {
           Serial3.println(CLEAR_SCREEN);
-          programIndex++;
+          programIndex = PWR_ON_SYSTEM;
         }
       }
       break;
-    case 1: {
+
+    case PWR_ON_SYSTEM: {
+
         /* Set all Vgate CTL to MIN. */
         for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
           vgate_set_value[i] = VGATE_MIN;
@@ -388,14 +402,16 @@ void loop() {
         digitalWrite(LED_D, false);
 
         if (check_errors_routine() == 0) {
-          programIndex++;
+          programIndex = SETUP_DVR;
         }
         else {
           //SerialUSB.print("Error: "); SerialUSB.println(init_check_errors);
         }
       }
       break;
-    case 2: {
+
+    case SETUP_DVR: {
+
         if (check_errors_routine() == 0) {
           /* Start setup of the DRIVER bias current. */
           if ((bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0) && (bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0)) {
@@ -404,16 +420,18 @@ void loop() {
             amplifier_status[DVR_PHISICAL_POSITION[1]] = MOSFET_SETUP_OK;  // set mosfet ok
 
             fin_cnt = 0;
-            programIndex ++;
+            programIndex = SETUP_FIN;
           }
         }
         else {
           //SerialUSB.print("DVR Error: "); SerialUSB.println(check_errors_routine());
-          programIndex = 1;
+          programIndex = PWR_ON_SYSTEM;
         }
       }
       break;
-    case 3: {
+
+    case SETUP_FIN: {
+
         if (check_errors_routine() == 0) {
           /* Start setting the FINAL bias currents. */
           if (bias_setting_routine(FIN_PHISICAL_POSITION[fin_cnt], IFIN_REF, IFIN_DELTA, CORRECTION_ON) == 0) {
@@ -443,7 +461,7 @@ void loop() {
                   digitalWrite(LED_B, true);  // Bias ready
                   cell_status = false;
 
-                  programIndex ++;
+                  programIndex = BIAS_LOOP;
                 }
                 else {
                   fin_cnt ++;
@@ -454,11 +472,13 @@ void loop() {
         }
         else {
           //SerialUSB.print("FIN Error: "); SerialUSB.println(check_errors_routine());
-          programIndex = 1;
+          programIndex = PWR_ON_SYSTEM;
         }
       }
       break;
-    case 4: {
+
+    case BIAS_LOOP: {
+
         //if (digitalRead(CELL_OFF_CMD == LOW)) {
 
         bool trigger_val = external_trigger();
@@ -526,7 +546,7 @@ void loop() {
         }
         else if (softwareDelay(CHECK_ERRORS_TIMER) == true) {
           if (check_errors_routine() != 0) {
-            programIndex = 1;
+            programIndex = PWR_ON_SYSTEM;
           }
         }
         else {
@@ -535,7 +555,7 @@ void loop() {
         //}
         //else {
         //  Serial3.println(CLEAR_SCREEN);
-        //  programIndex = 0;
+        //  programIndex = SETUP_PROGRAM;
         //}
       }
       break;
@@ -550,7 +570,7 @@ void loop() {
     if (ctrl_button() == true) {
       setup_menu(enable);
     }
-    else if (programIndex == 0) {
+    else if (programIndex == SETUP_PROGRAM) {
       start_menu();
     }
     else {
