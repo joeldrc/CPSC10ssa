@@ -356,6 +356,7 @@ void loop() {
         }
         set_external_dac_output();      // Enable the value on dac out
 
+        /* Reset digitals outputs. */
         digitalWrite(RLY_CTL, LOW);     // Set RLY CTL to CLOSED
         digitalWrite(SEL_CTL, LOW);     // Set SEL CTL to 0V
         digitalWrite(CELL_ST_OK, LOW);  // Set CELL ST to OFF
@@ -374,6 +375,7 @@ void loop() {
         /* Press enter to start the program */
         if (btnEnt == true) {
           Serial3.println(CLEAR_SCREEN);
+
           programIndex = PWR_ON_SYSTEM;
         }
       }
@@ -381,19 +383,17 @@ void loop() {
 
     case PWR_ON_SYSTEM: {
 
-        /* Set all Vgate CTL to MIN. */
         for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+          /* Reset Vgate array. */
           vgate_set_value[i] = VGATE_MIN;
+          /* Set all Vgate CTL to MIN. */
           analogWrite_external_dac(i, vgate_set_value[i]);
+          /* Reset amplifier status. */
+          amplifier_status[i] = MOSFET_NOT_SETTED;
         }
         set_external_dac_output();  // Enable the value on dac out
 
-        /* Reset amplifier status. */
-        for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-          amplifier_status[i] = MOSFET_NOT_SETTED;
-        }
-
-        /* Setup front pannel leds. */
+        /* Reset front pannel leds. */
         digitalWrite(LED_C, true);  // Card operational
         digitalWrite(LED_B, false); // Bias ready
         digitalWrite(LED_A, false);
