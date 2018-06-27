@@ -156,8 +156,8 @@ static const uint8_t DVR_PHISICAL_POSITION[DVR_TOTAL_NUMBER] = { 16, 17 };      
 static const uint8_t FIN_PHISICAL_POSITION[FIN_TOTAL_NUMBER] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };  // Use 0 to 15
 
 /* Vgate reference. */
-static const uint16_t VGATE_MIN = 2000;                   // Vgate minumum value    (0 to 4095 [bit])
-static const uint16_t VGATE_CORRECTION = 3;               // Value to increase and decrease   (0 to 4095 [bit])
+static const uint16_t VGATE_MIN = 2000;                   // Vgate minumum value (0 to 4095 [bit])
+static const uint16_t VGATE_CORRECTION = 3;               // Value to increase and decrease (0 to 4095 [bit])
 
 /* Imon reference. */
 static const uint16_t IDVR_DELTA = 1 * 3;                 // Idrv delta (0 to 4095 [bit])
@@ -172,8 +172,8 @@ static const uint16_t PS_VFIN_MAX = 3673;                 // Vfin max (0 to 4095
 /* Convertion bit to V & bit to A. */
 static const float VGATE_CONVERTION_VALUE = 0.00537 / 3;  // Vgate (5.37 mV/bit / 3) (Voltage divider on board)
 static const float IMON_CONVERTION_VALUE = 0.00488 * 2;   // Imon (4.88 mA/bit)
-static const float IMON_TOT_SCALING = 0.06 * 2;           // Scaling for DAC out (6 A/V to 100 A/V)
-static const float IMON_SCALING = 0.6 * 2;                // Scaling for DAC out (6 A/V to 10 A/V)
+static const float IMON_TOT_SCALING = 0.12;               // Scaling for DAC out (12 A/V to 100 A/V)
+static const float IMON_SCALING = 1.2;                    // Scaling for DAC out (12 A/V to 10 A/V)
 
 /* Software delay. */
 static const uint32_t VGATE_DELAY = 100;                  // Time to wait (1 to 4095) (microSeconds])
@@ -192,12 +192,12 @@ int32_t vgate_set_value[VGATE_TOTAL_NUMBER] = {};
 uint8_t amplifier_status[VGATE_TOTAL_NUMBER] = {};
 
 /* Vgate. */
-uint16_t VGATE_FUSE_REF = 80;                             // Fuse reference (0,1V) (0 to 4095 [bit]) (5.37 mV/bit)
-uint16_t VGATE_TEMP_REF = 200;                            // Temp reference (1,2V)  (0 to 4095 [bit]) (5.37 mV/bit)
+uint16_t VGATE_FUSE_REF = 80;                       // Fuse reference (0,1V) (0 to 4095 [bit]) (5.37 mV/bit)
+uint16_t VGATE_TEMP_REF = 200;                      // Temp reference (1,2V)  (0 to 4095 [bit]) (5.37 mV/bit)
 
 /* Imon. */
-uint16_t IDVR_REF = 210 / 2;                              // Idrv ref (0 to 4095 [bit]) (6 A/V)
-uint16_t IFIN_REF = 210 / 2;                              // Ifin ref (0 to 4095 [bit]) (6 A/V)
+uint16_t IDVR_REF = 100;                            // Idrv ref (0 to 4095 [bit]) (12 A/V)
+uint16_t IFIN_REF = 100;                            // Ifin ref (0 to 4095 [bit]) (12 A/V)
 
 /* External screen. */
 uint8_t imon_dvr_channel = 0;
