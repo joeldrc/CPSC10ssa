@@ -45,10 +45,9 @@
 
 /* ProgramIndex. */
 #define SETUP_PROGRAM           0
-#define PWR_ON_SYSTEM           1
-#define SETUP_DVR               2
-#define SETUP_FIN               3
-#define BIAS_LOOP               4
+#define SETUP_DVR               1
+#define SETUP_FIN               2
+#define BIAS_LOOP               3
 
 /* Mosfet status code. */
 #define MOSFET_NOT_SETTED       0       // White
@@ -350,39 +349,6 @@ void loop() {
 
     case SETUP_PROGRAM: {
 
-        /* Set all Vgate CTL to MIN. */
-        for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-          analogWrite_external_dac(i, VGATE_MIN);
-        }
-        set_external_dac_output();      // Enable the value on dac out
-
-        /* Reset digitals outputs. */
-        digitalWrite(RLY_CTL, LOW);     // Set RLY CTL to CLOSED
-        digitalWrite(SEL_CTL, LOW);     // Set SEL CTL to 0V
-        digitalWrite(CELL_ST_OK, LOW);  // Set CELL ST to OFF
-        digitalWrite(RF_CTL, LOW);      // Set RF CTL to OFF
-        digitalWrite(BIAS_RDY, LOW);    // Set BIAS RDY to OFF
-        digitalWrite(MEASURE_SEL, LOW); // Set MEASURE SEL to OFF
-        digitalWrite(CARD_ST_OK, HIGH); // Set CARD STATUS to OK
-
-        /*
-          // Check if CELL is OFF
-          if(digitalRead(CELL_OFF_CMD == LOW)) {
-            programIndex = PWR_ON_SYSTEM;
-          }
-        */
-
-        /* Press enter to start the program */
-        if (btnEnt == true) {
-          Serial3.println(CLEAR_SCREEN);
-
-          programIndex = PWR_ON_SYSTEM;
-        }
-      }
-      break;
-
-    case PWR_ON_SYSTEM: {
-
         for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
           /* Reset Vgate array. */
           vgate_set_value[i] = VGATE_MIN;
@@ -393,15 +359,25 @@ void loop() {
         }
         set_external_dac_output();  // Enable the value on dac out
 
+        /* Reset digitals outputs. */
+        digitalWrite(RLY_CTL, LOW);     // Set RLY CTL to CLOSED
+        digitalWrite(SEL_CTL, LOW);     // Set SEL CTL to 0V
+        digitalWrite(CELL_ST_OK, LOW);  // Set CELL ST to OFF
+        digitalWrite(RF_CTL, LOW);      // Set RF CTL to OFF
+        digitalWrite(BIAS_RDY, LOW);    // Set BIAS RDY to OFF
+        digitalWrite(MEASURE_SEL, LOW); // Set MEASURE SEL to OFF
+        digitalWrite(CARD_ST_OK, HIGH); // Set CARD STATUS to OK
+
         /* Reset front pannel leds. */
-        digitalWrite(LED_C, true);  // Card operational
-        digitalWrite(LED_B, false); // Bias ready
+        digitalWrite(LED_C, true);      // Card operational
+        digitalWrite(LED_B, false);     // Bias ready
         digitalWrite(LED_A, false);
         //digitalWrite(LED_E, false);
         digitalWrite(LED_F, false);
         digitalWrite(LED_D, false);
 
-        if (check_errors_routine() == 0) {
+        /* Check errors and CELL_OFF_CMD. */
+        if ((check_errors_routine() == 0) /* && (digitalRead(CELL_OFF_CMD == LOW)) */) {
           programIndex = SETUP_DVR;
         }
         else {
@@ -425,7 +401,7 @@ void loop() {
         }
         else {
           //SerialUSB.print("DVR Error: "); SerialUSB.println(check_errors_routine());
-          programIndex = PWR_ON_SYSTEM;
+          programIndex = SETUP_PROGRAM;
         }
       }
       break;
@@ -472,7 +448,7 @@ void loop() {
         }
         else {
           //SerialUSB.print("FIN Error: "); SerialUSB.println(check_errors_routine());
-          programIndex = PWR_ON_SYSTEM;
+          programIndex = SETUP_PROGRAM;
         }
       }
       break;
@@ -546,7 +522,7 @@ void loop() {
         }
         else if (softwareDelay(CHECK_ERRORS_TIMER) == true) {
           if (check_errors_routine() != 0) {
-            programIndex = PWR_ON_SYSTEM;
+            programIndex = SETUP_PROGRAM;
           }
         }
         else {
@@ -554,7 +530,6 @@ void loop() {
         }
         //}
         //else {
-        //  Serial3.println(CLEAR_SCREEN);
         //  programIndex = SETUP_PROGRAM;
         //}
       }
@@ -569,9 +544,6 @@ void loop() {
 
     if (ctrl_button() == true) {
       setup_menu(enable);
-    }
-    else if (programIndex == SETUP_PROGRAM) {
-      start_menu();
     }
     else {
       /* Control and verify if btn status is changed & display on lcd screen the mosfet status. */
