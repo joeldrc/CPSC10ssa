@@ -380,9 +380,6 @@ void loop() {
         if ((check_errors_routine() == 0) /* && (digitalRead(CELL_OFF_CMD == LOW)) */) {
           programIndex = SETUP_DVR;
         }
-        else {
-          //SerialUSB.print("Error: "); SerialUSB.println(init_check_errors);
-        }
       }
       break;
 
