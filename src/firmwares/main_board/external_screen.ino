@@ -7,24 +7,37 @@
 */
 
 
+/**
+  This function is called by the interrupt and is used to set a value in the variables.
+*/
 void btn_up() {
   btn_val = 1;
   btnUp = true;
 }
 
 
+/**
+  This function is called by the interrupt and is used to set a value in the variables.
+*/
 void btn_ent() {
   btn_val = 2;
   btnEnt = true;
 }
 
 
+/**
+  This function is called by the interrupt and is used to set a value in the variables.
+*/
 void btn_dwn() {
   btn_val = 3;
   btnDwn = true;
 }
 
 
+/**
+  This function is used to check if you need to change the menu (ex: default to settings).
+  Returns [true] or [false] according to the keys pressed.
+*/
 bool ctrl_button() {
   static bool value = false;
 
@@ -41,17 +54,10 @@ bool ctrl_button() {
 }
 
 
-void start_menu () {
-  //Serial3.println(CLEAR_SCREEN);
-  Serial3.println(RESET_SCREEN_POSITION);
-
-  Serial3.print(SCREEN_PRINT_LN); Serial3.println("  PRESS ");
-  Serial3.print(SCREEN_PRINT_LN); Serial3.println("  ENTER ");
-  Serial3.print(SCREEN_PRINT_LN); Serial3.println("   TO   ");
-  Serial3.print(SCREEN_PRINT_LN); Serial3.println(" PWR ON ");
-}
-
-
+/**
+  This function is used to display the default menu, in which values ​​are displayed and at the same time others can be modified.
+  It also sends data via UART serial to an external screen.
+*/
 void default_menu (bool enable) {
   static const uint8_t CNT_RESET_MENU = 150; // Second x 2
   static uint8_t cntCycle = 0;
@@ -215,6 +221,10 @@ void default_menu (bool enable) {
 }
 
 
+/**
+  This function is used to display the setup menu, in which values ​​are displayed and at the same time others can be modified.
+  It also sends data via UART serial to an external screen.
+*/
 void setup_menu(bool enable) {
   static const uint8_t CNT_RESET_MENU = 150; // Second x 2
   static uint8_t cntCycle = 0;

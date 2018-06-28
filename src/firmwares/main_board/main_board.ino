@@ -26,18 +26,19 @@
 */
 
 
+/* Including the SPI (Serial Peripheral Interface) library. */
 #include "SPI.h"
 
-
-/* -------------------- Comment to disable. -------------------- */
-
-#define _DATA_LOGGER
-#define _WATCHDOG               1000    // Time to wait (1 to 10000) (milliSeconds)
-
-/* -------------------- End comment to disable. -------------------- */
+/* Sets the values to start communication with the devices connected to the SPI. */
+SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP4922 (frequency in Hz, bit order, SPI mode)
 
 
 /* -------------------- Defines -------------------- */
+
+/* Comment these definitions if you want to disable them. */
+#define _DATA_LOGGER
+#define _WATCHDOG               1000    // Time to wait (1 to 10000) (milliSeconds)
+
 
 /* Global defines. */
 #define CORRECTION_ON           true
@@ -140,7 +141,7 @@ static const uint8_t MUX_EN2 = 11;
 
 /* MUX port & channel. */
 static const uint8_t MUX_MAX_CHANNEL = 16;
-static const uint8_t MUX_PORT_ADDRESS = 21;               // PORT name value: (port 21 to 24 = pin 9 to pin 6)
+static const uint8_t MUX_PORT_ADDRESS = 21; // PORT name value: (port 21 to 24 = pin 9 to pin 6)
 
 /* -------------------- End I/O pin assignment -------------------- */
 
@@ -192,12 +193,12 @@ int32_t vgate_set_value[VGATE_TOTAL_NUMBER] = {};
 uint8_t amplifier_status[VGATE_TOTAL_NUMBER] = {};
 
 /* Vgate. */
-uint16_t VGATE_FUSE_REF = 80;                       // Fuse reference (0,1V) (0 to 4095 [bit]) (5.37 mV/bit)
-uint16_t VGATE_TEMP_REF = 200;                      // Temp reference (1,2V)  (0 to 4095 [bit]) (5.37 mV/bit)
+uint16_t VGATE_FUSE_REF = 80;                             // Fuse reference (0,1V) (0 to 4095 [bit]) (5.37 mV/bit)
+uint16_t VGATE_TEMP_REF = 200;                            // Temp reference (1,2V)  (0 to 4095 [bit]) (5.37 mV/bit)
 
 /* Imon. */
-uint16_t IDVR_REF = 100;                            // Idrv ref (0 to 4095 [bit]) (12 A/V)
-uint16_t IFIN_REF = 100;                            // Ifin ref (0 to 4095 [bit]) (12 A/V)
+uint16_t IDVR_REF = 100;                                  // Idrv ref (0 to 4095 [bit]) (12 A/V)
+uint16_t IFIN_REF = 100;                                  // Ifin ref (0 to 4095 [bit]) (12 A/V)
 
 /* External screen. */
 uint8_t imon_dvr_channel = 0;
@@ -214,11 +215,17 @@ volatile bool btnDwn = false;
 /* -------------------- End Global variables -------------------- */
 
 
+/**
+  This function is used to call the whatchdog function.
+*/
 #ifdef _WATCHDOG
 void watchdogSetup() {} //this function has to be present, otherwise watchdog won't work
 #endif
 
 
+/**
+  This function is used to perform the microprocessor setup, it is executed only once at start up.
+*/
 void setup() {
   /* Initialize serials interfaces. */
   SerialUSB.begin(115200);    // Open serial port, sets data rate to 115200 bps (Arduino due max speed (2000000)
@@ -230,8 +237,6 @@ void setup() {
 
   /* Initialize SPI interface. */
   SPI.begin();
-  /* 20 Mhz freq. max MCP4922 (frequency in Hz, bit order, spi MODE) */
-  SPISettings settingA (20000000, MSBFIRST, SPI_MODE0);
   SPI.beginTransaction(settingA);
 
   /* Initialize SPI pin. */
@@ -340,6 +345,9 @@ void setup() {
 }
 
 
+/**
+  This function is used to perform an infinite cycle.
+*/
 void loop() {
   static uint8_t programIndex = SETUP_PROGRAM;
   static uint8_t fin_cnt = 0;
@@ -357,7 +365,7 @@ void loop() {
           /* Reset amplifier status. */
           amplifier_status[i] = MOSFET_NOT_SETTED;
         }
-        set_external_dac_output();  // Enable the value on dac out
+        set_external_dac_output();      // Enable the value on dac out
 
         /* Reset digitals outputs. */
         digitalWrite(RLY_CTL, LOW);     // Set RLY CTL to CLOSED

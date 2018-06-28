@@ -7,6 +7,9 @@
 */
 
 
+/**
+  This function is used to make the initial setup of the ADC present on the microprocessor.
+*/
 void adc_init_setup() {
   /* Initialize onboard adc's registers (1Msps). */
   pmc_enable_periph_clk(ID_ADC);                                  // Power management controller told to turn on adc
@@ -41,6 +44,12 @@ void adc_init_setup() {
 }
 
 
+/**
+  This function is used to read the value of the 16 channels of the analog multiplexer.
+  The parameters are:
+  - enum of the selected ADC channel;
+  - array to store data.
+*/
 void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead) {
 
   //adc_disable_all_channel(ADC);   // To comment if you want more speed
@@ -78,6 +87,11 @@ void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead) {
 }
 
 
+/**
+  This function is used to read the value of the adc.
+  The parameters are:
+  - enum of the selected adc channel.
+*/
 uint32_t analogRead_single_channel(enum adc_channel_num_t adc_ch) {
   uint32_t valueRead;
 
@@ -100,6 +114,12 @@ uint32_t analogRead_single_channel(enum adc_channel_num_t adc_ch) {
 }
 
 
+/**
+  This function is used to write the value on the external DACs via SPI communication.
+  The parameters are:
+  - number of the selected channel;
+  - value to write.
+*/
 void analogWrite_external_dac(uint8_t num, uint16_t value) {
   /**
     Bitmasking for setting options in a MCP4922 dac:
@@ -125,7 +145,6 @@ void analogWrite_external_dac(uint8_t num, uint16_t value) {
 
     0b0111XXXXXXXXXXXX where X is the 12 bits to be written to the active channel.
     bit 11 down to bit 0
-
   */
 
   static const uint16_t dac_channel_A = 0b0111000000000000, dac_channel_B = 0b1111000000000000;
@@ -167,6 +186,9 @@ void analogWrite_external_dac(uint8_t num, uint16_t value) {
 }
 
 
+/**
+  This function is used to confirm and enable the value written on the external DACs.
+*/
 void set_external_dac_output() {
   /* Enable dac out (LDAC). */
   digitalWrite(LDAC, LOW);  // Enable the buffer to set the output on LDAC
@@ -174,6 +196,12 @@ void set_external_dac_output() {
 }
 
 
+/**
+  This function is used to write the values ​​on the internal microprocessor DACs.
+  The parameters are:
+  - number of the selected channel;
+  - value to write.
+*/
 void analogWrite_internal_dac(uint8_t num, uint32_t value) {
   dacc_set_channel_selection(DACC_INTERFACE, num);
   dacc_write_conversion_data(DACC_INTERFACE, value);
