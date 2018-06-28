@@ -68,8 +68,8 @@ void vgate_measure_routine() {
 
 /**
   This function measures the voltage on all the channels of Imon, in order to read the current values at the output from the current meters:
-  stores them in an array (imon_value);
-  writes the value on the microcontroller dac.
+  - stores them in an array (imon_value);
+  - writes the value on the microcontroller dac.
 */
 void imon_measure_routine() {
   uint32_t imon_fin_total_val = 0;
