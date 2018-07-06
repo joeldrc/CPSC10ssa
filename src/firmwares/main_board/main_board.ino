@@ -193,17 +193,17 @@ int32_t vgate_set_value[VGATE_TOTAL_NUMBER] = {};
 uint8_t amplifier_status[VGATE_TOTAL_NUMBER] = {};
 
 /* Vgate. */
-uint16_t VGATE_FUSE_REF = 80;                             // Fuse reference (0,1V) (0 to 4095 [bit]) (5.37 mV/bit)
-uint16_t VGATE_TEMP_REF = 200;                            // Temp reference (1,2V)  (0 to 4095 [bit]) (5.37 mV/bit)
+int32_t VGATE_FUSE_REF = 80;                                // Fuse reference (0,1V) (0 to 4095 [bit]) (5.37 mV/bit)
+int32_t VGATE_TEMP_REF = 200;                               // Temp reference (1,2V)  (0 to 4095 [bit]) (5.37 mV/bit)
 
 /* Imon. */
-uint16_t IDVR_REF = 100;                                  // Idrv ref (0 to 4095 [bit]) (12 A/V)
-uint16_t IFIN_REF = 100;                                  // Ifin ref (0 to 4095 [bit]) (12 A/V)
+int32_t IDVR_REF = 100;                                     // Idrv ref (0 to 4095 [bit]) (12 A/V)
+int32_t IFIN_REF = 100;                                     // Ifin ref (0 to 4095 [bit]) (12 A/V)
 
 /* External screen. */
-uint8_t imon_dvr_channel = 0;
-uint8_t imon_fin_channel = 0;
-uint8_t ampTemp_channel = 0;
+int32_t imon_dvr_channel = 0;
+int32_t imon_fin_channel = 0;
+int32_t ampTemp_channel = 0;
 
 /* Button interrupt */
 volatile uint8_t btn_val = 0;
