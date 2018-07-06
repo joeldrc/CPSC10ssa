@@ -67,30 +67,15 @@ void default_menu (bool enable) {
     case 1: {
         switch (menu_val) {
           case 1: {
-              if (imon_dvr_channel < DVR_TOTAL_NUMBER) {
-                imon_dvr_channel ++;
-              }
-              else {
-                imon_dvr_channel = 0;
-              }
+              selector_increase(&imon_dvr_channel, 0, DVR_TOTAL_NUMBER, 1);
             }
             break;
           case 2: {
-              if (imon_fin_channel < FIN_TOTAL_NUMBER) {
-                imon_fin_channel ++;
-              }
-              else {
-                imon_fin_channel = 0;
-              }
+              selector_increase(&imon_fin_channel, 0, FIN_TOTAL_NUMBER, 1);
             }
             break;
           case 3: {
-              if (ampTemp_channel < (VGATE_TOTAL_NUMBER - 1)) {
-                ampTemp_channel ++;
-              }
-              else {
-                ampTemp_channel = 0;
-              }
+              selector_increase(&ampTemp_channel, 0, VGATE_TOTAL_NUMBER - 1, 1);
             }
             break;
         }
@@ -108,30 +93,15 @@ void default_menu (bool enable) {
     case 3: {
         switch (menu_val) {
           case 1: {
-              if (imon_dvr_channel > 0) {
-                imon_dvr_channel --;
-              }
-              else {
-                imon_dvr_channel = DVR_TOTAL_NUMBER;
-              }
+              selector_decrease(&imon_dvr_channel, 0, DVR_TOTAL_NUMBER, 1);
             }
             break;
           case 2: {
-              if (imon_fin_channel > 0) {
-                imon_fin_channel --;
-              }
-              else {
-                imon_fin_channel = FIN_TOTAL_NUMBER;
-              }
+              selector_decrease(&imon_fin_channel, 0, FIN_TOTAL_NUMBER, 1);
             }
             break;
           case 3: {
-              if (ampTemp_channel > 0) {
-                ampTemp_channel --;
-              }
-              else {
-                ampTemp_channel = VGATE_TOTAL_NUMBER - 1;
-              }
+              selector_decrease(&ampTemp_channel, 0, VGATE_TOTAL_NUMBER - 1, 1);
             }
             break;
         }
@@ -164,12 +134,9 @@ void default_menu (bool enable) {
 
 
   Serial3.print(SCREEN_PRINT_COLOR);
-  if (menu_val == 1  && enable) {
-    Serial3.print("DVR>N:");
-  }
-  else {
-    Serial3.print("DVR N:");
-  }
+  Serial3.print("DVR");
+  selector_space(menu_val, 1, enable);
+  Serial3.print("N:");
   if (imon_dvr_channel < DVR_TOTAL_NUMBER) {
     Serial3.print(imon_dvr_channel);
     if (imon_dvr_channel < 10) {
@@ -183,12 +150,9 @@ void default_menu (bool enable) {
 
 
   Serial3.print(SCREEN_PRINT_COLOR);
-  if (menu_val == 2 && enable) {
-    Serial3.print("FIN>N:");
-  }
-  else {
-    Serial3.print("FIN N:");
-  }
+  Serial3.print("FIN");
+  selector_space(menu_val, 2, enable);
+  Serial3.print("N:");
   if (imon_fin_channel < FIN_TOTAL_NUMBER) {
     Serial3.print(imon_fin_channel);
     if (imon_fin_channel < 10) {
@@ -202,12 +166,9 @@ void default_menu (bool enable) {
 
 
   Serial3.print(SCREEN_PRINT_COLOR);
-  if (menu_val == 3 && enable) {
-    Serial3.print("TMP>N:");
-  }
-  else {
-    Serial3.print("TMP N:");
-  }
+  Serial3.print("TMP");
+  selector_space(menu_val, 3, enable);
+  Serial3.print("N:");
   Serial3.print(ampTemp_channel);
   if (ampTemp_channel < 10) {
     Serial3.print(" ");
@@ -232,11 +193,28 @@ void setup_menu(bool enable) {
 
   switch (btn_val) {
     case 1: {
-
+        switch (menu_val) {
+          case 1: {
+              selector_increase(&VGATE_FUSE_REF, 0, 4095, 5);
+            }
+            break;
+          case 2: {
+              selector_increase(&VGATE_TEMP_REF, 0, 4095, 5);
+            }
+            break;
+          case 3: {
+              selector_increase(&IDVR_REF, 0, 1000, 1);
+            }
+            break;
+          case 4: {
+              selector_increase(&IFIN_REF, 0, 1000, 1);
+            }
+            break;
+        }
       }
       break;
     case 2: {
-        if (menu_val < 3) {
+        if (menu_val < 4) {
           menu_val ++;
         }
         else {
@@ -245,7 +223,24 @@ void setup_menu(bool enable) {
       }
       break;
     case 3: {
-
+        switch (menu_val) {
+          case 1: {
+              selector_decrease(&VGATE_FUSE_REF, 0, 4095, 5);
+            }
+            break;
+          case 2: {
+              selector_decrease(&VGATE_TEMP_REF, 0, 4095, 5);
+            }
+            break;
+          case 3: {
+              selector_decrease(&IDVR_REF, 0, 1000, 1);
+            }
+            break;
+          case 4: {
+              selector_decrease(&IFIN_REF, 0, 1000, 1);
+            }
+            break;
+        }
       }
       break;
     default: {
@@ -269,11 +264,92 @@ void setup_menu(bool enable) {
   /* Start to sending data. */
   Serial3.println(RESET_SCREEN_POSITION);
 
-  Serial3.print(SCREEN_PRINT); Serial3.println("SETTINGS");
 
-  Serial3.print(SCREEN_PRINT_COLOR); Serial3.print("VFR ");  Serial3.println(VGATE_FUSE_REF);
-  Serial3.print(SCREEN_PRINT_LN); Serial3.print("VTR ");  Serial3.println(VGATE_TEMP_REF);
-  Serial3.print(SCREEN_PRINT_LN); Serial3.print("IDR ");  Serial3.println(IDVR_REF);
-  Serial3.print(SCREEN_PRINT_LN); Serial3.print("IFR ");  Serial3.println(IFIN_REF);
+  Serial3.print(SCREEN_PRINT);
+  Serial3.println("SETTINGS");
+  Serial3.println(SCREEN_PRINT_COLOR);
+
+  Serial3.print(SCREEN_PRINT);
+  Serial3.print("VFR");
+  selector_space(menu_val, 1, enable);
+  Serial3.print(VGATE_FUSE_REF);
+  space_corrector(VGATE_FUSE_REF);
+
+
+  Serial3.print(SCREEN_PRINT);
+  Serial3.print("VTR");
+  selector_space(menu_val, 2, enable);
+  Serial3.print(VGATE_TEMP_REF);
+  space_corrector(VGATE_TEMP_REF);
+
+
+  Serial3.print(SCREEN_PRINT);
+  Serial3.print("IDR");
+  selector_space(menu_val, 3, enable);
+  Serial3.print(IDVR_REF);
+  space_corrector(IDVR_REF);
+
+
+  Serial3.print(SCREEN_PRINT);
+  Serial3.print("IFR");
+  selector_space(menu_val, 4, enable);
+  Serial3.print(IFIN_REF);
+  space_corrector(IFIN_REF);
+}
+
+
+/**
+
+*/
+void selector_space(int32_t value, int32_t reference, bool en) {
+  if ((value == reference) && en) {
+    Serial3.print(">");
+  }
+  else {
+    Serial3.print(" ");
+  }
+}
+
+
+/**
+
+*/
+void space_corrector(uint32_t val) {
+  if (val < 10) {
+    Serial3.print("   ");
+  }
+  else if (val < 100) {
+    Serial3.print("  ");
+  }
+  else if (val < 1000) {
+    Serial3.print(" ");
+  }
+  Serial3.println("");
+}
+
+
+/**
+
+*/
+void selector_increase(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta) {
+  if (*var_to_modify <= (max_value - delta)) {
+    *var_to_modify = *var_to_modify + delta;
+  }
+  else {
+    *var_to_modify = min_value;
+  }
+}
+
+
+/**
+
+*/
+void selector_decrease(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta) {
+  if (*var_to_modify >= (min_value + delta)) {
+    *var_to_modify = *var_to_modify - delta;
+  }
+  else {
+    *var_to_modify = max_value;
+  }
 }
 
