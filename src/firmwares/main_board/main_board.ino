@@ -165,8 +165,8 @@ static const uint16_t IDVR_DELTA = 1 * 3;                 // Idrv delta (0 to 40
 static const uint16_t IFIN_DELTA = 1 * 3;                 // Ifin delta (0 to 4095 [bit])
 
 /* Alimentation. */
-static const uint16_t PS_VDVR_MIN = 2460;                 // Vdrv min (0 to 4095 [bit]) (0.0122 V/bit)
-static const uint16_t PS_VDVR_MAX = 3673;                 // Vdrv max (0 to 4095 [bit]) (0.0122 V/bit)
+static const uint16_t PS_VDVR_MIN = 1960;                 // Vdrv min (0 to 4095 [bit]) (0.0122 V/bit)
+static const uint16_t PS_VDVR_MAX = 2500;                 // Vdrv max (0 to 4095 [bit]) (0.0122 V/bit)
 static const uint16_t PS_VFIN_MIN = 2460;                 // Vfin min (0 to 4095 [bit]) (0.0122 V/bit)
 static const uint16_t PS_VFIN_MAX = 3673;                 // Vfin max (0 to 4095 [bit]) (0.0122 V/bit)
 
@@ -197,8 +197,8 @@ int32_t VGATE_FUSE_REF = 80;                                // Fuse reference (0
 int32_t VGATE_TEMP_REF = 200;                               // Temp reference (1,2V)  (0 to 4095 [bit]) (5.37 mV/bit)
 
 /* Imon. */
-int32_t IDVR_REF = 100;                                     // Idrv ref (0 to 4095 [bit]) (12 A/V)
-int32_t IFIN_REF = 100;                                     // Ifin ref (0 to 4095 [bit]) (12 A/V)
+int32_t IDVR_REF = 50;                                      // Idrv ref (0 to 4095 [bit]) (12 A/V)
+int32_t IFIN_REF = 50;                                      // Ifin ref (0 to 4095 [bit]) (12 A/V)
 
 /* External screen. */
 int32_t imon_dvr_channel = 0;
