@@ -194,7 +194,7 @@ uint8_t amplifier_status[VGATE_TOTAL_NUMBER] = {};
 
 /* Vgate. */
 int32_t VGATE_FUSE_REF = 80;                                // Fuse reference (0,1V) (0 to 4095 [bit]) (5.37 mV/bit)
-int32_t VGATE_TEMP_REF = 200;                               // Temp reference (1,2V)  (0 to 4095 [bit]) (5.37 mV/bit)
+int32_t VGATE_TEMP_REF = 200;                               // Temp reference (1,2V) (0 to 4095 [bit]) (5.37 mV/bit)
 
 /* Imon. */
 int32_t IDVR_REF = 50;                                      // Idrv ref (0 to 4095 [bit]) (12 A/V)
@@ -403,6 +403,8 @@ void loop() {
             fin_cnt = 0;
             programIndex = SETUP_FIN;
           }
+          /* Wait untill current is stabilized. */
+          delayMicroseconds(VGATE_DELAY);
         }
         else {
           //SerialUSB.print("DVR Error: "); SerialUSB.println(check_errors_routine());
