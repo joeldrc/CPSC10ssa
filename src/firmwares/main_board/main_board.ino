@@ -37,7 +37,7 @@ SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP492
 
 /* Comment these definitions if you want to disable them. */
 #define _DATA_LOGGER
-#define _WATCHDOG               1000    // Time to wait (1 to 10000) (milliSeconds)
+//#define _WATCHDOG               1000    // Time to wait (1 to 10000) (milliSeconds)
 
 
 /* Global defines. */
@@ -177,7 +177,7 @@ static const float IMON_TOT_SCALING = 0.12;               // Scaling for DAC out
 static const float IMON_SCALING = 1.2;                    // Scaling for DAC out (12 A/V to 10 A/V)
 
 /* Software delay. */
-static const uint32_t VGATE_DELAY = 100;                  // Time to wait (1 to 4095) (microSeconds])
+static const uint32_t VGATE_DELAY = 10000;                // Time to wait (1 to 4095) (microSeconds])
 static const uint32_t LCD_SCREEN_REFRESH = 1000;          // Time to wait (1 to 4095) (milliSeconds])
 static const uint32_t CHECK_ERRORS_TIMER = 10;            // Time to wait (1 to 4095) (milliSeconds])
 
@@ -356,7 +356,6 @@ void loop() {
   switch (programIndex) {
 
     case SETUP_PROGRAM: {
-
         for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
           /* Reset Vgate array. */
           vgate_set_value[i] = VGATE_MIN;
@@ -384,6 +383,8 @@ void loop() {
         digitalWrite(LED_F, false);
         digitalWrite(LED_D, false);
 
+        delayMicroseconds(VGATE_DELAY);
+
         /* Check errors and CELL_OFF_CMD. */
         if ((check_errors_routine() == 0) /* && (digitalRead(CELL_OFF_CMD == LOW)) */) {
           programIndex = SETUP_DVR;
@@ -392,10 +393,12 @@ void loop() {
       break;
 
     case SETUP_DVR: {
-
         if (check_errors_routine() == 0) {
           /* Start setup of the DRIVER bias current. */
-          if ((bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0) && (bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_ON) == 0)) {
+          uint8_t setup_dvr_0 = bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_ON);
+          uint8_t setup_dvr_1 = bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_ON);
+
+          if ((setup_dvr_0 == 0) && (setup_dvr_1 == 0)) {
             /* If the procedure was successful. */
             amplifier_status[DVR_PHISICAL_POSITION[0]] = MOSFET_SETUP_OK;  // set mosfet ok
             amplifier_status[DVR_PHISICAL_POSITION[1]] = MOSFET_SETUP_OK;  // set mosfet ok
@@ -414,7 +417,6 @@ void loop() {
       break;
 
     case SETUP_FIN: {
-
         if (check_errors_routine() == 0) {
           /* Start setting the FINAL bias currents. */
           if (bias_setting_routine(FIN_PHISICAL_POSITION[fin_cnt], IFIN_REF, IFIN_DELTA, CORRECTION_ON) == 0) {
@@ -461,7 +463,6 @@ void loop() {
       break;
 
     case BIAS_LOOP: {
-
         //if (digitalRead(CELL_OFF_CMD == LOW)) {
 
         bool trigger_val = external_trigger();
