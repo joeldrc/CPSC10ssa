@@ -18,14 +18,14 @@ uint8_t ps_status_routine() {
   uint32_t ps_vdvr = analogRead_single_channel(ADC_CHANNEL_4);  // Read A2 = ADC3 //25V
   uint32_t ps_vfin = analogRead_single_channel(ADC_CHANNEL_5);  // Read A3 = ADC4 //40V
 
-  if ((ps_vdvr < PS_VDVR_MIN) || (ps_vdvr > PS_VDVR_MAX)) {
+  if (((ps_vdvr > PS_VDVR_MIN) && (ps_vdvr < PS_VDVR_MAX)) && ((ps_vfin > PS_VFIN_MIN) && (ps_vfin < PS_VFIN_MAX))) {
+    return 0;
+  }
+  else if ((ps_vdvr < PS_VDVR_MIN) || (ps_vdvr > PS_VDVR_MAX)) {
     return 1;
   }
   else if ((ps_vfin < PS_VFIN_MIN) || (ps_vfin > PS_VFIN_MAX)) {
     return 2;
-  }
-  else {
-    return 0;
   }
 }
 
