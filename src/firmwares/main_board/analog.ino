@@ -49,22 +49,15 @@ void adc_init_setup() {
   The parameters are:
   - enum of the selected ADC channel;
   - array to store data.
+  - max number of channel to read
 */
-void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead) {
-
-  //adc_disable_all_channel(ADC);   // To comment if you want more speed
+void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead, uint16_t max_channel) {
+  //adc_disable_all_channel(ADC);   // Keep commented if you want more speed
   adc_enable_channel(ADC, adc_ch);  // Enable adc channel
 
-  /* Turn on the ADC to be ready for readings. */
-  adc_start(ADC);
-  while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  // Wait the end of conversion
-  adc_get_latest_value(ADC);
+  for (uint8_t i = 0; i < max_channel; i++) {
 
-  for (uint8_t i = 0; i < MUX_MAX_CHANNEL; i++) {
-    REG_PIOC_SODR = i << MUX_PORT_ADDRESS;  // Write value to port 21 until port 24 (port 21 to 24 = pin 9 to pin 6)
-
-    /* Wait untill the signal is stabilized. */
-    //asm volatile(".rept 10\n\tNOP\n\t.endr");  // 10 NOP cycle (20ns cycle)
+    REG_PIOC_ODSR = i << MUX_PORT_ADDRESS;  // Write value on port 21 until port 24 (port 21 to 24 = pin 9 to pin 6)
 
     /* First measurement is used to stabilize the value. */
     adc_start(ADC);
@@ -75,13 +68,7 @@ void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead) {
     adc_start(ADC);
     while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  // Wait the end of conversion
     valueRead[i] = adc_get_latest_value(ADC);
-
-    REG_PIOC_CODR = i << MUX_PORT_ADDRESS;    // Delete value to port 21 until port 24 (port 21 to 24 = pin 9 to pin 6)
-
-    /* Wait untill the signal is stabilized. */
-    //asm volatile(".rept 10\n\tNOP\n\t.endr"); // 10 NOP cycle (20ns cycle)
   }
-
   /* Disable ADC selected. */
   adc_disable_channel(ADC, adc_ch);
 }
@@ -97,11 +84,6 @@ uint32_t analogRead_single_channel(enum adc_channel_num_t adc_ch) {
 
   //adc_disable_all_channel(ADC);   // To comment if you want more speed
   adc_enable_channel(ADC, adc_ch);  // ADC start reading
-
-  /* First measurement is used to stabilize the value. */
-  adc_start(ADC);
-  while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  // Wait the end of conversion
-  adc_get_latest_value(ADC);
 
   /* ADC start reading value. */
   adc_start(ADC);
