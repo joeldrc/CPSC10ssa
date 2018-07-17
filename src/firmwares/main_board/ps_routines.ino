@@ -36,9 +36,9 @@ uint8_t ps_status_routine() {
   - checks whether the voltage is right or not, and sets the error in the array (amplifier_status) if an error occurs.
 */
 void vgate_measure_routine() {
-  analogRead_mux(ADC_CHANNEL_11, vgate_value);                  // Read 16 final value
-  vgate_value[16] = analogRead_single_channel(ADC_CHANNEL_0);   // Read drivers value
-  vgate_value[17] = analogRead_single_channel(ADC_CHANNEL_10);  // Read drivers value
+  analogRead_mux(ADC_CHANNEL_11, vgate_value, FIN_TOTAL_NUMBER);  // Read 16 final value
+  vgate_value[16] = analogRead_single_channel(ADC_CHANNEL_0);     // Read drivers value
+  vgate_value[17] = analogRead_single_channel(ADC_CHANNEL_10);    // Read drivers value
 
   for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
     if (vgate_value[FIN_PHISICAL_POSITION[i]] < VGATE_FUSE_REF) {
@@ -75,9 +75,9 @@ void imon_measure_routine() {
   uint32_t imon_fin_total_val = 0;
   uint32_t imon_dvr_total_val = 0;
 
-  analogRead_mux(ADC_CHANNEL_1, imon_value);                  // Read 16 final value
-  imon_value[16] = analogRead_single_channel(ADC_CHANNEL_3);  // Read drivers value
-  imon_value[17] = analogRead_single_channel(ADC_CHANNEL_2);  // Read drivers value
+  analogRead_mux(ADC_CHANNEL_1, imon_value, FIN_TOTAL_NUMBER);  // Read 16 final value
+  imon_value[16] = analogRead_single_channel(ADC_CHANNEL_3);    // Read drivers value
+  imon_value[17] = analogRead_single_channel(ADC_CHANNEL_2);    // Read drivers value
 
   for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i ++) {
     imon_dvr_total_val += imon_value[DVR_PHISICAL_POSITION[i]];
