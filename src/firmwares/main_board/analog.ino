@@ -53,29 +53,31 @@ void adc_init_setup() {
   - max number of channel to read
 */
 void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead, uint8_t *channel_position, uint8_t max_channel) {
-  //static const uint8_t MUX_MAX_CHANNEL = 16;  // Hardware limit to 16 channel
+  static const uint8_t MUX_MAX_CHANNEL = 16;  // Hardware limit to 16 channel
   static const uint8_t MUX_PORT_ADDRESS = 21;   // PORT name value: (port 21 to 24 = pin 9 to pin 6)
 
-  //adc_disable_all_channel(ADC);   // Keep commented if you want more speed
-  adc_enable_channel(ADC, adc_ch);  // Enable adc channel
+  if (max_channel <= MUX_MAX_CHANNEL) {
+    //adc_disable_all_channel(ADC);   // Keep commented if you want more speed
+    adc_enable_channel(ADC, adc_ch);  // Enable adc channel
 
-  for (uint8_t i = 0; i < max_channel; i++) {
-    REG_PIOC_OWER = 0b00000000111100000000000000000000;       // OWER enables any bits that are set to 1 in the value you write
-    REG_PIOC_OWDR = 0b11111111000011111111111111111111;       // OWDR disables any bits that are set to 1 in the value you write
-    REG_PIOC_ODSR = channel_position[i] << MUX_PORT_ADDRESS;  // Write value on port 21 until port 24 (port 21 to 24 = pin 9 to pin 6)
+    for (uint8_t i = 0; i < max_channel; i++) {
+      REG_PIOC_OWER = 0b00000000111100000000000000000000;       // OWER enables any bits that are set to 1 in the value you write
+      REG_PIOC_OWDR = 0b11111111000011111111111111111111;       // OWDR disables any bits that are set to 1 in the value you write
+      REG_PIOC_ODSR = channel_position[i] << MUX_PORT_ADDRESS;  // Write value on port 21 until port 24 (port 21 to 24 = pin 9 to pin 6)
 
-    /* First measurement is used to stabilize the value. */
-    adc_start(ADC);
-    while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  // Wait the end of conversion
-    adc_get_latest_value(ADC);
+      /* First measurement is used to stabilize the value. */
+      adc_start(ADC);
+      while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  // Wait the end of conversion
+      adc_get_latest_value(ADC);
 
-    /* ADC start reading value. */
-    adc_start(ADC);
-    while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  // Wait the end of conversion
-    valueRead[i] = adc_get_latest_value(ADC);
+      /* ADC start reading value. */
+      adc_start(ADC);
+      while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  // Wait the end of conversion
+      valueRead[i] = adc_get_latest_value(ADC);
+    }
+    /* Disable ADC selected. */
+    adc_disable_channel(ADC, adc_ch);
   }
-  /* Disable ADC selected. */
-  adc_disable_channel(ADC, adc_ch);
 }
 
 
@@ -89,6 +91,11 @@ uint32_t analogRead_single_channel(enum adc_channel_num_t adc_ch) {
 
   //adc_disable_all_channel(ADC);   // To comment if you want more speed
   adc_enable_channel(ADC, adc_ch);  // ADC start reading
+
+  /* First measurement is used to stabilize the value. */
+  adc_start(ADC);
+  while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  // Wait the end of conversion
+  adc_get_latest_value(ADC);
 
   /* ADC start reading value. */
   adc_start(ADC);
