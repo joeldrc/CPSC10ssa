@@ -45,10 +45,11 @@ SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP492
 #define CORRECTION_OFF          false
 
 /* ProgramIndex. */
-#define SETUP_PROGRAM           0
-#define SETUP_DVR               1
-#define SETUP_FIN               2
-#define BIAS_LOOP               3
+#define RESET_PROGRAM           0
+#define SETUP_PROGRAM           1
+#define SETUP_DVR               2
+#define SETUP_FIN               3
+#define BIAS_LOOP               4
 
 /* Mosfet status code. */
 #define MOSFET_NOT_SETTED       0       // White
@@ -153,8 +154,8 @@ static uint8_t DVR_PHISICAL_POSITION[DVR_TOTAL_NUMBER] = { 16, 17 };            
 static uint8_t FIN_PHISICAL_POSITION[FIN_TOTAL_NUMBER] = { 0, 1, 2, 3 /*, 4, 5, 6, 7, 8 , 9, 10, 11, 12, 13, 14, 15 */};  // Use 0 to 15
 
 /* Vgate reference. */
-static uint16_t VGATE_MIN = 2000;                   // Vgate minumum value (0 to 4095 [bit])
-static uint16_t VGATE_CORRECTION = 3;               // Value to increase and decrease (0 to 4095 [bit])
+static uint16_t VGATE_MIN = 1900;                   // Vgate minumum value (0 to 4095 [bit])
+static uint16_t VGATE_CORRECTION = 1;               // Value to increase and decrease (0 to 4095 [bit])
 
 /* Imon reference. */
 static uint16_t IDVR_DELTA = 1 * 3;                 // Idrv delta (0 to 4095 [bit])
@@ -193,7 +194,7 @@ int32_t VGATE_FUSE_REF = 80;                                // Fuse reference (0
 int32_t VGATE_TEMP_REF = 200;                               // Temp reference (1,2V) (0 to 4095 [bit]) (5.37 mV/bit)
 
 /* Imon. */
-int32_t IDVR_REF = 50;                                      // Idrv ref (0 to 4095 [bit]) (12 A/V)
+int32_t IDVR_REF = 100;                                     // Idrv ref (0 to 4095 [bit]) (12 A/V)
 int32_t IFIN_REF = 100;                                     // Ifin ref (0 to 4095 [bit]) (12 A/V)
 
 /* External screen. */
@@ -345,42 +346,42 @@ void setup() {
   This function is used to perform an infinite cycle.
 */
 void loop() {
-  static uint8_t programIndex = SETUP_PROGRAM;
+  static uint8_t programIndex = RESET_PROGRAM;
   static uint8_t fin_cnt = 0;
   static bool cell_status = false;
 
-  //imon_measure_routine();
-
   switch (programIndex) {
 
-    case SETUP_PROGRAM: {
+    case RESET_PROGRAM: {
         for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-          /* Reset Vgate array. */
-          vgate_set_value[i] = VGATE_MIN;
-          /* Set all Vgate CTL to MIN. */
-          analogWrite_external_dac(i, vgate_set_value[i]);
-          /* Reset amplifier status. */
-          amplifier_status[i] = MOSFET_NOT_SETTED;
+          vgate_set_value[i] = VGATE_MIN;                   // Reset Vgate array.
+          analogWrite_external_dac(i, vgate_set_value[i]);  // Set all Vgate CTL to MIN.
+          amplifier_status[i] = MOSFET_NOT_SETTED;          // Reset amplifier status.
         }
-        set_external_dac_output();      // Enable the value on dac out
+        set_external_dac_output();                          // Enable the value on dac out
 
         /* Reset digitals outputs. */
-        digitalWrite(RLY_CTL, LOW);     // Set RLY CTL to CLOSED
-        digitalWrite(SEL_CTL, LOW);     // Set SEL CTL to 0V
-        digitalWrite(CELL_ST_OK, LOW);  // Set CELL ST to OFF
-        digitalWrite(RF_CTL, LOW);      // Set RF CTL to OFF
-        digitalWrite(BIAS_RDY, LOW);    // Set BIAS RDY to OFF
-        digitalWrite(MEASURE_SEL, LOW); // Set MEASURE SEL to OFF
-        digitalWrite(CARD_ST_OK, HIGH); // Set CARD STATUS to OK
+        digitalWrite(RLY_CTL, LOW);                         // Set RLY CTL to CLOSED
+        digitalWrite(SEL_CTL, LOW);                         // Set SEL CTL to 0V
+        digitalWrite(CELL_ST_OK, LOW);                      // Set CELL ST to OFF
+        digitalWrite(RF_CTL, LOW);                          // Set RF CTL to OFF
+        digitalWrite(BIAS_RDY, LOW);                        // Set BIAS RDY to OFF
+        digitalWrite(MEASURE_SEL, LOW);                     // Set MEASURE SEL to OFF
+        digitalWrite(CARD_ST_OK, HIGH);                     // Set CARD STATUS to OK
 
         /* Reset front pannel leds. */
-        digitalWrite(LED_C, HIGH);      // Card operational
-        digitalWrite(LED_B, LOW);       // Bias ready
+        digitalWrite(LED_C, HIGH);                          // Card operational
+        digitalWrite(LED_B, LOW);                           // Bias ready
         digitalWrite(LED_A, LOW);
         //digitalWrite(LED_E, false);
         digitalWrite(LED_F, LOW);
         digitalWrite(LED_D, LOW);
 
+        programIndex = SETUP_PROGRAM;
+      }
+      break;
+
+    case SETUP_PROGRAM: {
         /* Check errors and CELL_OFF_CMD. */
         if ((check_errors_routine() == 0) /* && (digitalRead(CELL_OFF_CMD == LOW)) */) {
           programIndex = SETUP_DVR;
@@ -391,18 +392,11 @@ void loop() {
     case SETUP_DVR: {
         if (check_errors_routine() == 0) {
           /* Start setup of the DRIVER bias current. */
-          bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_OFF);
-          imon_measure_routine();
           uint8_t setup_dvr_0 = bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_ON);
-
-          bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_OFF);
-          imon_measure_routine();
           uint8_t setup_dvr_1 = bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_ON);
 
-          //          for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-          //            SerialUSB.println(imon_value[i]);
-          //          }
-          //          SerialUSB.println(" --- ");
+          //SerialUSB.println(vgate_set_value[16]);
+          //SerialUSB.println(vgate_set_value[17]);
 
           if ((setup_dvr_0 == 0) && (setup_dvr_1 == 0)) {
             /* If the procedure was successful. */
@@ -417,7 +411,7 @@ void loop() {
         }
         else {
           //SerialUSB.print("DVR Error: "); SerialUSB.println(check_errors_routine());
-          programIndex = SETUP_PROGRAM;
+          programIndex = RESET_PROGRAM;
         }
       }
       break;
@@ -464,7 +458,7 @@ void loop() {
         }
         else {
           //SerialUSB.print("FIN Error: "); SerialUSB.println(check_errors_routine());
-          programIndex = SETUP_PROGRAM;
+          programIndex = RESET_PROGRAM;
         }
       }
       break;
@@ -485,12 +479,13 @@ void loop() {
               bias_setting_routine(DVR_PHISICAL_POSITION[i], IDVR_REF, IDVR_DELTA, CORRECTION_OFF);
             }
 
-            delay(20);
-            imon_measure_routine();
-            //for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+            delay(500);
+            check_errors_routine();
+            //imon_measure_routine();
+
+            //for (uint8_t i=0; i < VGATE_TOTAL_NUMBER; i++) {
             //  SerialUSB.println(imon_value[i]);
             //}
-            //SerialUSB.println(" --- ");
 
             /* Set the bias voltage and make the correction. */
             for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
@@ -507,7 +502,7 @@ void loop() {
             }
             set_external_dac_output();  //enable the value on dac out
 
-            programIndex = SETUP_PROGRAM;
+            programIndex = RESET_PROGRAM;
           }
 
           //if (digitalRead(RLY_CTL == HIGH)) {
@@ -545,7 +540,7 @@ void loop() {
         }
         else if (softwareDelay(CHECK_ERRORS_TIMER) == true) {
           if (check_errors_routine() != 0) {
-            programIndex = SETUP_PROGRAM;
+            programIndex = RESET_PROGRAM;
           }
         }
         else {
