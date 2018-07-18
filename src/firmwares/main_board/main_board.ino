@@ -139,10 +139,6 @@ static const uint8_t MUX_S3 = 6;
 static const uint8_t MUX_EN1 = 10;
 static const uint8_t MUX_EN2 = 11;
 
-/* MUX port & channel. */
-static const uint8_t MUX_MAX_CHANNEL = 16;
-static const uint8_t MUX_PORT_ADDRESS = 21; // PORT name value: (port 21 to 24 = pin 9 to pin 6)
-
 /* -------------------- End I/O pin assignment -------------------- */
 
 
@@ -151,35 +147,35 @@ static const uint8_t MUX_PORT_ADDRESS = 21; // PORT name value: (port 21 to 24 =
 /* SOFTWARE CONSTANT for the setup. */
 static const uint8_t VGATE_TOTAL_NUMBER = 18;             // Max phisical number of single mosfets to regulate bias (!do not change this value!)
 static const uint8_t DVR_TOTAL_NUMBER = 2;                // Max number of DVR channels (2 is the minimum value)
-static const uint8_t FIN_TOTAL_NUMBER = 16;               // Max number of FIN channels
+static const uint8_t FIN_TOTAL_NUMBER = 4 /* 16 */;               // Max number of FIN channels
 
-static const uint8_t DVR_PHISICAL_POSITION[DVR_TOTAL_NUMBER] = { 16, 17 };                                                // Use 16 and 17
-static const uint8_t FIN_PHISICAL_POSITION[FIN_TOTAL_NUMBER] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };  // Use 0 to 15
+static uint8_t DVR_PHISICAL_POSITION[DVR_TOTAL_NUMBER] = { 16, 17 };                                                // Use 16 and 17
+static uint8_t FIN_PHISICAL_POSITION[FIN_TOTAL_NUMBER] = { 0, 1, 2, 3 /*, 4, 5, 6, 7, 8 , 9, 10, 11, 12, 13, 14, 15 */};  // Use 0 to 15
 
 /* Vgate reference. */
-static const uint16_t VGATE_MIN = 2000;                   // Vgate minumum value (0 to 4095 [bit])
-static const uint16_t VGATE_CORRECTION = 3;               // Value to increase and decrease (0 to 4095 [bit])
+static uint16_t VGATE_MIN = 2000;                   // Vgate minumum value (0 to 4095 [bit])
+static uint16_t VGATE_CORRECTION = 3;               // Value to increase and decrease (0 to 4095 [bit])
 
 /* Imon reference. */
-static const uint16_t IDVR_DELTA = 1 * 3;                 // Idrv delta (0 to 4095 [bit])
-static const uint16_t IFIN_DELTA = 1 * 3;                 // Ifin delta (0 to 4095 [bit])
+static uint16_t IDVR_DELTA = 1 * 3;                 // Idrv delta (0 to 4095 [bit])
+static uint16_t IFIN_DELTA = 1 * 3;                 // Ifin delta (0 to 4095 [bit])
 
 /* Alimentation. */
-static const uint16_t PS_VDVR_MIN = 1960;                 // Vdrv min (0 to 4095 [bit]) (0.0122 V/bit)
-static const uint16_t PS_VDVR_MAX = 2500;                 // Vdrv max (0 to 4095 [bit]) (0.0122 V/bit)
-static const uint16_t PS_VFIN_MIN = 2460;                 // Vfin min (0 to 4095 [bit]) (0.0122 V/bit)
-static const uint16_t PS_VFIN_MAX = 3673;                 // Vfin max (0 to 4095 [bit]) (0.0122 V/bit)
+static uint16_t PS_VDVR_MIN = 1960;                 // Vdrv min (0 to 4095 [bit]) (0.0122 V/bit)
+static uint16_t PS_VDVR_MAX = 2500;                 // Vdrv max (0 to 4095 [bit]) (0.0122 V/bit)
+static uint16_t PS_VFIN_MIN = 2460;                 // Vfin min (0 to 4095 [bit]) (0.0122 V/bit)
+static uint16_t PS_VFIN_MAX = 3673;                 // Vfin max (0 to 4095 [bit]) (0.0122 V/bit)
 
 /* Convertion bit to V & bit to A. */
-static const float VGATE_CONVERTION_VALUE = 0.00537 / 3;  // Vgate (5.37 mV/bit / 3) (Voltage divider on board)
-static const float IMON_CONVERTION_VALUE = 0.00488 * 2;   // Imon (4.88 mA/bit)
-static const float IMON_TOT_SCALING = 0.12;               // Scaling for DAC out (12 A/V to 100 A/V)
-static const float IMON_SCALING = 1.2;                    // Scaling for DAC out (12 A/V to 10 A/V)
+static float VGATE_CONVERTION_VALUE = 0.00537 / 3;  // Vgate (5.37 mV/bit / 3) (Voltage divider on board)
+static float IMON_CONVERTION_VALUE = 0.00488 * 2;   // Imon (4.88 mA/bit)
+static float IMON_TOT_SCALING = 0.12;               // Scaling for DAC out (12 A/V to 100 A/V)
+static float IMON_SCALING = 1.2;                    // Scaling for DAC out (12 A/V to 10 A/V)
 
 /* Software delay. */
-static const uint32_t VGATE_DELAY = 10000;                // Time to wait (1 to 4095) (microSeconds])
-static const uint32_t LCD_SCREEN_REFRESH = 1000;          // Time to wait (1 to 4095) (milliSeconds])
-static const uint32_t CHECK_ERRORS_TIMER = 10;            // Time to wait (1 to 4095) (milliSeconds])
+static uint32_t VGATE_DELAY = 100;                  // Time to wait (1 to 4095) (microSeconds])
+static uint32_t LCD_SCREEN_REFRESH = 1000;          // Time to wait (1 to 4095) (milliSeconds])
+static uint32_t CHECK_ERRORS_TIMER = 10;            // Time to wait (1 to 4095) (milliSeconds])
 
 /* -------------------- End software constant -------------------- */
 
@@ -198,7 +194,7 @@ int32_t VGATE_TEMP_REF = 200;                               // Temp reference (1
 
 /* Imon. */
 int32_t IDVR_REF = 50;                                      // Idrv ref (0 to 4095 [bit]) (12 A/V)
-int32_t IFIN_REF = 50;                                      // Ifin ref (0 to 4095 [bit]) (12 A/V)
+int32_t IFIN_REF = 100;                                     // Ifin ref (0 to 4095 [bit]) (12 A/V)
 
 /* External screen. */
 int32_t imon_dvr_channel = 0;
@@ -353,6 +349,8 @@ void loop() {
   static uint8_t fin_cnt = 0;
   static bool cell_status = false;
 
+  //imon_measure_routine();
+
   switch (programIndex) {
 
     case SETUP_PROGRAM: {
@@ -376,14 +374,12 @@ void loop() {
         digitalWrite(CARD_ST_OK, HIGH); // Set CARD STATUS to OK
 
         /* Reset front pannel leds. */
-        digitalWrite(LED_C, true);      // Card operational
-        digitalWrite(LED_B, false);     // Bias ready
-        digitalWrite(LED_A, false);
+        digitalWrite(LED_C, HIGH);      // Card operational
+        digitalWrite(LED_B, LOW);       // Bias ready
+        digitalWrite(LED_A, LOW);
         //digitalWrite(LED_E, false);
-        digitalWrite(LED_F, false);
-        digitalWrite(LED_D, false);
-
-        delayMicroseconds(VGATE_DELAY);
+        digitalWrite(LED_F, LOW);
+        digitalWrite(LED_D, LOW);
 
         /* Check errors and CELL_OFF_CMD. */
         if ((check_errors_routine() == 0) /* && (digitalRead(CELL_OFF_CMD == LOW)) */) {
@@ -395,8 +391,18 @@ void loop() {
     case SETUP_DVR: {
         if (check_errors_routine() == 0) {
           /* Start setup of the DRIVER bias current. */
+          bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_OFF);
+          imon_measure_routine();
           uint8_t setup_dvr_0 = bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_ON);
+
+          bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_OFF);
+          imon_measure_routine();
           uint8_t setup_dvr_1 = bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_ON);
+
+          //          for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+          //            SerialUSB.println(imon_value[i]);
+          //          }
+          //          SerialUSB.println(" --- ");
 
           if ((setup_dvr_0 == 0) && (setup_dvr_1 == 0)) {
             /* If the procedure was successful. */
@@ -407,7 +413,7 @@ void loop() {
             programIndex = SETUP_FIN;
           }
           /* Wait untill current is stabilized. */
-          delayMicroseconds(VGATE_DELAY);
+          delayMicroseconds(VGATE_DELAY * 100);
         }
         else {
           //SerialUSB.print("DVR Error: "); SerialUSB.println(check_errors_routine());
@@ -423,6 +429,7 @@ void loop() {
             /* If the procedure was successful. */
             amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]] = MOSFET_SETUP_OK;  // Set mosfet ok
           }
+
           /* Wait untill current is stabilized. */
           delayMicroseconds(VGATE_DELAY);
 
@@ -469,17 +476,23 @@ void loop() {
         digitalWrite(LED_D, trigger_val);
 
         if ((trigger_val == true) && (cell_status == false)) {
-          /* Set the bias voltage for the first time, without correcting it. */
           if (check_errors_routine() == 0) {
+            /* Set the bias voltage for the first time, without correcting it. */
             for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
               bias_setting_routine(FIN_PHISICAL_POSITION[i], IFIN_REF, IFIN_DELTA, CORRECTION_OFF);
             }
             for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i++) {
               bias_setting_routine(DVR_PHISICAL_POSITION[i], IDVR_REF, IDVR_DELTA, CORRECTION_OFF);
             }
-          }
-          /* Set the bias voltage and make the correction. */
-          if (check_errors_routine() == 0) {
+
+            delay(20);
+            imon_measure_routine();
+            //for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+            //  SerialUSB.println(imon_value[i]);
+            //}
+            //SerialUSB.println(" --- ");
+
+            /* Set the bias voltage and make the correction. */
             for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
               bias_setting_routine(FIN_PHISICAL_POSITION[i], IFIN_REF, IFIN_DELTA, CORRECTION_ON);
             }
@@ -493,6 +506,8 @@ void loop() {
               analogWrite_external_dac(i, VGATE_MIN);
             }
             set_external_dac_output();  //enable the value on dac out
+
+            programIndex = SETUP_PROGRAM;
           }
 
           //if (digitalRead(RLY_CTL == HIGH)) {
