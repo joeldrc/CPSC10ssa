@@ -13,6 +13,7 @@
   In the event of an error, it returns:
   - [1] if there is no voltage on the DVR,
   - [2] if there is no voltage on the FIN.
+  - [3] if there is another error.
 */
 uint8_t ps_status_routine() {
   uint32_t ps_vdvr = analogRead_single_channel(ADC_CHANNEL_4);  // Read A2 = ADC3 //25V
@@ -27,6 +28,9 @@ uint8_t ps_status_routine() {
   else if ((ps_vfin < PS_VFIN_MIN) || (ps_vfin > PS_VFIN_MAX)) {
     return 2;
   }
+  else {
+    return 3;
+  }
 }
 
 
@@ -36,9 +40,9 @@ uint8_t ps_status_routine() {
   - checks whether the voltage is right or not, and sets the error in the array (amplifier_status) if an error occurs.
 */
 void vgate_measure_routine() {
-  analogRead_mux(ADC_CHANNEL_11, vgate_value, FIN_TOTAL_NUMBER);  // Read 16 final value
-  vgate_value[16] = analogRead_single_channel(ADC_CHANNEL_0);     // Read drivers value
-  vgate_value[17] = analogRead_single_channel(ADC_CHANNEL_10);    // Read drivers value
+  analogRead_mux(ADC_CHANNEL_11, vgate_value, FIN_PHISICAL_POSITION, FIN_TOTAL_NUMBER); // Read 16 final value
+  vgate_value[16] = analogRead_single_channel(ADC_CHANNEL_0);                           // Read drivers value
+  vgate_value[17] = analogRead_single_channel(ADC_CHANNEL_10);                          // Read drivers value
 
   for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
     if (vgate_value[FIN_PHISICAL_POSITION[i]] < VGATE_FUSE_REF) {
@@ -75,9 +79,9 @@ void imon_measure_routine() {
   uint32_t imon_fin_total_val = 0;
   uint32_t imon_dvr_total_val = 0;
 
-  analogRead_mux(ADC_CHANNEL_1, imon_value, FIN_TOTAL_NUMBER);  // Read 16 final value
-  imon_value[16] = analogRead_single_channel(ADC_CHANNEL_3);    // Read drivers value
-  imon_value[17] = analogRead_single_channel(ADC_CHANNEL_2);    // Read drivers value
+  analogRead_mux(ADC_CHANNEL_1, imon_value, FIN_PHISICAL_POSITION, FIN_TOTAL_NUMBER); // Read 16 final value
+  imon_value[16] = analogRead_single_channel(ADC_CHANNEL_3);                          // Read drivers value
+  imon_value[17] = analogRead_single_channel(ADC_CHANNEL_2);                          // Read drivers value
 
   for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i ++) {
     imon_dvr_total_val += imon_value[DVR_PHISICAL_POSITION[i]];
@@ -90,14 +94,14 @@ void imon_measure_routine() {
   imon_fin_total_val = uint16_t(imon_fin_total_val * IMON_TOT_SCALING);
 
   if (imon_dvr_channel < DVR_TOTAL_NUMBER) {
-    analogWrite_internal_dac(0, uint16_t(imon_value[DVR_PHISICAL_POSITION[imon_dvr_channel]] * IMON_SCALING)); // Write on DAC 0
+    analogWrite_internal_dac(0, uint16_t(imon_value[DVR_PHISICAL_POSITION[imon_dvr_channel]] / IMON_SCALING));  // Write on DAC 0
   }
   else {
     analogWrite_internal_dac(0, imon_dvr_total_val);  // Write on DAC 0
   }
 
   if (imon_fin_channel < FIN_TOTAL_NUMBER) {
-    analogWrite_internal_dac(1, uint16_t(imon_value[FIN_PHISICAL_POSITION[imon_fin_channel]] * IMON_SCALING)); // Write on DAC 1
+    analogWrite_internal_dac(1, uint16_t(imon_value[FIN_PHISICAL_POSITION[imon_fin_channel]] / IMON_SCALING));  // Write on DAC 1
   }
   else {
     analogWrite_internal_dac(1, imon_fin_total_val);  // Write on DAC 1
