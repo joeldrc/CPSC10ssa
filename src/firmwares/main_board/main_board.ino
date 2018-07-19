@@ -425,7 +425,8 @@ void loop() {
           }
 
           /* Wait untill current is stabilized. */
-          delayMicroseconds(VGATE_DELAY);
+          //delayMicroseconds(VGATE_DELAY);
+          delay(10);
 
           /* Check if any errors have occurred, if not, proceed. */
           switch (amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]]) {
@@ -479,7 +480,7 @@ void loop() {
               bias_setting_routine(DVR_PHISICAL_POSITION[i], IDVR_REF, IDVR_DELTA, CORRECTION_OFF);
             }
 
-            delay(1000);
+            delay(200);
             check_errors_routine();
             //imon_measure_routine();
 
