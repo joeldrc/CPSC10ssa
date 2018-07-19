@@ -62,20 +62,21 @@ void default_menu (bool enable) {
   static const uint8_t CNT_RESET_MENU = 150; // Second x 2
   static uint8_t cntCycle = 0;
   static uint8_t menu_val = 0;
+  uint16_t setting_val[3] = { 1, 1, 1 };
 
   switch (btn_val) {
     case 1: {
         switch (menu_val) {
           case 1: {
-              selector_increase(&imon_dvr_channel, 0, DVR_TOTAL_NUMBER, 1);
+              selector_increase(&imon_dvr_channel, 0, DVR_TOTAL_NUMBER, setting_val[menu_val - 1]);
             }
             break;
           case 2: {
-              selector_increase(&imon_fin_channel, 0, FIN_TOTAL_NUMBER, 1);
+              selector_increase(&imon_fin_channel, 0, FIN_TOTAL_NUMBER, setting_val[menu_val - 1]);
             }
             break;
           case 3: {
-              selector_increase(&ampTemp_channel, 0, VGATE_TOTAL_NUMBER - 1, 1);
+              selector_increase(&ampTemp_channel, 0, VGATE_TOTAL_NUMBER - 1, setting_val[menu_val - 1]);
             }
             break;
         }
@@ -93,15 +94,15 @@ void default_menu (bool enable) {
     case 3: {
         switch (menu_val) {
           case 1: {
-              selector_decrease(&imon_dvr_channel, 0, DVR_TOTAL_NUMBER, 1);
+              selector_decrease(&imon_dvr_channel, 0, DVR_TOTAL_NUMBER, setting_val[menu_val - 1]);
             }
             break;
           case 2: {
-              selector_decrease(&imon_fin_channel, 0, FIN_TOTAL_NUMBER, 1);
+              selector_decrease(&imon_fin_channel, 0, FIN_TOTAL_NUMBER, setting_val[menu_val - 1]);
             }
             break;
           case 3: {
-              selector_decrease(&ampTemp_channel, 0, VGATE_TOTAL_NUMBER - 1, 1);
+              selector_decrease(&ampTemp_channel, 0, VGATE_TOTAL_NUMBER - 1, setting_val[menu_val - 1]);
             }
             break;
         }
@@ -190,24 +191,25 @@ void setup_menu(bool enable) {
   static const uint8_t CNT_RESET_MENU = 150; // Second x 2
   static uint8_t cntCycle = 0;
   static uint8_t menu_val = 0;
+  uint16_t setting_val[4] = { 5, 5, 5, 5 };
 
   switch (btn_val) {
     case 1: {
         switch (menu_val) {
           case 1: {
-              selector_increase(&VGATE_FUSE_REF, 0, 4095, 5);
+              selector_increase(&VGATE_FUSE_REF, 0, 4095, setting_val[menu_val - 1]);
             }
             break;
           case 2: {
-              selector_increase(&VGATE_TEMP_REF, 0, 4095, 5);
+              selector_increase(&VGATE_TEMP_REF, 0, 4095, setting_val[menu_val - 1]);
             }
             break;
           case 3: {
-              selector_increase(&IDVR_REF, 0, 1000, 1);
+              selector_increase(&IDVR_REF, 0, 1000, setting_val[menu_val - 1]);
             }
             break;
           case 4: {
-              selector_increase(&IFIN_REF, 0, 1000, 1);
+              selector_increase(&IFIN_REF, 0, 1000, setting_val[menu_val - 1]);
             }
             break;
         }
@@ -225,19 +227,19 @@ void setup_menu(bool enable) {
     case 3: {
         switch (menu_val) {
           case 1: {
-              selector_decrease(&VGATE_FUSE_REF, 0, 4095, 5);
+              selector_decrease(&VGATE_FUSE_REF, 0, 4095, setting_val[menu_val - 1]);
             }
             break;
           case 2: {
-              selector_decrease(&VGATE_TEMP_REF, 0, 4095, 5);
+              selector_decrease(&VGATE_TEMP_REF, 0, 4095, setting_val[menu_val - 1]);
             }
             break;
           case 3: {
-              selector_decrease(&IDVR_REF, 0, 1000, 1);
+              selector_decrease(&IDVR_REF, 0, 1000, setting_val[menu_val - 1]);
             }
             break;
           case 4: {
-              selector_decrease(&IFIN_REF, 0, 1000, 1);
+              selector_decrease(&IFIN_REF, 0, 1000, setting_val[menu_val - 1]);
             }
             break;
         }
