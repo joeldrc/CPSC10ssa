@@ -407,7 +407,7 @@ void loop() {
             programIndex = SETUP_FIN;
           }
           /* Wait untill current is stabilized. */
-          delayMicroseconds(VGATE_DELAY * 100);
+          delay(10);
         }
         else {
           //SerialUSB.print("DVR Error: "); SerialUSB.println(check_errors_routine());
@@ -479,13 +479,14 @@ void loop() {
               bias_setting_routine(DVR_PHISICAL_POSITION[i], IDVR_REF, IDVR_DELTA, CORRECTION_OFF);
             }
 
-            delay(500);
+            delay(1000);
             check_errors_routine();
             //imon_measure_routine();
 
-            //for (uint8_t i=0; i < VGATE_TOTAL_NUMBER; i++) {
-            //  SerialUSB.println(imon_value[i]);
-            //}
+            for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+              SerialUSB.println(imon_value[i]);
+            }
+            SerialUSB.println(" --- ");
 
             /* Set the bias voltage and make the correction. */
             for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
@@ -494,6 +495,9 @@ void loop() {
             for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i++) {
               bias_setting_routine(DVR_PHISICAL_POSITION[i], IDVR_REF, IDVR_DELTA, CORRECTION_ON);
             }
+
+            SerialUSB.println(vgate_set_value[16]);
+            SerialUSB.println(vgate_set_value[17]);
           }
           else {
             /* Set all Vgate CTL to OFF. */
