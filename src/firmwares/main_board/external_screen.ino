@@ -39,9 +39,18 @@ void btn_dwn() {
   Returns [true] or [false] according to the keys pressed.
 */
 bool ctrl_button() {
+  static const uint32_t BUTTON_DELAY = 5; // Time in seconds
+  static uint32_t cnt = 0;
   static bool value = false;
 
-  if ((btnUp == true) && (btnEnt == true) && (btnDwn == true)) {
+  if ((digitalRead(BUTTON_B) == LOW) && (cnt < BUTTON_DELAY)) {
+    cnt ++;
+  }
+  else {
+    cnt = 0;
+  }
+
+  if (cnt == BUTTON_DELAY) {
     value = !value;
     Serial3.println(CLEAR_SCREEN);
   }
