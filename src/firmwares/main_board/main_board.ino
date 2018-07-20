@@ -154,7 +154,7 @@ static uint8_t DVR_PHISICAL_POSITION[DVR_TOTAL_NUMBER] = { 16, 17 };            
 static uint8_t FIN_PHISICAL_POSITION[FIN_TOTAL_NUMBER] = { 0, 1, 2, 3 /*, 4, 5, 6, 7, 8 , 9, 10, 11, 12, 13, 14, 15 */};  // Use 0 to 15
 
 /* Vgate reference. */
-static uint16_t VGATE_MIN = 1900;                   // Vgate minumum value (0 to 4095 [bit])
+static uint16_t VGATE_MIN = 3280;                   // Vgate minumum value (0 to 4095 [bit])
 static uint16_t VGATE_CORRECTION = 1;               // Value to increase and decrease (0 to 4095 [bit])
 
 /* Imon reference. */
@@ -403,11 +403,17 @@ void loop() {
             amplifier_status[DVR_PHISICAL_POSITION[0]] = MOSFET_SETUP_OK;  // set mosfet ok
             amplifier_status[DVR_PHISICAL_POSITION[1]] = MOSFET_SETUP_OK;  // set mosfet ok
 
+            /* set all Vgate CTL to OFF. */
+            for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+              analogWrite_external_dac(i, VGATE_MIN);
+            }
+            set_external_dac_output();  // Enable the value on dac out
+
             fin_cnt = 0;
             programIndex = SETUP_FIN;
           }
           /* Wait untill current is stabilized. */
-          delay(10);
+          delay(1);
         }
         else {
           //SerialUSB.print("DVR Error: "); SerialUSB.println(check_errors_routine());
@@ -426,7 +432,7 @@ void loop() {
 
           /* Wait untill current is stabilized. */
           //delayMicroseconds(VGATE_DELAY);
-          delay(10);
+          delay(1);
 
           /* Check if any errors have occurred, if not, proceed. */
           switch (amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]]) {
