@@ -11,8 +11,7 @@
   This function is called by the interrupt and is used to set a value in the variables.
 */
 void btn_up() {
-  btn_val = 1;
-  btnUp = true;
+  btn_val = UP_BUTTON;
 }
 
 
@@ -20,8 +19,7 @@ void btn_up() {
   This function is called by the interrupt and is used to set a value in the variables.
 */
 void btn_ent() {
-  btn_val = 2;
-  btnEnt = true;
+  btn_val = ENT_BUTTON;
 }
 
 
@@ -29,8 +27,26 @@ void btn_ent() {
   This function is called by the interrupt and is used to set a value in the variables.
 */
 void btn_dwn() {
-  btn_val = 3;
-  btnDwn = true;
+  btn_val = DWN_BUTTON;
+}
+
+
+/**
+  This function when is called check if the button is pressed and return his value.
+*/
+uint8_t check_pressed_button() {
+  if (digitalRead(BUTTON_A) == LOW) {
+    return UP_BUTTON;
+  }
+  else if (digitalRead(BUTTON_B) == LOW) {
+    return ENT_BUTTON;
+  }
+  else if (digitalRead(BUTTON_C) == LOW) {
+    return DWN_BUTTON;
+  }
+  else {
+    return NONE_BUTTON;
+  }
 }
 
 
@@ -38,26 +54,21 @@ void btn_dwn() {
   This function is used to check if you need to change the menu (ex: default to settings).
   Returns [true] or [false] according to the keys pressed.
 */
-bool ctrl_button() {
-  static const uint32_t BUTTON_DELAY = 5; // Time in seconds
+bool ctrl_button(uint32_t button_delay) {
   static uint32_t cnt = 0;
   static bool value = false;
 
-  if ((digitalRead(BUTTON_B) == LOW) && (cnt < BUTTON_DELAY)) {
+  if ((check_pressed_button() == ENT_BUTTON) && (cnt < button_delay)) {
     cnt ++;
   }
   else {
     cnt = 0;
   }
 
-  if (cnt == BUTTON_DELAY) {
+  if (cnt == button_delay) {
     value = !value;
     Serial3.println(CLEAR_SCREEN);
   }
-
-  btnUp = false;
-  btnEnt = false;
-  btnDwn = false;
 
   return value;
 }
@@ -73,8 +84,12 @@ void default_menu (bool enable) {
   static uint8_t menu_val = 0;
   uint16_t setting_val[3] = { 1, 1, 1 };
 
+  if (btn_val == NONE_BUTTON) {
+    btn_val = check_pressed_button();
+  }
+
   switch (btn_val) {
-    case 1: {
+    case UP_BUTTON: {
         switch (menu_val) {
           case 1: {
               selector_increase(&imon_dvr_channel, 0, DVR_TOTAL_NUMBER, setting_val[menu_val - 1]);
@@ -91,7 +106,7 @@ void default_menu (bool enable) {
         }
       }
       break;
-    case 2: {
+    case ENT_BUTTON: {
         if (menu_val < 3) {
           menu_val ++;
         }
@@ -100,7 +115,7 @@ void default_menu (bool enable) {
         }
       }
       break;
-    case 3: {
+    case DWN_BUTTON: {
         switch (menu_val) {
           case 1: {
               selector_decrease(&imon_dvr_channel, 0, DVR_TOTAL_NUMBER, setting_val[menu_val - 1]);
@@ -129,10 +144,10 @@ void default_menu (bool enable) {
       break;
   }
 
-  if (btn_val != 0) {
-    cntCycle = 0;     // Reset cnt variable
+  if (btn_val != NONE_BUTTON) {
+    cntCycle = 0;         // Reset cnt variable
   }
-  btn_val = 0;        // Reset interrupt variable
+  btn_val = NONE_BUTTON;  // Reset interrupt variable
 
 
   /* Send to LCD screen amplifiers status (0: WHITE, 1: GREEN, 2: YELLOW, 3: RED, 4: BLUE, 5: VIOLET). */
@@ -202,8 +217,12 @@ void setup_menu(bool enable) {
   static uint8_t menu_val = 0;
   uint16_t setting_val[4] = { 5, 5, 5, 5 };
 
+  if (btn_val == NONE_BUTTON) {
+    btn_val = check_pressed_button();
+  }
+
   switch (btn_val) {
-    case 1: {
+    case UP_BUTTON: {
         switch (menu_val) {
           case 1: {
               selector_increase(&VGATE_FUSE_REF, 0, 4095, setting_val[menu_val - 1]);
@@ -224,7 +243,7 @@ void setup_menu(bool enable) {
         }
       }
       break;
-    case 2: {
+    case ENT_BUTTON: {
         if (menu_val < 4) {
           menu_val ++;
         }
@@ -233,7 +252,7 @@ void setup_menu(bool enable) {
         }
       }
       break;
-    case 3: {
+    case DWN_BUTTON: {
         switch (menu_val) {
           case 1: {
               selector_decrease(&VGATE_FUSE_REF, 0, 4095, setting_val[menu_val - 1]);
@@ -266,10 +285,10 @@ void setup_menu(bool enable) {
       break;
   }
 
-  if (btn_val != 0) {
-    cntCycle = 0;     // Reset cnt variable
+  if (btn_val != NONE_BUTTON) {
+    cntCycle = 0;         // Reset cnt variable
   }
-  btn_val = 0;        // Reset interrupt variable
+  btn_val = NONE_BUTTON;  // Reset interrupt variable
 
 
   /* Start to sending data. */
