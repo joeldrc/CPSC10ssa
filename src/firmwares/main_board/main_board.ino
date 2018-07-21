@@ -68,6 +68,12 @@ SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP492
 #define CLEAR_SCREEN            'f'     // Clear screen
 #define RESET_SCREEN_POSITION   'g'     // Reset screen position
 
+/* Button code */
+#define NONE_BUTTON              0
+#define UP_BUTTON                1
+#define ENT_BUTTON               2
+#define DWN_BUTTON               3
+
 /* -------------------- End Defines -------------------- */
 
 
@@ -148,35 +154,36 @@ static const uint8_t MUX_EN2 = 11;
 /* SOFTWARE CONSTANT for the setup. */
 static const uint8_t VGATE_TOTAL_NUMBER = 18;             // Max phisical number of single mosfets to regulate bias (!do not change this value!)
 static const uint8_t DVR_TOTAL_NUMBER = 2;                // Max number of DVR channels (2 is the minimum value)
-static const uint8_t FIN_TOTAL_NUMBER = 4 /* 16 */;               // Max number of FIN channels
+static const uint8_t FIN_TOTAL_NUMBER = 4;                // Max number of FIN channels (1 to 16)
 
-static uint8_t DVR_PHISICAL_POSITION[DVR_TOTAL_NUMBER] = { 16, 17 };                                                // Use 16 and 17
+static uint8_t DVR_PHISICAL_POSITION[DVR_TOTAL_NUMBER] = { 16, 17 };                                                      // Use 16 and 17
 static uint8_t FIN_PHISICAL_POSITION[FIN_TOTAL_NUMBER] = { 0, 1, 2, 3 /*, 4, 5, 6, 7, 8 , 9, 10, 11, 12, 13, 14, 15 */};  // Use 0 to 15
 
 /* Vgate reference. */
-static uint16_t VGATE_MIN = 3280;                   // Vgate minumum value (0 to 4095 [bit])
-static uint16_t VGATE_CORRECTION = 1;               // Value to increase and decrease (0 to 4095 [bit])
+static const uint16_t VGATE_MIN = 3280;                   // Vgate minumum value (0 to 4095 [bit])
+static const uint16_t VGATE_CORRECTION = 1;               // Value to increase and decrease (0 to 4095 [bit])
 
 /* Imon reference. */
-static uint16_t IDVR_DELTA = 1 * 3;                 // Idrv delta (0 to 4095 [bit])
-static uint16_t IFIN_DELTA = 1 * 3;                 // Ifin delta (0 to 4095 [bit])
+static const uint16_t IDVR_DELTA = 1 * 3;                 // Idrv delta (0 to 4095 [bit])
+static const uint16_t IFIN_DELTA = 1 * 3;                 // Ifin delta (0 to 4095 [bit])
 
 /* Alimentation. */
-static uint16_t PS_VDVR_MIN = 1960;                 // Vdrv min (0 to 4095 [bit]) (0.0122 V/bit)
-static uint16_t PS_VDVR_MAX = 2500;                 // Vdrv max (0 to 4095 [bit]) (0.0122 V/bit)
-static uint16_t PS_VFIN_MIN = 2460;                 // Vfin min (0 to 4095 [bit]) (0.0122 V/bit)
-static uint16_t PS_VFIN_MAX = 3673;                 // Vfin max (0 to 4095 [bit]) (0.0122 V/bit)
+static const uint16_t PS_VDVR_MIN = 1960;                 // Vdrv min (0 to 4095 [bit]) (0.0122 V/bit)
+static const uint16_t PS_VDVR_MAX = 2500;                 // Vdrv max (0 to 4095 [bit]) (0.0122 V/bit)
+static const uint16_t PS_VFIN_MIN = 2460;                 // Vfin min (0 to 4095 [bit]) (0.0122 V/bit)
+static const uint16_t PS_VFIN_MAX = 3673;                 // Vfin max (0 to 4095 [bit]) (0.0122 V/bit)
 
 /* Convertion bit to V & bit to A. */
-static float VGATE_CONVERTION_VALUE = 0.00537 / 3;  // Vgate (5.37 mV/bit / 3) (Voltage divider on board)
-static float IMON_CONVERTION_VALUE = 0.00488 * 2;   // Imon (4.88 mA/bit)
-static float IMON_TOT_SCALING = 0.12;               // Scaling for DAC out (12 A/V to 100 A/V)
-static float IMON_SCALING = 1.2;                    // Scaling for DAC out (12 A/V to 10 A/V)
+static const float VGATE_CONVERTION_VALUE = 0.00537 / 3;  // Vgate (5.37 mV/bit / 3) (Voltage divider on board)
+static const float IMON_CONVERTION_VALUE = 0.00488 * 2;   // Imon (4.88 mA/bit)
+static const float IMON_TOT_SCALING = 0.12;               // Scaling for DAC out (12 A/V to 100 A/V)
+static const float IMON_SCALING = 1.2;                    // Scaling for DAC out (12 A/V to 10 A/V)
 
 /* Software delay. */
-static uint32_t VGATE_DELAY = 100;                  // Time to wait (1 to 4095) (microSeconds])
-static uint32_t LCD_SCREEN_REFRESH = 1000;          // Time to wait (1 to 4095) (milliSeconds])
-static uint32_t CHECK_ERRORS_TIMER = 10;            // Time to wait (1 to 4095) (milliSeconds])
+static const uint32_t VGATE_DELAY = 100;                  // Time to wait (1 to 4095) (microSeconds)
+static const uint32_t LCD_SCREEN_REFRESH = 1000;          // Time to wait (1 to 4095) (milliSeconds)
+static const uint32_t BUTTON_DELAY_TO_CHANGE_MENU = 5;    // Time to wait (1 to 4095) (seconds)
+static const uint32_t CHECK_ERRORS_TIMER = 10;            // Time to wait (1 to 4095) (milliSeconds)
 
 /* -------------------- End software constant -------------------- */
 
@@ -190,12 +197,12 @@ int32_t vgate_set_value[VGATE_TOTAL_NUMBER] = {};
 uint8_t amplifier_status[VGATE_TOTAL_NUMBER] = {};
 
 /* Vgate. */
-int32_t VGATE_FUSE_REF = 80;                                // Fuse reference (0,1V) (0 to 4095 [bit]) (5.37 mV/bit)
-int32_t VGATE_TEMP_REF = 200;                               // Temp reference (1,2V) (0 to 4095 [bit]) (5.37 mV/bit)
+int32_t VGATE_FUSE_REF = 80;                              // Fuse reference (0,1V) (0 to 4095 [bit]) (5.37 mV/bit)
+int32_t VGATE_TEMP_REF = 200;                             // Temp reference (1,2V) (0 to 4095 [bit]) (5.37 mV/bit)
 
 /* Imon. */
-int32_t IDVR_REF = 100;                                     // Idrv ref (0 to 4095 [bit]) (12 A/V)
-int32_t IFIN_REF = 100;                                     // Ifin ref (0 to 4095 [bit]) (12 A/V)
+int32_t IDVR_REF = 100;                                   // Idrv ref (0 to 4095 [bit]) (12 A/V)
+int32_t IFIN_REF = 100;                                   // Ifin ref (0 to 4095 [bit]) (12 A/V)
 
 /* External screen. */
 int32_t imon_dvr_channel = 0;
@@ -203,11 +210,7 @@ int32_t imon_fin_channel = 0;
 int32_t ampTemp_channel = 0;
 
 /* Button interrupt */
-volatile uint8_t btn_val = 0;
-
-volatile bool btnUp = false;
-volatile bool btnEnt = false;
-volatile bool btnDwn = false;
+volatile uint8_t btn_val = NONE_BUTTON;
 
 /* -------------------- End Global variables -------------------- */
 
@@ -571,7 +574,8 @@ void loop() {
     enable = !enable;
     digitalWrite(LED_BUILTIN, enable);
 
-    if (ctrl_button() == true) {
+    if (ctrl_button(BUTTON_DELAY_TO_CHANGE_MENU) == true) {
+      /* Control and verify if btn status is changed & display on lcd screen the mosfet setting page. */
       setup_menu(enable);
     }
     else {
