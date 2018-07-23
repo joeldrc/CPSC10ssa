@@ -180,7 +180,7 @@ static const float IMON_TOT_SCALING = 0.12;               // Scaling for DAC out
 static const float IMON_SCALING = 1.2;                    // Scaling for DAC out (12 A/V to 10 A/V)
 
 /* Software delay. */
-static const uint32_t VGATE_DELAY = 100;                  // Time to wait (1 to 4095) (microSeconds)
+static const uint32_t VGATE_DELAY = 1000;                 // Time to wait (1 to 4095) (microSeconds)
 static const uint32_t LCD_SCREEN_REFRESH = 1000;          // Time to wait (1 to 4095) (milliSeconds)
 static const uint32_t BUTTON_DELAY_TO_CHANGE_MENU = 5;    // Time to wait (1 to 4095) (seconds)
 static const uint32_t CHECK_ERRORS_TIMER = 10;            // Time to wait (1 to 4095) (milliSeconds)
@@ -416,7 +416,7 @@ void loop() {
             programIndex = SETUP_FIN;
           }
           /* Wait untill current is stabilized. */
-          delay(1);
+          delayMicroseconds(VGATE_DELAY);
         }
         else {
           //SerialUSB.print("DVR Error: "); SerialUSB.println(check_errors_routine());
@@ -434,8 +434,7 @@ void loop() {
           }
 
           /* Wait untill current is stabilized. */
-          //delayMicroseconds(VGATE_DELAY);
-          delay(1);
+          delayMicroseconds(VGATE_DELAY);
 
           /* Check if any errors have occurred, if not, proceed. */
           switch (amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]]) {

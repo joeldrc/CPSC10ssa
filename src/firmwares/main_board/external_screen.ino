@@ -86,6 +86,10 @@ void default_menu (bool enable) {
 
   if (btn_val == NONE_BUTTON) {
     btn_val = check_pressed_button();
+
+    if (btn_val == ENT_BUTTON) {
+      btn_val = NONE_BUTTON;
+    }
   }
 
   switch (btn_val) {
@@ -219,6 +223,10 @@ void setup_menu(bool enable) {
 
   if (btn_val == NONE_BUTTON) {
     btn_val = check_pressed_button();
+
+    if (btn_val == ENT_BUTTON) {
+      btn_val = NONE_BUTTON;
+    }
   }
 
   switch (btn_val) {
