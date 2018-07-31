@@ -204,8 +204,8 @@ int32_t VGATE_FUSE_REF = 80;                              // Fuse reference (0,1
 int32_t VGATE_TEMP_REF = 200;                             // Temp reference (1,2V) (0 to 4095 [bit]) (5.37 mV/bit)
 
 /* Imon. */
-int32_t IDVR_REF = 100;                                   // Idrv ref (0 to 4095 [bit]) (12 A/V)
-int32_t IFIN_REF = 100;                                   // Ifin ref (0 to 4095 [bit]) (12 A/V)
+int32_t IDVR_REF = 100 * 2;                               // Idrv ref (0 to 4095 [bit]) (12 A/V)
+int32_t IFIN_REF = 200;                                   // Ifin ref (0 to 4095 [bit]) (12 A/V)
 
 /* External screen. */
 int32_t imon_dvr_channel = 0;
@@ -401,9 +401,6 @@ void loop() {
           uint8_t setup_dvr_0 = bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_ON);
           uint8_t setup_dvr_1 = bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_ON);
 
-          //USB.println(vgate_set_value[16]);
-          //USB.println(vgate_set_value[17]);
-
           if ((setup_dvr_0 == 0) && (setup_dvr_1 == 0)) {
             /* If the procedure was successful. */
             amplifier_status[DVR_PHISICAL_POSITION[0]] = MOSFET_SETUP_OK;  // set mosfet ok
@@ -419,7 +416,7 @@ void loop() {
             programIndex = SETUP_FIN;
           }
           /* Wait untill current is stabilized. */
-          delayMicroseconds(VGATE_DELAY);
+          delayMicroseconds(VGATE_DELAY * 10);
         }
         else {
           //USB.print("DVR Error: "); USB.println(check_errors_routine());
@@ -484,32 +481,28 @@ void loop() {
         if ((trigger_val == true) && (cell_status == false)) {
           if (check_errors_routine() == 0) {
             /* Set the bias voltage for the first time, without correcting it. */
-            for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
-              bias_setting_routine(FIN_PHISICAL_POSITION[i], IFIN_REF, IFIN_DELTA, CORRECTION_OFF);
-            }
             for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i++) {
               bias_setting_routine(DVR_PHISICAL_POSITION[i], IDVR_REF, IDVR_DELTA, CORRECTION_OFF);
             }
+            for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
+              bias_setting_routine(FIN_PHISICAL_POSITION[i], IFIN_REF, IFIN_DELTA, CORRECTION_OFF);
+            }
 
-            delay(200);
-            check_errors_routine();
-            //imon_measure_routine();
-
-            //for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-            //  USB.println(imon_value[i]);
-            //}
-            //USB.println(" --- ");
+            uint32_t previusMillis = millis();
+            uint32_t currentMillis = previusMillis;
+            while ((currentMillis - previusMillis) < 200) { // Software delay 200ms
+              imon_measure_routine();
+              //check_errors_routine();
+              currentMillis = millis();
+            }
 
             /* Set the bias voltage and make the correction. */
-            for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
-              bias_setting_routine(FIN_PHISICAL_POSITION[i], IFIN_REF, IFIN_DELTA, CORRECTION_ON);
-            }
             for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i++) {
               bias_setting_routine(DVR_PHISICAL_POSITION[i], IDVR_REF, IDVR_DELTA, CORRECTION_ON);
             }
-
-            //USB.println(vgate_set_value[16]);
-            //USB.println(vgate_set_value[17]);
+            for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
+              bias_setting_routine(FIN_PHISICAL_POSITION[i], IFIN_REF, IFIN_DELTA, CORRECTION_ON);
+            }
           }
           else {
             /* Set all Vgate CTL to OFF. */
