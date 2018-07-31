@@ -94,14 +94,14 @@ void imon_measure_routine() {
   imon_fin_total_val = uint16_t(imon_fin_total_val * IMON_TOT_SCALING);
 
   if (imon_dvr_channel < DVR_TOTAL_NUMBER) {
-    analogWrite_internal_dac(0, uint16_t(imon_value[DVR_PHISICAL_POSITION[imon_dvr_channel]] / IMON_SCALING));  // Write on DAC 0
+    analogWrite_internal_dac(0, uint16_t(imon_value[DVR_PHISICAL_POSITION[imon_dvr_channel]] * IMON_SCALING));  // Write on DAC 0
   }
   else {
     analogWrite_internal_dac(0, imon_dvr_total_val);  // Write on DAC 0
   }
 
   if (imon_fin_channel < FIN_TOTAL_NUMBER) {
-    analogWrite_internal_dac(1, uint16_t(imon_value[FIN_PHISICAL_POSITION[imon_fin_channel]] / IMON_SCALING));  // Write on DAC 1
+    analogWrite_internal_dac(1, uint16_t(imon_value[FIN_PHISICAL_POSITION[imon_fin_channel]] * IMON_SCALING));  // Write on DAC 1
   }
   else {
     analogWrite_internal_dac(1, imon_fin_total_val);  // Write on DAC 1
