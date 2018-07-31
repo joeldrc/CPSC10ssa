@@ -67,7 +67,7 @@ bool ctrl_button(uint32_t button_delay) {
 
   if (cnt == button_delay) {
     value = !value;
-    Serial3.println(CLEAR_SCREEN);
+    LCD.println(CLEAR_SCREEN);
   }
 
   return value;
@@ -155,59 +155,59 @@ void default_menu (bool enable) {
 
 
   /* Send to LCD screen amplifiers status (0: WHITE, 1: GREEN, 2: YELLOW, 3: RED, 4: BLUE, 5: VIOLET). */
-  Serial3.print(SCREEN_PRINT_SERIAL);
+  LCD.print(SCREEN_PRINT_SERIAL);
   for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-    Serial3.print(amplifier_status[i], DEC);
+    LCD.print(amplifier_status[i], DEC);
   }
-  Serial3.println("     ");
+  LCD.println("     ");
 
 
-  Serial3.print(SCREEN_PRINT_COLOR);
-  Serial3.print("DVR");
+  LCD.print(SCREEN_PRINT_COLOR);
+  LCD.print("DVR");
   selector_space(menu_val, 1, enable);
-  Serial3.print("N:");
+  LCD.print("N:");
   if (imon_dvr_channel < DVR_TOTAL_NUMBER) {
-    Serial3.print(imon_dvr_channel);
+    LCD.print(imon_dvr_channel);
     if (imon_dvr_channel < 10) {
-      Serial3.print(" ");
+      LCD.print(" ");
     }
   }
   else {
-    Serial3.print("AL");
+    LCD.print("AL");
   }
-  Serial3.println("");
+  LCD.println("");
 
 
-  Serial3.print(SCREEN_PRINT_COLOR);
-  Serial3.print("FIN");
+  LCD.print(SCREEN_PRINT_COLOR);
+  LCD.print("FIN");
   selector_space(menu_val, 2, enable);
-  Serial3.print("N:");
+  LCD.print("N:");
   if (imon_fin_channel < FIN_TOTAL_NUMBER) {
-    Serial3.print(imon_fin_channel);
+    LCD.print(imon_fin_channel);
     if (imon_fin_channel < 10) {
-      Serial3.print(" ");
+      LCD.print(" ");
     }
   }
   else {
-    Serial3.print("AL");
+    LCD.print("AL");
   }
-  Serial3.println("");
+  LCD.println("");
 
 
-  Serial3.print(SCREEN_PRINT_COLOR);
-  Serial3.print("TMP");
+  LCD.print(SCREEN_PRINT_COLOR);
+  LCD.print("TMP");
   selector_space(menu_val, 3, enable);
-  Serial3.print("N:");
-  Serial3.print(ampTemp_channel);
+  LCD.print("N:");
+  LCD.print(ampTemp_channel);
   if (ampTemp_channel < 10) {
-    Serial3.print(" ");
+    LCD.print(" ");
   }
-  Serial3.println("");
+  LCD.println("");
 
 
   /* Send temp value (float). */
-  Serial3.print(SCREEN_PRINT_BIG);
-  Serial3.println(float(cntCycle)); // <-- To add more code
+  LCD.print(SCREEN_PRINT_BIG);
+  LCD.println(float(cntCycle)); // <-- To add more code
 }
 
 
@@ -300,38 +300,38 @@ void setup_menu(bool enable) {
 
 
   /* Start to sending data. */
-  Serial3.println(RESET_SCREEN_POSITION);
+  LCD.println(RESET_SCREEN_POSITION);
 
 
-  Serial3.print(SCREEN_PRINT);
-  Serial3.println("SETTINGS");
-  Serial3.println(SCREEN_PRINT_COLOR);
+  LCD.print(SCREEN_PRINT);
+  LCD.println("SETTINGS");
+  LCD.println(SCREEN_PRINT_COLOR);
 
-  Serial3.print(SCREEN_PRINT);
-  Serial3.print("VFR");
+  LCD.print(SCREEN_PRINT);
+  LCD.print("VFR");
   selector_space(menu_val, 1, enable);
-  Serial3.print(VGATE_FUSE_REF);
+  LCD.print(VGATE_FUSE_REF);
   space_corrector(VGATE_FUSE_REF);
 
 
-  Serial3.print(SCREEN_PRINT);
-  Serial3.print("VTR");
+  LCD.print(SCREEN_PRINT);
+  LCD.print("VTR");
   selector_space(menu_val, 2, enable);
-  Serial3.print(VGATE_TEMP_REF);
+  LCD.print(VGATE_TEMP_REF);
   space_corrector(VGATE_TEMP_REF);
 
 
-  Serial3.print(SCREEN_PRINT);
-  Serial3.print("IDR");
+  LCD.print(SCREEN_PRINT);
+  LCD.print("IDR");
   selector_space(menu_val, 3, enable);
-  Serial3.print(IDVR_REF);
+  LCD.print(IDVR_REF);
   space_corrector(IDVR_REF);
 
 
-  Serial3.print(SCREEN_PRINT);
-  Serial3.print("IFR");
+  LCD.print(SCREEN_PRINT);
+  LCD.print("IFR");
   selector_space(menu_val, 4, enable);
-  Serial3.print(IFIN_REF);
+  LCD.print(IFIN_REF);
   space_corrector(IFIN_REF);
 }
 
@@ -341,10 +341,10 @@ void setup_menu(bool enable) {
 */
 void selector_space(int32_t value, int32_t reference, bool en) {
   if ((value == reference) && en) {
-    Serial3.print(">");
+    LCD.print(">");
   }
   else {
-    Serial3.print(" ");
+    LCD.print(" ");
   }
 }
 
@@ -354,15 +354,15 @@ void selector_space(int32_t value, int32_t reference, bool en) {
 */
 void space_corrector(uint32_t val) {
   if (val < 10) {
-    Serial3.print("   ");
+    LCD.print("   ");
   }
   else if (val < 100) {
-    Serial3.print("  ");
+    LCD.print("  ");
   }
   else if (val < 1000) {
-    Serial3.print(" ");
+    LCD.print(" ");
   }
-  Serial3.println("");
+  LCD.println("");
 }
 
 

@@ -41,6 +41,9 @@ SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP492
 
 
 /* Global defines. */
+#define LCD                     Serial3
+#define USB                     SerialUSB
+
 #define CORRECTION_ON           true
 #define CORRECTION_OFF          false
 
@@ -228,8 +231,8 @@ void watchdogSetup() {} //this function has to be present, otherwise watchdog wo
 */
 void setup() {
   /* Initialize serials interfaces. */
-  SerialUSB.begin(115200);    // Open serial port, sets data rate to 115200 bps (Arduino due max speed (2000000)
-  Serial3.begin(115200);      // Initialize Serial USART 3 (For LCD Display)
+  USB.begin(115200);          // Open serial port, sets data rate to 115200 bps (Arduino due max speed (2000000)
+  LCD.begin(115200);          // Initialize Serial USART 3 (For LCD Display)
 
 #ifdef _WATCHDOG
   watchdogEnable(_WATCHDOG);  // Initialize watchdog timer
@@ -398,8 +401,8 @@ void loop() {
           uint8_t setup_dvr_0 = bias_setting_routine(DVR_PHISICAL_POSITION[0], IDVR_REF, IDVR_DELTA, CORRECTION_ON);
           uint8_t setup_dvr_1 = bias_setting_routine(DVR_PHISICAL_POSITION[1], IDVR_REF, IDVR_DELTA, CORRECTION_ON);
 
-          //SerialUSB.println(vgate_set_value[16]);
-          //SerialUSB.println(vgate_set_value[17]);
+          //USB.println(vgate_set_value[16]);
+          //USB.println(vgate_set_value[17]);
 
           if ((setup_dvr_0 == 0) && (setup_dvr_1 == 0)) {
             /* If the procedure was successful. */
@@ -419,7 +422,7 @@ void loop() {
           delayMicroseconds(VGATE_DELAY);
         }
         else {
-          //SerialUSB.print("DVR Error: "); SerialUSB.println(check_errors_routine());
+          //USB.print("DVR Error: "); USB.println(check_errors_routine());
           programIndex = RESET_PROGRAM;
         }
       }
@@ -466,7 +469,7 @@ void loop() {
           }
         }
         else {
-          //SerialUSB.print("FIN Error: "); SerialUSB.println(check_errors_routine());
+          //USB.print("FIN Error: "); USB.println(check_errors_routine());
           programIndex = RESET_PROGRAM;
         }
       }
@@ -492,10 +495,10 @@ void loop() {
             check_errors_routine();
             //imon_measure_routine();
 
-            for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-              SerialUSB.println(imon_value[i]);
-            }
-            SerialUSB.println(" --- ");
+            //for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+            //  USB.println(imon_value[i]);
+            //}
+            //USB.println(" --- ");
 
             /* Set the bias voltage and make the correction. */
             for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
@@ -505,8 +508,8 @@ void loop() {
               bias_setting_routine(DVR_PHISICAL_POSITION[i], IDVR_REF, IDVR_DELTA, CORRECTION_ON);
             }
 
-            SerialUSB.println(vgate_set_value[16]);
-            SerialUSB.println(vgate_set_value[17]);
+            //USB.println(vgate_set_value[16]);
+            //USB.println(vgate_set_value[17]);
           }
           else {
             /* Set all Vgate CTL to OFF. */
