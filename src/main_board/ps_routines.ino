@@ -115,11 +115,9 @@ void imon_measure_routine() {
   In the event of an error, it reports the error value of the failed function.
 */
 uint8_t check_errors_routine() {
-  uint8_t return_val = 0;
-
   uint8_t val_ps_status_routine = ps_status_routine();
   if ((val_ps_status_routine != 0)) {
-    return_val = val_ps_status_routine;
+    return val_ps_status_routine;
   }
 
   vgate_measure_routine();
@@ -129,24 +127,47 @@ uint8_t check_errors_routine() {
       case MOSFET_UNABLE_TO_SET:
       case MOSFET_FUSE_ERROR:
       case MOSFET_TEMP_ERROR: {
-          vgate_off(i);
+          reset_single_vgate(i, VGATE_MIN);
         }
         break;
     }
   }
 
   imon_measure_routine();
-  return return_val;
+  return 0;
 }
 
 
 /**
   This function is used to deactivate the output using the external DAC and reset the individual Vgate channels.
 */
-void vgate_off(uint8_t i) {
-  vgate_set_value[i] = VGATE_MIN;
-  analogWrite_external_dac(i, vgate_set_value[i]);
+void reset_single_vgate(uint8_t i, uint16_t reference) {
+  vgate_set_value[i] = reference;                   // Reset Vgate array.
+  analogWrite_external_dac(i, vgate_set_value[i]);  // Set Vgate CTL to MIN.
   set_external_dac_output();
+}
+
+
+/**
+  This function is used to deactivate all outputs using the external DAC and reset all Vgate channels.
+*/
+void reset_all_vgate(uint16_t reference) {
+  for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+    vgate_set_value[i] = reference;                   // Reset Vgate array.
+    analogWrite_external_dac(i, vgate_set_value[i]);  // Set all Vgate CTL to MIN.
+  }
+  set_external_dac_output();                          // Enable the value on dac out
+}
+
+
+/**
+  This function is used to deactivate all outputs using the external DAC.
+*/
+void all_vgate_off(uint16_t reference) {
+  for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+    analogWrite_external_dac(i, reference);
+  }
+  set_external_dac_output();  //enable the value on dac out
 }
 
 
@@ -177,7 +198,7 @@ uint8_t bias_setting_routine(uint8_t i, uint16_t ref_value, uint16_t delta_value
     }
     if ((vgate_set_value[i] < 0) || (vgate_set_value[i] > 4095)) {
       amplifier_status[i] = MOSFET_UNABLE_TO_SET;  // If is impossible to setup the mosfet
-      vgate_off(i);
+      reset_single_vgate(i, VGATE_MIN);
       return 1;
     }
   }
