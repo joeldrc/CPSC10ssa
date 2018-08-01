@@ -363,12 +363,19 @@ void loop() {
   switch (programIndex) {
 
     case RESET_PROGRAM: {
+        /* Reset amplifier status. */
         for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-          vgate_set_value[i] = VGATE_MIN;                   // Reset Vgate array.
-          analogWrite_external_dac(i, vgate_set_value[i]);  // Set all Vgate CTL to MIN.
-          amplifier_status[i] = MOSFET_NOT_SETTED;          // Reset amplifier status.
+          amplifier_status[i] = MOSFET_NONE;
         }
-        set_external_dac_output();                          // Enable the value on dac out
+        for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i++) {
+          amplifier_status[DVR_PHISICAL_POSITION[i]] = MOSFET_NOT_SETTED;
+        }
+        for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
+          amplifier_status[FIN_PHISICAL_POSITION[i]] = MOSFET_NOT_SETTED;
+        }
+
+        /* Reset Vgate array, set all Vgate CTL to MIN. */
+        reset_all_vgate(VGATE_MIN);
 
         /* Reset digitals outputs. */
         digitalWrite(RLY_CTL, LOW);                         // Set RLY CTL to CLOSED
@@ -410,18 +417,15 @@ void loop() {
             amplifier_status[DVR_PHISICAL_POSITION[0]] = MOSFET_SETUP_OK;  // set mosfet ok
             amplifier_status[DVR_PHISICAL_POSITION[1]] = MOSFET_SETUP_OK;  // set mosfet ok
 
-            /* set all Vgate CTL to OFF. */
-            for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-              analogWrite_external_dac(i, VGATE_MIN);
-            }
-            set_external_dac_output();  // Enable the value on dac out
+            /* Set all Vgate CTL to OFF. */
+            all_vgate_off(VGATE_MIN);
 
             fin_cnt = 0;
             programIndex = SETUP_FIN;
           }
+
           /* Wait untill current is stabilized. */
-          delayMicroseconds(VGATE_DVR_DELAY);
-          //delay_with_current_measure(VGATE_DVR_DELAY);
+          delay_with_current_measure(VGATE_DVR_DELAY);
         }
         else {
           //USB.print("DVR Error: "); USB.println(check_errors_routine());
@@ -439,8 +443,7 @@ void loop() {
           }
 
           /* Wait untill current is stabilized. */
-          delayMicroseconds(VGATE_FIN_DELAY);
-          //delay_with_current_measure(VGATE_FIN_DELAY);
+          delay_with_current_measure(VGATE_FIN_DELAY);
 
           /* Check if any errors have occurred, if not, proceed. */
           switch (amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]]) {
@@ -448,15 +451,12 @@ void loop() {
             case MOSFET_UNABLE_TO_SET:
             case MOSFET_FUSE_ERROR:
             case MOSFET_TEMP_ERROR: {
-                vgate_off (FIN_PHISICAL_POSITION[fin_cnt]);
+                reset_single_vgate(FIN_PHISICAL_POSITION[fin_cnt], VGATE_MIN);
               }
             case MOSFET_SETUP_OK: {
                 if (fin_cnt == (FIN_TOTAL_NUMBER - 1)) {
-                  /* set all Vgate CTL to OFF. */
-                  for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-                    analogWrite_external_dac(i, VGATE_MIN);
-                  }
-                  set_external_dac_output();  // Enable the value on dac out
+                  /* Set all Vgate CTL to OFF. */
+                  all_vgate_off(VGATE_MIN);
 
                   digitalWrite(BIAS_RDY, HIGH);
                   digitalWrite(LED_B, true);  // Bias ready
@@ -506,12 +506,6 @@ void loop() {
             }
           }
           else {
-            /* Set all Vgate CTL to OFF. */
-            for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-              analogWrite_external_dac(i, VGATE_MIN);
-            }
-            set_external_dac_output();  //enable the value on dac out
-
             programIndex = RESET_PROGRAM;
           }
 
@@ -533,18 +527,15 @@ void loop() {
 #endif
 
           /* Set all Vgate CTL to OFF. */
-          for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-            analogWrite_external_dac(i, VGATE_MIN);
-          }
-          set_external_dac_output();  //enable the value on dac out
-
-          /* Refresh current value. */
-          imon_measure_routine();
+          all_vgate_off(VGATE_MIN);
 
           digitalWrite(RF_CTL, LOW);
           cell_status = false;
 
 #ifdef _DATA_LOGGER
+          /* Refresh current value before sending data. */
+          imon_measure_routine();
+          /* Send data on the USB port. */
           send_usb_data(vgate_stored_value, imon_stored_value, VGATE_TOTAL_NUMBER);
 #endif
         }
@@ -553,9 +544,7 @@ void loop() {
             programIndex = RESET_PROGRAM;
           }
         }
-        else {
-          imon_measure_routine();
-        }
+
         //}
         //else {
         //  programIndex = SETUP_PROGRAM;
@@ -564,8 +553,10 @@ void loop() {
       break;
   }
 
-  /* TEST: control current at high speed */
-  //imon_measure_routine();
+
+  /* Check current at high speed */
+  imon_measure_routine();
+
 
   /* Do some other instructions in parallel. */
   if (otherThread(LCD_SCREEN_REFRESH) == true) {
