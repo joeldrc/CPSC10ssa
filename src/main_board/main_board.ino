@@ -37,7 +37,7 @@ SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP492
 
 /* Comment these definitions if you want to disable them. */
 #define _DATA_LOGGER
-//#define _WATCHDOG               1000    // Time to wait (1 to 10000) (milliSeconds)
+//#define _WATCHDOG               1000  // Time to wait (1 to 10000) (milliSeconds)
 
 
 /* Global defines. */
@@ -186,7 +186,7 @@ static const float IMON_SCALING = 1.24;                   // Scaling for DAC out
 /* Software delay. */
 static const uint32_t VGATE_DVR_DELAY = 10000;            // Time to wait (1 to 4095) (microSeconds)
 static const uint32_t VGATE_FIN_DELAY = 1000;             // Time to wait (1 to 4095) (microSeconds)
-static const uint32_t VGATE_BIAS_DELAY = 40;              // Time to wait (1 to 4095) (milliSeconds)
+static const uint32_t VGATE_BIAS_DELAY = 40000;           // Time to wait (1 to 4095) (microSeconds)
 
 static const uint32_t LCD_SCREEN_REFRESH = 1000;          // Time to wait (1 to 4095) (milliSeconds)
 static const uint32_t BUTTON_DELAY_TO_CHANGE_MENU = 5;    // Time to wait (1 to 4095) (seconds)
@@ -421,6 +421,7 @@ void loop() {
           }
           /* Wait untill current is stabilized. */
           delayMicroseconds(VGATE_DVR_DELAY);
+          //delay_with_current_measure(VGATE_DVR_DELAY);
         }
         else {
           //USB.print("DVR Error: "); USB.println(check_errors_routine());
@@ -439,6 +440,7 @@ void loop() {
 
           /* Wait untill current is stabilized. */
           delayMicroseconds(VGATE_FIN_DELAY);
+          //delay_with_current_measure(VGATE_FIN_DELAY);
 
           /* Check if any errors have occurred, if not, proceed. */
           switch (amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]]) {
@@ -493,12 +495,7 @@ void loop() {
             }
 
             /* Wait untill current is stabilized. */
-            uint32_t previusMillis = millis();
-            uint32_t currentMillis = previusMillis;
-            while ((currentMillis - previusMillis) < VGATE_BIAS_DELAY) { // Software delay untill current is stabilized
-              imon_measure_routine();
-              currentMillis = millis();
-            }
+            delay_with_current_measure(VGATE_BIAS_DELAY);
 
             /* Set the bias voltage and make the correction. */
             for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i++) {
@@ -566,6 +563,9 @@ void loop() {
       }
       break;
   }
+
+  /* TEST: control current at high speed */
+  //imon_measure_routine();
 
   /* Do some other instructions in parallel. */
   if (otherThread(LCD_SCREEN_REFRESH) == true) {
