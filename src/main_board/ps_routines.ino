@@ -115,9 +115,11 @@ void imon_measure_routine() {
   In the event of an error, it reports the error value of the failed function.
 */
 uint8_t check_errors_routine() {
+  uint8_t return_val = 0;
+
   uint8_t val_ps_status_routine = ps_status_routine();
   if ((val_ps_status_routine != 0)) {
-    return val_ps_status_routine;
+    return_val = val_ps_status_routine;
   }
 
   vgate_measure_routine();
@@ -134,7 +136,7 @@ uint8_t check_errors_routine() {
   }
 
   imon_measure_routine();
-  return 0;
+  return return_val;
 }
 
 
