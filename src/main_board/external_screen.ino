@@ -104,7 +104,9 @@ void default_menu (bool enable) {
             }
             break;
           case 3: {
-              selector_increase(&ampTemp_channel, 0, VGATE_TOTAL_NUMBER - 1, setting_val[menu_val - 1]);
+              if ((selector_increase(&ampTemp_channel, 0, VGATE_TOTAL_NUMBER - 1, setting_val[menu_val - 1])) == true) {
+                internal_temp_measure = !internal_temp_measure;
+              }
             }
             break;
         }
@@ -130,7 +132,9 @@ void default_menu (bool enable) {
             }
             break;
           case 3: {
-              selector_decrease(&ampTemp_channel, 0, VGATE_TOTAL_NUMBER - 1, setting_val[menu_val - 1]);
+              if ((selector_decrease(&ampTemp_channel, 0, VGATE_TOTAL_NUMBER - 1, setting_val[menu_val - 1])) == true) {
+                internal_temp_measure = !internal_temp_measure;
+              }
             }
             break;
         }
@@ -207,7 +211,12 @@ void default_menu (bool enable) {
 
   /* Send temp value (float). */
   LCD.print(SCREEN_PRINT_BIG);
-  LCD.println(float(cntCycle)); // <-- To add more code
+  if (internal_temp_measure == true) {
+    LCD.println(float(cntCycle)); // <-- To add more code (READ PT100)
+  }
+  else {
+    LCD.println("EXT ");
+  }
 }
 
 
@@ -367,27 +376,35 @@ void space_corrector(uint32_t val) {
 
 
 /**
+  This function is used to reset the value of index if is in overflow.
 
+  Return true if is in overflow.
 */
-void selector_increase(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta) {
+bool selector_increase(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta) {
   if (*var_to_modify <= (max_value - delta)) {
     *var_to_modify = *var_to_modify + delta;
+    return false;
   }
   else {
     *var_to_modify = min_value;
+    return true;
   }
 }
 
 
 /**
+  This function is used to reset the value of index if is in overflow.
 
+  Return true if is in overflow.
 */
-void selector_decrease(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta) {
+bool selector_decrease(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta) {
   if (*var_to_modify >= (min_value + delta)) {
     *var_to_modify = *var_to_modify - delta;
+    return false;
   }
   else {
     *var_to_modify = max_value;
+    return true;
   }
 }
 

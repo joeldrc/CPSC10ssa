@@ -216,6 +216,8 @@ int32_t imon_dvr_channel = 0;
 int32_t imon_fin_channel = 0;
 int32_t ampTemp_channel = 0;
 
+bool internal_temp_measure = true;
+
 /* Button interrupt */
 volatile uint8_t btn_val = NONE_BUTTON;
 
