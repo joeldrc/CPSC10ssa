@@ -180,8 +180,8 @@ static const uint16_t PS_VFIN_MAX = 3673;                 // Vfin max (0 to 4095
 /* Convertion bit to V & bit to A. */
 static const float VGATE_CONVERTION_VALUE = 0.00537 / 3;  // Vgate (5.37 mV/bit / 3) (Voltage divider on board)
 static const float IMON_CONVERTION_VALUE = 0.00488 * 2;   // Imon (4.88 mA/bit)
-static const float IMON_TOT_SCALING = 0.124;              // Scaling for DAC out (12 A/V to 100 A/V)
-static const float IMON_SCALING = 1.24;                   // Scaling for DAC out (12 A/V to 10 A/V)
+static const float IMON_TOT_SCALING = 0.0733;             // Scaling for DAC out (12 A/V to 100 A/V)
+static const float IMON_SCALING = 0.733;                  // Scaling for DAC out (12 A/V to 10 A/V)
 
 /* Software delay. */
 static const uint32_t VGATE_DVR_DELAY = 10000;            // Time to wait (1 to 4095) (microSeconds)
@@ -560,15 +560,16 @@ void loop() {
   /* Check current at high speed */
   imon_measure_routine();
 
-  /* Read PT1000 value. */
-  amp_temp_value = analogRead_tempSensor(0);
-
-
   /* Do some other instructions in parallel. */
   if (otherThread(LCD_SCREEN_REFRESH) == true) {
     static bool enable = false;
     enable = !enable;
     digitalWrite(LED_BUILTIN, enable);
+
+
+    /* Read PT1000 value. */
+    amp_temp_value = analogRead_tempSensor(0);
+
 
     if (ctrl_button(BUTTON_DELAY_TO_CHANGE_MENU) == true) {
       /* Control and verify if btn status is changed & display on lcd screen the mosfet setting page. */
