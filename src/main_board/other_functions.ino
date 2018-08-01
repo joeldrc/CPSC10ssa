@@ -54,6 +54,22 @@ bool softwareDelay (uint32_t mSeconds) {
 
 
 /**
+  This function is used to create a software delay using a micros() function,
+  you can wait and at the same time execute the imon_routine().
+
+  The parameter is the time to set (in microseconds).
+*/
+void delay_with_current_measure(uint32_t delay_us) {
+  uint32_t previusTime = micros();
+  uint32_t currentTime = previusTime;
+  while ((currentTime - previusTime) < delay_us) {
+    imon_measure_routine();
+    currentTime = micros();
+  }
+}
+
+
+/**
   This function is used to copy an array into another.
 */
 void copyArray (int32_t *from, float *to, uint16_t sizeOf, float correction) {
