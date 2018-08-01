@@ -104,7 +104,7 @@ void default_menu (bool enable) {
             }
             break;
           case 3: {
-              if ((selector_increase(&ampTemp_channel, 0, VGATE_TOTAL_NUMBER - 1, setting_val[menu_val - 1])) == true) {
+              if ((selector_increase(&amp_temp_channel, 0, VGATE_TOTAL_NUMBER - 1, setting_val[menu_val - 1])) == true) {
                 internal_temp_measure = !internal_temp_measure;
               }
             }
@@ -132,7 +132,7 @@ void default_menu (bool enable) {
             }
             break;
           case 3: {
-              if ((selector_decrease(&ampTemp_channel, 0, VGATE_TOTAL_NUMBER - 1, setting_val[menu_val - 1])) == true) {
+              if ((selector_decrease(&amp_temp_channel, 0, VGATE_TOTAL_NUMBER - 1, setting_val[menu_val - 1])) == true) {
                 internal_temp_measure = !internal_temp_measure;
               }
             }
@@ -202,8 +202,8 @@ void default_menu (bool enable) {
   LCD.print("TMP");
   selector_space(menu_val, 3, enable);
   LCD.print("N:");
-  LCD.print(ampTemp_channel);
-  if (ampTemp_channel < 10) {
+  LCD.print(amp_temp_channel);
+  if (amp_temp_channel < 10) {
     LCD.print(" ");
   }
   LCD.println("");
@@ -212,7 +212,7 @@ void default_menu (bool enable) {
   /* Send temp value (float). */
   LCD.print(SCREEN_PRINT_BIG);
   if (internal_temp_measure == true) {
-    LCD.println(float(cntCycle)); // <-- To add more code (READ PT100)
+    LCD.println(amp_temp_value);
   }
   else {
     LCD.println("EXT ");

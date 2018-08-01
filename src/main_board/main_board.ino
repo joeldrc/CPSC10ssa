@@ -214,8 +214,9 @@ int32_t IFIN_REF = 200;                                   // Ifin ref (0 to 4095
 /* External screen. */
 int32_t imon_dvr_channel = 0;
 int32_t imon_fin_channel = 0;
-int32_t ampTemp_channel = 0;
+int32_t amp_temp_channel = 0;
 
+uint32_t amp_temp_value = 0;
 bool internal_temp_measure = true;
 
 /* Button interrupt */
@@ -558,6 +559,9 @@ void loop() {
 
   /* Check current at high speed */
   imon_measure_routine();
+
+  /* Read PT1000 value. */
+  amp_temp_value = analogRead_tempSensor(0);
 
 
   /* Do some other instructions in parallel. */
