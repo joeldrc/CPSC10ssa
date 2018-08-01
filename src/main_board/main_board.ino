@@ -208,15 +208,15 @@ int32_t VGATE_FUSE_REF = 80;                              // Fuse reference (0,1
 int32_t VGATE_TEMP_REF = 200;                             // Temp reference (1,2V) (0 to 4095 [bit]) (5.37 mV/bit)
 
 /* Imon. */
-int32_t IDVR_REF = 100 * 2;                               // Idrv ref (0 to 4095 [bit]) (12 A/V)
-int32_t IFIN_REF = 200;                                   // Ifin ref (0 to 4095 [bit]) (12 A/V)
+int32_t IDVR_REF = 100 * 2;                               // Idrv ref (10.2 mA/bit) (0 to 4095 [bit]) (12 A/V)
+int32_t IFIN_REF = 200;                                   // Ifin ref (5.1 mA/bit) (0 to 4095 [bit]) (12 A/V)
 
 /* External screen. */
 int32_t imon_dvr_channel = 0;
 int32_t imon_fin_channel = 0;
 int32_t amp_temp_channel = 0;
 
-uint32_t amp_temp_value = 0;
+float amp_temp_value = 0;
 bool internal_temp_measure = true;
 
 /* Button interrupt */

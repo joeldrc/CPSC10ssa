@@ -230,7 +230,7 @@ bool external_trigger() {
 /**
   This function is used to read PT1000 temp value.
 */
-uint16_t analogRead_tempSensor(uint8_t  channel) {
+float analogRead_tempSensor(uint8_t channel) {
 
   //add code
 
