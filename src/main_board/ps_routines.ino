@@ -230,14 +230,22 @@ bool external_trigger() {
 /**
   This function is used to read PT1000 temp value.
 */
-float analogRead_tempSensor(uint8_t channel) {
+float analogRead_tempSensor(bool relay_status, uint8_t channel) {
+  static bool previus_status = relay_status;
 
-  if (internal_temp_measure == true) {
-    digitalWrite(MEASURE_SEL, LOW);   // Set RLY CTL to CLOSED
+  if (relay_status != previus_status) {
+    /* Set PT1000 relay */
+    if (relay_status == true) {
+      digitalWrite(MEASURE_SEL, LOW);   // Set RLY CTL to CLOSED
+      previus_status = true;
+    }
+    else {
+      digitalWrite(MEASURE_SEL, HIGH);  // Set RLY CTL to OPEN
+      previus_status = false;
+    }
   }
-  else {
-    digitalWrite(MEASURE_SEL, HIGH);  // Set RLY CTL to OPEN
-  }
+
+  // Add code ++
 
   return random(0, 100);
 }

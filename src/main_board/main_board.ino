@@ -560,16 +560,16 @@ void loop() {
   /* Check current at high speed */
   imon_measure_routine();
 
+
+  /* Read PT1000 value. */
+  amp_temp_value = analogRead_tempSensor(internal_temp_measure, 0);
+
+
   /* Do some other instructions in parallel. */
   if (otherThread(LCD_SCREEN_REFRESH) == true) {
     static bool enable = false;
     enable = !enable;
     digitalWrite(LED_BUILTIN, enable);
-
-
-    /* Read PT1000 value. */
-    amp_temp_value = analogRead_tempSensor(0);
-
 
     if (ctrl_button(BUTTON_DELAY_TO_CHANGE_MENU) == true) {
       /* Control and verify if btn status is changed & display on lcd screen the mosfet setting page. */
