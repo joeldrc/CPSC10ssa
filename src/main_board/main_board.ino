@@ -55,12 +55,13 @@ SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP492
 #define BIAS_LOOP               4
 
 /* Mosfet status code. */
-#define MOSFET_NOT_SETTED       0       // White
-#define MOSFET_SETUP_OK         1       // Green
-#define MOSFET_TEMP_ERROR       2       // Yellow
-#define MOSFET_FUSE_ERROR       3       // Red
-#define MOSFET_UNABLE_TO_SET    4       // Blue
-#define MOSFET_OTHER_ERROR      5       // Purple
+#define MOSFET_NOT_SETTED       0     // White
+#define MOSFET_SETUP_OK         1     // Green
+#define MOSFET_TEMP_ERROR       2     // Yellow
+#define MOSFET_FUSE_ERROR       3     // Red
+#define MOSFET_UNABLE_TO_SET    4     // Blue
+#define MOSFET_OTHER_ERROR      5     // Purple
+#define MOSFET_NONE             6     // No color
 
 /* External screen. */
 #define SCREEN_PRINT_SERIAL     'a'
@@ -68,8 +69,8 @@ SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP492
 #define SCREEN_PRINT_BIG        'c'
 #define SCREEN_PRINT            'd'
 #define SCREEN_PRINT_LN         'e'
-#define CLEAR_SCREEN            'f'     // Clear screen
-#define RESET_SCREEN_POSITION   'g'     // Reset screen position
+#define CLEAR_SCREEN            'f'   // Clear screen
+#define RESET_SCREEN_POSITION   'g'   // Reset screen position
 
 /* Button code */
 #define NONE_BUTTON              0
@@ -179,11 +180,14 @@ static const uint16_t PS_VFIN_MAX = 3673;                 // Vfin max (0 to 4095
 /* Convertion bit to V & bit to A. */
 static const float VGATE_CONVERTION_VALUE = 0.00537 / 3;  // Vgate (5.37 mV/bit / 3) (Voltage divider on board)
 static const float IMON_CONVERTION_VALUE = 0.00488 * 2;   // Imon (4.88 mA/bit)
-static const float IMON_TOT_SCALING = 0.12;               // Scaling for DAC out (12 A/V to 100 A/V)
-static const float IMON_SCALING = 1.2;                    // Scaling for DAC out (12 A/V to 10 A/V)
+static const float IMON_TOT_SCALING = 0.124;              // Scaling for DAC out (12 A/V to 100 A/V)
+static const float IMON_SCALING = 1.24;                   // Scaling for DAC out (12 A/V to 10 A/V)
 
 /* Software delay. */
-static const uint32_t VGATE_DELAY = 1000;                 // Time to wait (1 to 4095) (microSeconds)
+static const uint32_t VGATE_DVR_DELAY = 10000;            // Time to wait (1 to 4095) (microSeconds)
+static const uint32_t VGATE_FIN_DELAY = 1000;             // Time to wait (1 to 4095) (microSeconds)
+static const uint32_t VGATE_BIAS_DELAY = 40;              // Time to wait (1 to 4095) (milliSeconds)
+
 static const uint32_t LCD_SCREEN_REFRESH = 1000;          // Time to wait (1 to 4095) (milliSeconds)
 static const uint32_t BUTTON_DELAY_TO_CHANGE_MENU = 5;    // Time to wait (1 to 4095) (seconds)
 static const uint32_t CHECK_ERRORS_TIMER = 10;            // Time to wait (1 to 4095) (milliSeconds)
@@ -416,7 +420,7 @@ void loop() {
             programIndex = SETUP_FIN;
           }
           /* Wait untill current is stabilized. */
-          delayMicroseconds(VGATE_DELAY * 10);
+          delayMicroseconds(VGATE_DVR_DELAY);
         }
         else {
           //USB.print("DVR Error: "); USB.println(check_errors_routine());
@@ -434,7 +438,7 @@ void loop() {
           }
 
           /* Wait untill current is stabilized. */
-          delayMicroseconds(VGATE_DELAY);
+          delayMicroseconds(VGATE_FIN_DELAY);
 
           /* Check if any errors have occurred, if not, proceed. */
           switch (amplifier_status[FIN_PHISICAL_POSITION[fin_cnt]]) {
@@ -488,11 +492,11 @@ void loop() {
               bias_setting_routine(FIN_PHISICAL_POSITION[i], IFIN_REF, IFIN_DELTA, CORRECTION_OFF);
             }
 
+            /* Wait untill current is stabilized. */
             uint32_t previusMillis = millis();
             uint32_t currentMillis = previusMillis;
-            while ((currentMillis - previusMillis) < 200) { // Software delay 200ms
+            while ((currentMillis - previusMillis) < VGATE_BIAS_DELAY) { // Software delay untill current is stabilized
               imon_measure_routine();
-              //check_errors_routine();
               currentMillis = millis();
             }
 
