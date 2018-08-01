@@ -232,7 +232,12 @@ bool external_trigger() {
 */
 float analogRead_tempSensor(uint8_t channel) {
 
-  //add code
+  if (internal_temp_measure == true) {
+    digitalWrite(MEASURE_SEL, LOW);   // Set RLY CTL to CLOSED
+  }
+  else {
+    digitalWrite(MEASURE_SEL, HIGH);  // Set RLY CTL to OPEN
+  }
 
   return random(0, 100);
 }
