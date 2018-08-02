@@ -82,7 +82,7 @@ void default_menu (bool enable) {
   static const uint8_t CNT_RESET_MENU = 150; // Second x 2
   static uint8_t cntCycle = 0;
   static uint8_t menu_val = 0;
-  uint16_t setting_val[3] = { 1, 1, 1 };
+  uint16_t setting_val[3] = { 1, 1, 1 }; // Number to increse or decrease
 
   if (btn_val == NONE_BUTTON) {
     btn_val = check_pressed_button();
@@ -104,9 +104,7 @@ void default_menu (bool enable) {
             }
             break;
           case 3: {
-              if ((selector_increase(&amp_temp_channel, 0, VGATE_TOTAL_NUMBER - 1, setting_val[menu_val - 1])) == true) {
-                internal_temp_measure = !internal_temp_measure;
-              }
+              selector_increase(&selector_channel, 0, EXT_RLY_MUX_TOTAL_NUMBER - 1, setting_val[menu_val - 1]);
             }
             break;
         }
@@ -132,9 +130,7 @@ void default_menu (bool enable) {
             }
             break;
           case 3: {
-              if ((selector_decrease(&amp_temp_channel, 0, VGATE_TOTAL_NUMBER - 1, setting_val[menu_val - 1])) == true) {
-                internal_temp_measure = !internal_temp_measure;
-              }
+              selector_decrease(&selector_channel, 0, EXT_RLY_MUX_TOTAL_NUMBER - 1, setting_val[menu_val - 1]);
             }
             break;
         }
@@ -161,7 +157,7 @@ void default_menu (bool enable) {
   /* Send to LCD screen amplifiers status (0: WHITE, 1: GREEN, 2: YELLOW, 3: RED, 4: BLUE, 5: VIOLET). */
   LCD.print(SCREEN_PRINT_SERIAL);
   for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-    LCD.print(amplifier_status[i], DEC);
+    LCD.print(power_module_status[i], DEC);
   }
   LCD.println("     ");
 
@@ -202,8 +198,8 @@ void default_menu (bool enable) {
   LCD.print("TMP");
   selector_space(menu_val, 3, enable);
   LCD.print("N:");
-  LCD.print(amp_temp_channel);
-  if (amp_temp_channel < 10) {
+  LCD.print(selector_channel);
+  if (selector_channel < 10) {
     LCD.print(" ");
   }
   LCD.println("");
@@ -211,8 +207,8 @@ void default_menu (bool enable) {
 
   /* Send temp value (float). */
   LCD.print(SCREEN_PRINT_BIG);
-  if (internal_temp_measure == true) {
-    LCD.println(float(amp_temp_value));
+  if (measure_select_st == true) {
+    LCD.println(float(pt1000_value));
   }
   else {
     LCD.println("EXT ");
