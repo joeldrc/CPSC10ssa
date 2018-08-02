@@ -376,14 +376,12 @@ void space_corrector(uint32_t val) {
 
   Return true if is in overflow.
 */
-bool selector_increase(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta) {
+void selector_increase(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta) {
   if (*var_to_modify <= (max_value - delta)) {
     *var_to_modify = *var_to_modify + delta;
-    return false;
   }
   else {
     *var_to_modify = min_value;
-    return true;
   }
 }
 
@@ -393,14 +391,12 @@ bool selector_increase(int32_t *var_to_modify, int32_t min_value, int32_t max_va
 
   Return true if is in overflow.
 */
-bool selector_decrease(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta) {
+void selector_decrease(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta) {
   if (*var_to_modify >= (min_value + delta)) {
     *var_to_modify = *var_to_modify - delta;
-    return false;
   }
   else {
     *var_to_modify = max_value;
-    return true;
   }
 }
 
