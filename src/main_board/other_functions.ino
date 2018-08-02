@@ -17,7 +17,7 @@
   - [true] if the set time has already elapsed;
   - [false] if the set time has not yet passed.
 */
-bool otherThread (uint32_t mSeconds) {
+bool refresh_routine (uint32_t mSeconds) {
   static uint32_t previusMillis = 0;
   uint32_t currentMillis = millis();
   if (currentMillis - previusMillis > mSeconds) {
