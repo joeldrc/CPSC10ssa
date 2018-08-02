@@ -216,7 +216,7 @@ int32_t imon_dvr_channel = 0;
 int32_t imon_fin_channel = 0;
 int32_t amp_temp_channel = 0;
 
-float amp_temp_value = 0;
+uint16_t amp_temp_value = 0;
 bool internal_temp_measure = true;
 
 /* Button interrupt */

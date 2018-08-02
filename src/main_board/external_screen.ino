@@ -212,7 +212,7 @@ void default_menu (bool enable) {
   /* Send temp value (float). */
   LCD.print(SCREEN_PRINT_BIG);
   if (internal_temp_measure == true) {
-    LCD.println(amp_temp_value);
+    LCD.println(float(amp_temp_value));
   }
   else {
     LCD.println("EXT ");

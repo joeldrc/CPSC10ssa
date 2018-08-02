@@ -230,7 +230,7 @@ bool external_trigger() {
 /**
   This function is used to read PT1000 temp value.
 */
-float analogRead_tempSensor(bool relay_status, uint8_t channel) {
+uint16_t analogRead_tempSensor(bool relay_status, uint8_t channel) {
   static bool previus_status = relay_status;
 
   if (relay_status != previus_status) {
