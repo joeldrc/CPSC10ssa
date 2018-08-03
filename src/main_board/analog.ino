@@ -70,6 +70,8 @@ void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead, uint8_t *
       while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  // Wait the end of conversion
       adc_get_latest_value(ADC);
 
+      delayMicroseconds(1);
+
       /* ADC start reading value. */
       adc_start(ADC);
       while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  // Wait the end of conversion
