@@ -190,9 +190,9 @@ static const float IMON_TOT_SCALING = 0.012;              // Scaling for DAC out
 static const float IMON_SCALING = 1.2;                    // Scaling for DAC out (12 A/V to 10 A/V)
 
 /* Software delay. */
-static const uint32_t VGATE_DVR_DELAY = 10000;            // Time to wait (1 to 4095) (microSeconds)
-static const uint32_t VGATE_FIN_DELAY = 1000;             // Time to wait (1 to 4095) (microSeconds)
-static const uint32_t VGATE_BIAS_DELAY = 40000;           // Time to wait (1 to 4095) (microSeconds)
+static const uint32_t VGATE_DVR_DELAY = 5000;             // Time to wait (1 to 4095) (microSeconds)
+static const uint32_t VGATE_FIN_DELAY = 5000;             // Time to wait (1 to 4095) (microSeconds)
+static const uint32_t VGATE_BIAS_DELAY = 50000;           // Time to wait (1 to 4095) (microSeconds)
 
 static const uint32_t LCD_SCREEN_REFRESH = 500;           // Time to wait (1 to 4095) (milliSeconds)
 static const uint32_t CHECK_ERRORS_TIMER = 10;            // Time to wait (1 to 4095) (milliSeconds)
@@ -226,8 +226,15 @@ int32_t selector_channel = 0;
 uint16_t pt1000_value = 0;
 bool measure_select_st = true;
 
-/* Button interrupt */
+/* Button interrupt. */
 volatile uint8_t btn_val = NONE_BUTTON;
+
+/* Datalogger. */
+#ifdef _DATA_LOGGER
+bool data_to_send = false;
+float vgate_stored_value[VGATE_TOTAL_NUMBER] = {};
+float imon_stored_value[VGATE_TOTAL_NUMBER] = {};
+#endif
 
 /* -------------------- End Global variables -------------------- */
 
@@ -390,7 +397,7 @@ void loop() {
         }
 
         /* Reset Vgate array, set all Vgate CTL to MIN. */
-        reset_all_vgate(VGATE_BIAS_OFF);
+        reset_all_vgate(VGATE_ADJ_MAX);
 
         /* Reset digitals outputs. */
         digitalWrite(RLY_CTL, LOW);                         // Set RLY CTL to CLOSED
@@ -533,10 +540,9 @@ void loop() {
 
 #ifdef _DATA_LOGGER
           /* Store vgate & imon value for USB sending */
-          float vgate_stored_value[VGATE_TOTAL_NUMBER];
-          float imon_stored_value[VGATE_TOTAL_NUMBER];
           copyArray(vgate_value, vgate_stored_value, VGATE_TOTAL_NUMBER, VGATE_CONVERTION_VALUE);
           copyArray(imon_value, imon_stored_value, VGATE_TOTAL_NUMBER, IMON_CONVERTION_VALUE);
+          data_to_send = true;
 #endif
 
           /* Set all Vgate CTL to OFF. */
@@ -544,13 +550,6 @@ void loop() {
 
           digitalWrite(RF_CTL, LOW);
           cell_st_ok = false;
-
-#ifdef _DATA_LOGGER
-          /* Refresh current value before sending data. */
-          imon_measure_routine();
-          /* Send data on the USB port. */
-          send_usb_data(vgate_stored_value, imon_stored_value, VGATE_TOTAL_NUMBER);
-#endif
         }
         else if (softwareDelay(CHECK_ERRORS_TIMER) == true) {
           if (check_errors_routine() != 0) {
@@ -585,6 +584,14 @@ void loop() {
       /* Control and verify if btn status is changed & display on lcd screen the mosfet status. */
       default_menu(enable);
     }
+
+#ifdef _DATA_LOGGER
+    /* Send data on the USB port. */
+    if (data_to_send == true) {
+      send_usb_data(vgate_stored_value, imon_stored_value, VGATE_TOTAL_NUMBER);
+      data_to_send = false;
+    }
+#endif
   }
 
 #ifdef _WATCHDOG
