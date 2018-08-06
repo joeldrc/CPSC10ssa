@@ -82,6 +82,7 @@ void default_menu (bool enable) {
   static const uint8_t CNT_RESET_MENU = 150; // Second x 2
   static uint8_t cntCycle = 0;
   static uint8_t menu_val = 0;
+  static bool switch_measure = true;     // Used to change internal/external relay measure
   uint16_t setting_val[3] = { 1, 1, 1 }; // Number to increse or decrease
 
   if (btn_val == NONE_BUTTON) {
@@ -116,6 +117,8 @@ void default_menu (bool enable) {
         }
         else {
           menu_val = 1;
+
+          switch_measure = !switch_measure;
         }
       }
       break;
@@ -195,7 +198,7 @@ void default_menu (bool enable) {
 
 
   LCD.print(SCREEN_PRINT_COLOR);
-  LCD.print("TMP");
+  LCD.print("MEA");
   selector_space(menu_val, 3, enable);
   LCD.print("N:");
   LCD.print(selector_channel);
@@ -204,13 +207,15 @@ void default_menu (bool enable) {
   }
   LCD.println("");
 
-
   /* Send temp value (float). */
   LCD.print(SCREEN_PRINT_BIG);
-  if (measure_select_st == true) {
-    LCD.println(float(pt1000_value));
+
+  if (switch_measure == true) {
+    measure_select_st = true;
+    LCD.println(float(pt1000_value * 0.01));
   }
   else {
+    measure_select_st = false;
     LCD.println("EXT ");
   }
 }
