@@ -224,7 +224,7 @@ void setup_menu(bool enable) {
   static const uint8_t CNT_RESET_MENU = 150; // Second x 2
   static uint8_t cntCycle = 0;
   static uint8_t menu_val = 0;
-  uint16_t setting_val[4] = { 5, 5, 5, 5 };
+  uint16_t setting_val[4] = { 1, 1, 1, 1 };
 
   if (btn_val == NONE_BUTTON) {
     btn_val = check_pressed_button();
