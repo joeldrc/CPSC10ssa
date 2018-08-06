@@ -186,7 +186,7 @@ static const uint16_t PS_VFIN_MAX = 3690;                 // Vfin max (0 to 4095
 static const float VGATE_CONVERTION_VALUE = 0.00537 / 3;  // Vgate (5.37 mV/bit / 3) (Voltage divider on board)
 static const float IMON_CONVERTION_VALUE = 0.00488 * 2;   // Imon (4.88 mA/bit)
 
-static const float IMON_TOT_SCALING = 0.0128;             // Scaling for DAC out (12.8 A/V to 100 A/V)
+static const float IMON_TOT_SCALING = 0.128;              // Scaling for DAC out (12.8 A/V to 100 A/V)
 static const float IMON_SCALING = 1.28;                   // Scaling for DAC out (12.8 A/V to 10 A/V)
 
 /* Software delay. */
