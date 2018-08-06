@@ -186,8 +186,8 @@ static const uint16_t PS_VFIN_MAX = 3690;                 // Vfin max (0 to 4095
 static const float VGATE_CONVERTION_VALUE = 0.00537 / 3;  // Vgate (5.37 mV/bit / 3) (Voltage divider on board)
 static const float IMON_CONVERTION_VALUE = 0.00488 * 2;   // Imon (4.88 mA/bit)
 
-static const float IMON_TOT_SCALING = 0.012;              // Scaling for DAC out (12 A/V to 100 A/V)
-static const float IMON_SCALING = 1.2;                    // Scaling for DAC out (12 A/V to 10 A/V)
+static const float IMON_TOT_SCALING = 0.0128;             // Scaling for DAC out (12.8 A/V to 100 A/V)
+static const float IMON_SCALING = 1.28;                   // Scaling for DAC out (12.8 A/V to 10 A/V)
 
 /* Software delay. */
 static const uint32_t VGATE_DVR_DELAY = 5000;             // Time to wait (1 to 4095) (microSeconds)
@@ -215,8 +215,8 @@ int32_t VGATE_FUSE_REF = 20;                              // Fuse reference (0,1
 int32_t VGATE_TEMP_REF = 225;                             // Temp reference (1,2V) (0 to 4095 [bit]) (5.37 mV/bit)
 
 /* Imon. */
-int32_t IDVR_REF = 103;                                   // Idrv ref (9.7 mA/bit) (0 to 4095 [bit]) (12 A/V) (single mosfet)
-int32_t IFIN_REF = 206;                                   // Ifin ref (9.7 mA/bit) (0 to 4095 [bit]) (12 A/V) (double mosfet)
+int32_t IDVR_REF = 95;                                    // Idrv ref (10.3 mA/bit) (0 to 4095 [bit]) (12.8 A/V) (single mosfet)
+int32_t IFIN_REF = 190;                                   // Ifin ref (10.3 mA/bit) (0 to 4095 [bit]) (12.8 A/V) (double mosfet)
 
 /* External screen. */
 int32_t imon_dvr_channel = 0;
