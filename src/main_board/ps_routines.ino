@@ -37,7 +37,7 @@ uint8_t ps_status_routine() {
 /**
   This function measures the voltage on all Vgate channels:
   - stores them in an array (vgate_value);
-  - checks whether the voltage is right or not, and sets the error in the array (amplifier_status) if an error occurs.
+  - checks whether the voltage is right or not, and sets the error in the array (power_module_status) if an error occurs.
 */
 void vgate_measure_routine() {
   analogRead_mux(ADC_CHANNEL_11, vgate_value, FIN_PHISICAL_POSITION, FIN_TOTAL_NUMBER); // Read 16 final value
@@ -46,25 +46,25 @@ void vgate_measure_routine() {
 
   for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
     if (vgate_value[FIN_PHISICAL_POSITION[i]] < VGATE_FUSE_REF) {
-      amplifier_status[FIN_PHISICAL_POSITION[i]] = MOSFET_FUSE_ERROR;
+      power_module_status[FIN_PHISICAL_POSITION[i]] = MOSFET_FUSE_ERROR;
     }
     else if (vgate_value[FIN_PHISICAL_POSITION[i]] < VGATE_TEMP_REF) {
-      amplifier_status[FIN_PHISICAL_POSITION[i]] = MOSFET_TEMP_ERROR;
+      power_module_status[FIN_PHISICAL_POSITION[i]] = MOSFET_TEMP_ERROR;
     }
-    else if ((amplifier_status[FIN_PHISICAL_POSITION[i]] != MOSFET_SETUP_OK) && (amplifier_status[FIN_PHISICAL_POSITION[i]] != MOSFET_UNABLE_TO_SET)) {
-      amplifier_status[FIN_PHISICAL_POSITION[i]] = MOSFET_NOT_SETTED;
+    else if ((power_module_status[FIN_PHISICAL_POSITION[i]] != MOSFET_SETUP_OK) && (power_module_status[FIN_PHISICAL_POSITION[i]] != MOSFET_UNABLE_TO_SET)) {
+      power_module_status[FIN_PHISICAL_POSITION[i]] = MOSFET_NOT_SETTED;
     }
   }
 
   for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i++) {
     if (vgate_value[DVR_PHISICAL_POSITION[i]] < VGATE_FUSE_REF) {
-      amplifier_status[DVR_PHISICAL_POSITION[i]] = MOSFET_FUSE_ERROR;
+      power_module_status[DVR_PHISICAL_POSITION[i]] = MOSFET_FUSE_ERROR;
     }
     else if (vgate_value[DVR_PHISICAL_POSITION[i]] < VGATE_TEMP_REF) {
-      amplifier_status[DVR_PHISICAL_POSITION[i]] = MOSFET_TEMP_ERROR;
+      power_module_status[DVR_PHISICAL_POSITION[i]] = MOSFET_TEMP_ERROR;
     }
-    else if ((amplifier_status[DVR_PHISICAL_POSITION[i]] != MOSFET_SETUP_OK) && (amplifier_status[DVR_PHISICAL_POSITION[i]] != MOSFET_UNABLE_TO_SET)) {
-      amplifier_status[DVR_PHISICAL_POSITION[i]] = MOSFET_NOT_SETTED;
+    else if ((power_module_status[DVR_PHISICAL_POSITION[i]] != MOSFET_SETUP_OK) && (power_module_status[DVR_PHISICAL_POSITION[i]] != MOSFET_UNABLE_TO_SET)) {
+      power_module_status[DVR_PHISICAL_POSITION[i]] = MOSFET_NOT_SETTED;
     }
   }
 }
@@ -86,12 +86,12 @@ void imon_measure_routine() {
   for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i ++) {
     imon_dvr_total_val += imon_value[DVR_PHISICAL_POSITION[i]];
   }
-  imon_dvr_total_val = uint16_t(imon_dvr_total_val * IMON_TOT_SCALING);
+  imon_dvr_total_val = uint16_t(imon_dvr_total_val * IMON_SCALING); // 10A/V
 
   for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i ++) {
     imon_fin_total_val += imon_value[FIN_PHISICAL_POSITION[i]];
   }
-  imon_fin_total_val = uint16_t(imon_fin_total_val * IMON_TOT_SCALING);
+  imon_fin_total_val = uint16_t(imon_fin_total_val * IMON_TOT_SCALING); // 100A/V
 
   if (imon_dvr_channel < DVR_TOTAL_NUMBER) {
     analogWrite_internal_dac(0, uint16_t(imon_value[DVR_PHISICAL_POSITION[imon_dvr_channel]] * IMON_SCALING));  // Write on DAC 0
@@ -122,12 +122,12 @@ uint8_t check_errors_routine() {
 
   vgate_measure_routine();
   for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
-    switch (amplifier_status[i]) {
+    switch (power_module_status[i]) {
       case MOSFET_OTHER_ERROR:
       case MOSFET_UNABLE_TO_SET:
       case MOSFET_FUSE_ERROR:
       case MOSFET_TEMP_ERROR: {
-          vgate_off(i);
+          reset_single_vgate(i, VGATE_BIAS_OFF);
         }
         break;
     }
@@ -141,10 +141,33 @@ uint8_t check_errors_routine() {
 /**
   This function is used to deactivate the output using the external DAC and reset the individual Vgate channels.
 */
-void vgate_off(uint8_t i) {
-  vgate_set_value[i] = VGATE_MIN;
-  analogWrite_external_dac(i, vgate_set_value[i]);
+void reset_single_vgate(uint8_t i, uint16_t reference) {
+  vgate_set_value[i] = reference;                   // Reset Vgate array.
+  analogWrite_external_dac(i, vgate_set_value[i]);  // Set Vgate CTL to MIN.
   set_external_dac_output();
+}
+
+
+/**
+  This function is used to deactivate all outputs using the external DAC and reset all Vgate channels.
+*/
+void reset_all_vgate(uint16_t reference) {
+  for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+    vgate_set_value[i] = reference;                   // Reset Vgate array.
+    analogWrite_external_dac(i, vgate_set_value[i]);  // Set all Vgate CTL to MIN.
+  }
+  set_external_dac_output();                          // Enable the value on dac out
+}
+
+
+/**
+  This function is used to deactivate all outputs using the external DAC.
+*/
+void all_vgate_off(uint16_t reference) {
+  for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
+    analogWrite_external_dac(i, reference);
+  }
+  set_external_dac_output();  //enable the value on dac out
 }
 
 
@@ -174,8 +197,8 @@ uint8_t bias_setting_routine(uint8_t i, uint16_t ref_value, uint16_t delta_value
       return 0;
     }
     if ((vgate_set_value[i] < 0) || (vgate_set_value[i] > 4095)) {
-      amplifier_status[i] = MOSFET_UNABLE_TO_SET;  // If is impossible to setup the mosfet
-      vgate_off(i);
+      power_module_status[i] = MOSFET_UNABLE_TO_SET;  // If is impossible to setup the mosfet
+      reset_single_vgate(i, VGATE_BIAS_OFF);
       return 1;
     }
   }
@@ -201,5 +224,30 @@ bool external_trigger() {
   else {
     return false;
   }
+}
+
+
+/**
+  This function is used to read PT1000 temp value.
+*/
+uint16_t analogRead_tempSensor(bool relay_status, uint8_t channel) {
+  static bool previus_status = relay_status;
+
+  if (relay_status != previus_status) {
+    /* Set PT1000 relay */
+    if (relay_status == true) {
+      digitalWrite(MEASURE_SEL, LOW);   // Set RLY CTL to CLOSED
+      previus_status = true;
+    }
+    else {
+      digitalWrite(MEASURE_SEL, HIGH);  // Set RLY CTL to OPEN
+      previus_status = false;
+    }
+  }
+
+  // Add code ++
+
+  //return analogRead_single_channel(ADC_CHANNEL_7);  // ADC n. 0
+  return random(channel, 100);
 }
 

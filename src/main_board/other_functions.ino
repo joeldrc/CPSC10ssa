@@ -17,7 +17,7 @@
   - [true] if the set time has already elapsed;
   - [false] if the set time has not yet passed.
 */
-bool otherThread (uint32_t mSeconds) {
+bool refresh_routine (uint32_t mSeconds) {
   static uint32_t previusMillis = 0;
   uint32_t currentMillis = millis();
   if (currentMillis - previusMillis > mSeconds) {
@@ -49,6 +49,22 @@ bool softwareDelay (uint32_t mSeconds) {
   }
   else {
     return false;
+  }
+}
+
+
+/**
+  This function is used to create a software delay using a micros() function,
+  you can wait and at the same time execute the imon_routine().
+
+  The parameter is the time to set (in microseconds).
+*/
+void delay_with_current_measure(uint32_t delay_us) {
+  uint32_t previusTime = micros();
+  uint32_t currentTime = previusTime;
+  while ((currentTime - previusTime) < delay_us) {
+    imon_measure_routine();
+    currentTime = micros();
   }
 }
 
