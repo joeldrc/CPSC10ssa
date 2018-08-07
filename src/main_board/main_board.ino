@@ -389,7 +389,12 @@ void loop() {
 
   /* Check if CELL is OFF. */
   if (digitalRead(CELL_OFF_CMD) == LOW) {
-    programIndex = RESET_PROGRAM;
+    if (programIndex != SETUP_PROGRAM) {
+      programIndex = RESET_PROGRAM;
+    }
+    else {
+      programIndex = SETUP_PROGRAM;
+    }
   }
 
   switch (programIndex) {
@@ -426,13 +431,16 @@ void loop() {
         digitalWrite(LED_F, LOW);
         digitalWrite(LED_D, LOW);
 
+        /* Reset variables. */
+        fin_cnt = 0;                                        // Reset final counter variable
+
         programIndex = SETUP_PROGRAM;
       }
       break;
 
     case SETUP_PROGRAM: {
         /* Check errors and CELL_OFF_CMD. */
-        if ((check_errors_routine() == 0) /* && (digitalRead(CELL_OFF_CMD == LOW)) */) {
+        if ((check_errors_routine() == 0) && (digitalRead(CELL_OFF_CMD) == HIGH)) {
           programIndex = SETUP_DVR;
         }
       }
@@ -452,7 +460,6 @@ void loop() {
             /* Set all Vgate CTL to OFF. */
             all_vgate_off(VGATE_BIAS_OFF);
 
-            fin_cnt = 0;  // Reset final counter variable
             programIndex = SETUP_FIN;
           }
 
@@ -460,7 +467,6 @@ void loop() {
           delay_with_current_measure(VGATE_DVR_DELAY);
         }
         else {
-          //USB.print("DVR Error: "); USB.println(check_errors_routine());
           programIndex = RESET_PROGRAM;
         }
       }
@@ -504,7 +510,6 @@ void loop() {
           }
         }
         else {
-          //USB.print("FIN Error: "); USB.println(check_errors_routine());
           programIndex = RESET_PROGRAM;
         }
       }
