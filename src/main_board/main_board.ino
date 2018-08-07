@@ -149,6 +149,9 @@ static const uint8_t MUX_S3 = 6;
 static const uint8_t MUX_EN1 = 10;
 static const uint8_t MUX_EN2 = 11;
 
+/* External monostable. */
+static const uint8_t MONOSTABLE_OUT = 69;
+
 /* -------------------- End I/O pin assignment -------------------- */
 
 
@@ -328,6 +331,10 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(BUTTON_A), btn_up, FALLING);  // Interrupt pin
   attachInterrupt(digitalPinToInterrupt(BUTTON_B), btn_ent, FALLING); // Interrupt pin
   attachInterrupt(digitalPinToInterrupt(BUTTON_C), btn_dwn, FALLING); // Interrupt pin
+
+  /* Initialize monostable. */
+  pinMode(MONOSTABLE_OUT, OUTPUT);
+  digitalWrite(MONOSTABLE_OUT, LOW);
 
   /* Initialize insulated inputs pins. */
   pinMode(LOC_BIAS_ON_FRONT_NEGATIVE, INPUT_PULLUP);
@@ -563,10 +570,8 @@ void loop() {
       break;
   }
 
-
   /* Check current at high speed */
   imon_measure_routine();
-
 
   /* Do some other instructions in parallel. */
   if (refresh_routine(LCD_SCREEN_REFRESH) == true) {
@@ -574,10 +579,8 @@ void loop() {
     enable = !enable;
     digitalWrite(LED_BUILTIN, enable);
 
-
     /* Read PT1000 value. */
     pt1000_value = analogRead_tempSensor(measure_select_st, 0);
-
 
     if (ctrl_button(BUTTON_DELAY_TO_CHANGE_MENU) == true) {
       /* Control and verify if btn status is changed & display on lcd screen the mosfet setting page. */
@@ -596,6 +599,9 @@ void loop() {
     }
 #endif
   }
+
+  /* Send a pulse to reset the monostable. */
+  pulse_monostable();
 
 #ifdef _WATCHDOG
   /* Reset watchdog timer. */

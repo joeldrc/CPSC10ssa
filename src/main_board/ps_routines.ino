@@ -250,3 +250,12 @@ uint16_t analogRead_tempSensor(bool relay_status, uint8_t channel) {
   return analogRead_single_channel(ADC_CHANNEL_7);  // ADC n. 0
 }
 
+
+/**
+  This function is used to send a pulse on monostable.
+*/
+void pulse_monostable() {
+  digitalWrite(MONOSTABLE_OUT, HIGH);
+  digitalWrite(MONOSTABLE_OUT, LOW);
+}
+
