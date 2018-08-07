@@ -388,9 +388,9 @@ void loop() {
   static bool cell_st_ok = false;
 
   /* Check if CELL is OFF. */
-  //if (digitalRead(CELL_OFF_CMD != LOW)) {
-  //  programIndex = SETUP_PROGRAM;
-  //}
+  if (digitalRead(CELL_OFF_CMD) == LOW) {
+    programIndex = RESET_PROGRAM;
+  }
 
   switch (programIndex) {
 
@@ -452,7 +452,7 @@ void loop() {
             /* Set all Vgate CTL to OFF. */
             all_vgate_off(VGATE_BIAS_OFF);
 
-            fin_cnt = 0;
+            fin_cnt = 0;  // Reset final counter variable
             programIndex = SETUP_FIN;
           }
 
