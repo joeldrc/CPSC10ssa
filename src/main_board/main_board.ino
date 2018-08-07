@@ -200,8 +200,8 @@ static const uint32_t VGATE_DVR_DELAY = 5000;             // Time to wait (1 to 
 static const uint32_t VGATE_FIN_DELAY = 5000;             // Time to wait (1 to 4095) (microSeconds) - between adjustment step at amplifier pwr-on
 static const uint32_t VGATE_BIAS_DELAY = 50000;           // Time to wait (1 to 4095) (microSeconds) - RF blank time
 
-static const uint32_t LCD_SCREEN_REFRESH = 750;           // Time to wait (1 to 4095) (milliSeconds)
-static const uint32_t CHECK_ERRORS_TIMER = 10;            // Time to wait (1 to 4095) (milliSeconds)
+static const uint32_t LCD_SCREEN_DELAY = 750;             // Time to wait (1 to 4095) (milliSeconds)
+static const uint32_t CHECK_ERRORS_DELAY = 10;            // Time to wait (1 to 4095) (milliSeconds)
 
 static const uint32_t BUTTON_DELAY_TO_CHANGE_MENU = 5;    // Time to wait (1 to 4095) (seconds)
 
@@ -480,34 +480,24 @@ void loop() {
             power_module_status[FIN_PHISICAL_POSITION[fin_cnt]] = MOSFET_SETUP_OK;  // Set mosfet ok
           }
 
+          if (power_module_status[FIN_PHISICAL_POSITION[fin_cnt]] != MOSFET_NOT_SETTED) {
+            if (fin_cnt == (FIN_TOTAL_NUMBER - 1)) {
+              /* Set all Vgate CTL to OFF. */
+              all_vgate_off(VGATE_BIAS_OFF);
+
+              digitalWrite(BIAS_RDY, HIGH);
+              digitalWrite(LED_B, true);  // Bias ready
+              cell_st_ok = false;
+
+              programIndex = BIAS_LOOP;
+            }
+            else {
+              fin_cnt ++;
+            }
+          }
+
           /* Wait untill current is stabilized. */
           delay_with_current_measure(VGATE_FIN_DELAY);
-
-          /* Check if any errors have occurred, if not, proceed. */
-          switch (power_module_status[FIN_PHISICAL_POSITION[fin_cnt]]) {
-            case MOSFET_OTHER_ERROR:
-            case MOSFET_UNABLE_TO_SET:
-            case MOSFET_FUSE_ERROR:
-            case MOSFET_TEMP_ERROR: {
-                reset_single_vgate(FIN_PHISICAL_POSITION[fin_cnt], VGATE_BIAS_OFF);
-              }
-            case MOSFET_SETUP_OK: {
-                if (fin_cnt == (FIN_TOTAL_NUMBER - 1)) {
-                  /* Set all Vgate CTL to OFF. */
-                  all_vgate_off(VGATE_BIAS_OFF);
-
-                  digitalWrite(BIAS_RDY, HIGH);
-                  digitalWrite(LED_B, true);  // Bias ready
-                  cell_st_ok = false;
-
-                  programIndex = BIAS_LOOP;
-                }
-                else {
-                  fin_cnt ++;
-                }
-              }
-              break;
-          }
         }
         else {
           programIndex = RESET_PROGRAM;
@@ -566,7 +556,7 @@ void loop() {
           digitalWrite(RF_CTL, LOW);
           cell_st_ok = false;
         }
-        else if (softwareDelay(CHECK_ERRORS_TIMER) == true) {
+        else if (softwareDelay(CHECK_ERRORS_DELAY) == true) {
           if (check_errors_routine() != 0) {
             programIndex = RESET_PROGRAM;
           }
@@ -579,7 +569,7 @@ void loop() {
   imon_measure_routine();
 
   /* Do some other instructions in parallel. */
-  if (refresh_routine(LCD_SCREEN_REFRESH) == true) {
+  if (refresh_routine(LCD_SCREEN_DELAY) == true) {
     static bool enable = false;
     enable = !enable;
     digitalWrite(LED_BUILTIN, enable);
