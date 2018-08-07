@@ -247,7 +247,6 @@ uint16_t analogRead_tempSensor(bool relay_status, uint8_t channel) {
 
   // Add code ++
 
-  //return analogRead_single_channel(ADC_CHANNEL_7);  // ADC n. 0
-  return random(channel, 100);
+  return analogRead_single_channel(ADC_CHANNEL_7);  // ADC n. 0
 }
 

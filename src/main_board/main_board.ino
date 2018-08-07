@@ -194,7 +194,7 @@ static const uint32_t VGATE_DVR_DELAY = 5000;             // Time to wait (1 to 
 static const uint32_t VGATE_FIN_DELAY = 5000;             // Time to wait (1 to 4095) (microSeconds)
 static const uint32_t VGATE_BIAS_DELAY = 50000;           // Time to wait (1 to 4095) (microSeconds)
 
-static const uint32_t LCD_SCREEN_REFRESH = 500;           // Time to wait (1 to 4095) (milliSeconds)
+static const uint32_t LCD_SCREEN_REFRESH = 750;           // Time to wait (1 to 4095) (milliSeconds)
 static const uint32_t CHECK_ERRORS_TIMER = 10;            // Time to wait (1 to 4095) (milliSeconds)
 
 static const uint32_t BUTTON_DELAY_TO_CHANGE_MENU = 5;    // Time to wait (1 to 4095) (seconds)
