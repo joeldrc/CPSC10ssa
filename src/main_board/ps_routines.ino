@@ -16,8 +16,8 @@
   - [3] if there is another error.
 */
 uint8_t ps_status_routine() {
-  uint32_t ps_vdvr = analogRead_single_channel(ADC_CHANNEL_4);  // Read A2 = ADC3 //25V
-  uint32_t ps_vfin = analogRead_single_channel(ADC_CHANNEL_5);  // Read A3 = ADC4 //40V
+  uint32_t ps_vdvr = analogRead_single_channel(ADC_CHANNEL_4);  // Read A2 = ADC3 (25V)
+  uint32_t ps_vfin = analogRead_single_channel(ADC_CHANNEL_5);  // Read A3 = ADC4 (40V)
 
   if (((ps_vdvr > PS_VDVR_MIN) && (ps_vdvr < PS_VDVR_MAX)) && ((ps_vfin > PS_VFIN_MIN) && (ps_vfin < PS_VFIN_MAX))) {
     return 0;
@@ -115,6 +115,9 @@ void imon_measure_routine() {
   In the event of an error, it reports the error value of the failed function.
 */
 uint8_t check_errors_routine() {
+
+  imon_measure_routine();
+
   uint8_t val_ps_status_routine = ps_status_routine();
   if ((val_ps_status_routine != 0)) {
     return val_ps_status_routine;
@@ -133,7 +136,6 @@ uint8_t check_errors_routine() {
     }
   }
 
-  imon_measure_routine();
   return 0;
 }
 
