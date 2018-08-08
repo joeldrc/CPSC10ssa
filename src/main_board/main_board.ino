@@ -426,9 +426,9 @@ void loop() {
         /* Reset front pannel leds. */
         digitalWrite(LED_C, HIGH);                          // Card operational
         digitalWrite(LED_B, LOW);                           // Bias ready
-        digitalWrite(LED_A, LOW);
+        digitalWrite(LED_A, LOW);                           // RF ctl
         //digitalWrite(LED_E, false);
-        digitalWrite(LED_F, LOW);
+        digitalWrite(LED_F, LOW);                           // RLY st
         digitalWrite(LED_D, LOW);
 
         /* Reset variables. */
@@ -507,9 +507,12 @@ void loop() {
 
     case BIAS_LOOP: {
         bool trigger_val = external_trigger();
-        digitalWrite(LED_D, trigger_val);
+        bool rly_status = digitalRead(RLY_CTL == LOW);
 
-        if ((trigger_val == true) && (cell_st_ok == false)) {
+        digitalWrite(LED_D, trigger_val);
+        digitalWrite(LED_F, !rly_status);
+
+        if (((trigger_val == true) && (cell_st_ok == false)) && (rly_status == false)) {
           if (check_errors_routine() == 0) {
             /* Set the bias voltage for the first time, without correcting it. */
             for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i++) {
@@ -534,14 +537,12 @@ void loop() {
             programIndex = RESET_PROGRAM;
           }
 
-          //if (digitalRead(RLY_CTL == HIGH)) {
-          //  digitalWrite(RF_CTL, HIGH);
-          //  cell_st_ok = true;
-          //}
+          digitalWrite(RF_CTL, HIGH);
+          digitalWrite(LED_A, HIGH);
 
-          cell_st_ok = true; // Bypass cell_st_ok
+          cell_st_ok = true;
         }
-        else if ((trigger_val == false) && (cell_st_ok == true)) {
+        else if (trigger_val == false) {
 
 #ifdef _DATA_LOGGER
           /* Store vgate & imon value for USB sending */
@@ -554,9 +555,12 @@ void loop() {
           all_vgate_off(VGATE_BIAS_OFF);
 
           digitalWrite(RF_CTL, LOW);
+          digitalWrite(LED_A, LOW);
+
           cell_st_ok = false;
         }
-        else if (softwareDelay(CHECK_ERRORS_DELAY) == true) {
+
+        if (softwareDelay(CHECK_ERRORS_DELAY) == true) {
           if (check_errors_routine() != 0) {
             programIndex = RESET_PROGRAM;
           }
