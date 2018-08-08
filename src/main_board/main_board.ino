@@ -433,6 +433,7 @@ void loop() {
 
         /* Reset variables. */
         fin_cnt = 0;                                        // Reset final counter variable
+        cell_st_ok = false;
 
         programIndex = SETUP_PROGRAM;
       }
