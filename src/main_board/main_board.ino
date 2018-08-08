@@ -155,7 +155,7 @@ static const uint8_t MONOSTABLE_OUT = 69;
 /* -------------------- End I/O pin assignment -------------------- */
 
 
-/* -------------------- Software constant -------------------- */
+/* -------------------- Software constant definition -------------------- */
 
 /* SOFTWARE CONSTANT for the setup. */
 static const uint8_t VGATE_TOTAL_NUMBER = 18;             // Max phisical number of single mosfets to regulate bias (!do not change this value!)
@@ -205,7 +205,7 @@ static const uint32_t CHECK_ERRORS_DELAY = 10;            // Time to wait (1 to 
 
 static const uint32_t BUTTON_DELAY_TO_CHANGE_MENU = 5;    // Time to wait (1 to 4095) (seconds)
 
-/* -------------------- End software constant -------------------- */
+/* -------------------- End software constant definition -------------------- */
 
 
 /* -------------------- Global variables -------------------- */
@@ -229,8 +229,8 @@ int32_t imon_dvr_channel = 0;
 int32_t imon_fin_channel = 0;
 int32_t selector_channel = 0;
 
-uint16_t pt1000_value = 0;
-bool measure_select_st = true;
+uint16_t pt1000_value = 0;                                // Reset PT1000 value
+bool measure_select_st = true;                            // Set measure to internal (PT1000)
 
 /* Button interrupt. */
 volatile uint8_t btn_val = NONE_BUTTON;
@@ -411,7 +411,7 @@ void loop() {
           power_module_status[FIN_PHISICAL_POSITION[i]] = MOSFET_NOT_SETTED;
         }
 
-        /* Reset Vgate array, set all Vgate CTL to MIN. */
+        /* Reset Vgate array, set all Vgate CTL to OFF. */
         reset_all_vgate(VGATE_ADJ_MAX);
 
         /* Reset digitals outputs. */
@@ -480,7 +480,7 @@ void loop() {
             power_module_status[FIN_PHISICAL_POSITION[fin_cnt]] = MOSFET_SETUP_OK;  // Set mosfet ok
           }
 
-          if (power_module_status[FIN_PHISICAL_POSITION[fin_cnt]] != MOSFET_NOT_SETTED) {
+          if (power_module_status[FIN_PHISICAL_POSITION[fin_cnt]] == MOSFET_SETUP_OK /* != MOSFET_NOT_SETTED */) {
             if (fin_cnt == (FIN_TOTAL_NUMBER - 1)) {
               /* Set all Vgate CTL to OFF. */
               all_vgate_off(VGATE_BIAS_OFF);
@@ -507,7 +507,7 @@ void loop() {
 
     case BIAS_LOOP: {
         bool trigger_val = external_trigger();
-        bool rly_status = digitalRead(RLY_CTL == LOW);
+        bool rly_status = digitalRead(OPEN_RLY_CMD);
 
         digitalWrite(LED_D, trigger_val);
         digitalWrite(LED_F, !rly_status);
@@ -532,17 +532,17 @@ void loop() {
             for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
               bias_setting_routine(FIN_PHISICAL_POSITION[i], IFIN_REF, IFIN_DELTA, CORRECTION_ON);
             }
+
+            digitalWrite(RF_CTL, HIGH);
+            digitalWrite(LED_A, HIGH);
+
+            cell_st_ok = true;
           }
           else {
             programIndex = RESET_PROGRAM;
           }
-
-          digitalWrite(RF_CTL, HIGH);
-          digitalWrite(LED_A, HIGH);
-
-          cell_st_ok = true;
         }
-        else if (trigger_val == false) {
+        else if ((trigger_val == false) || (rly_status == true)) {
 
 #ifdef _DATA_LOGGER
           /* Store vgate & imon value for USB sending */
@@ -579,7 +579,7 @@ void loop() {
     digitalWrite(LED_BUILTIN, enable);
 
     /* Read PT1000 value. */
-    pt1000_value = analogRead_tempSensor(measure_select_st, 0);
+    pt1000_value = analogRead_tempSensor(measure_select_st, selector_channel);
 
     if (ctrl_button(BUTTON_DELAY_TO_CHANGE_MENU) == true) {
       /* Control and verify if btn status is changed & display on lcd screen the mosfet setting page. */
