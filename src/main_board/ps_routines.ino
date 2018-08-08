@@ -131,6 +131,8 @@ uint8_t check_errors_routine() {
       case MOSFET_FUSE_ERROR:
       case MOSFET_TEMP_ERROR: {
           reset_single_vgate(i, VGATE_BIAS_OFF);
+
+          return 4; // This return is enabled if you want to stop the system when there is one error
         }
         break;
     }
