@@ -152,8 +152,8 @@ uint8_t check_errors_routine() {
   This function is used to deactivate the output using the external DAC and reset the individual Vgate channels.
 */
 void reset_single_vgate(uint8_t i, uint16_t reference) {
-  vgate_set_value[i] = reference;                   // Reset Vgate array.
-  analogWrite_external_dac(i, vgate_set_value[i]);  // Set Vgate CTL to MIN.
+  vgate_set_value[i] = reference;                     // Reset Vgate array.
+  analogWrite_external_dac(i, vgate_set_value[i]);    // Set Vgate CTL to MIN.
   set_external_dac_output();
 }
 
