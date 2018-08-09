@@ -11,25 +11,31 @@
   This function verifies the presence of power supply voltage of the DVR (25 V.) and of the FIN (40 V.).
   If there are no problems, it returns [0].
   In the event of an error, it returns:
-  - [1] if there is no voltage on the DVR,
-  - [2] if there is no voltage on the FIN.
-  - [3] if there is another error.
+  - [1] if there is an error.
 */
 uint8_t ps_status_routine() {
   uint32_t ps_vdvr = analogRead_single_channel(ADC_CHANNEL_4);  // Read A2 = ADC3 (25V)
   uint32_t ps_vfin = analogRead_single_channel(ADC_CHANNEL_5);  // Read A3 = ADC4 (40V)
 
-  if (((ps_vdvr > PS_VDVR_MIN) && (ps_vdvr < PS_VDVR_MAX)) && ((ps_vfin > PS_VFIN_MIN) && (ps_vfin < PS_VFIN_MAX))) {
-    return 0;
-  }
-  else if ((ps_vdvr < PS_VDVR_MIN) || (ps_vdvr > PS_VDVR_MAX)) {
-    return 1;
-  }
-  else if ((ps_vfin < PS_VFIN_MIN) || (ps_vfin > PS_VFIN_MAX)) {
-    return 2;
+  if ((ps_vdvr > PS_VDVR_MIN) && (ps_vdvr < PS_VDVR_MAX)) {
+    vdvr_ok = true;
   }
   else {
-    return 3;
+    vdvr_ok = false;
+  }
+
+  if ((ps_vfin > PS_VFIN_MIN) && (ps_vfin < PS_VFIN_MAX)) {
+    vfin_ok = true;
+  }
+  else {
+    vfin_ok = false;
+  }
+
+  if ((vdvr_ok == true) && (vfin_ok == true)) {
+    return 0;
+  }
+  else {
+    return 1;
   }
 }
 
@@ -132,7 +138,7 @@ uint8_t check_errors_routine() {
       case MOSFET_TEMP_ERROR: {
           reset_single_vgate(i, VGATE_BIAS_OFF);
 
-          return 4; // This return is enabled if you want to stop the system when there is one error
+          return 2; // This return is enabled if you want to stop the system when there is one error
         }
         break;
     }
