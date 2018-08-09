@@ -54,7 +54,7 @@ void adc_init_setup() {
 */
 void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead, uint8_t *channel_position, uint8_t max_channel) {
   static const uint8_t MUX_MAX_CHANNEL = 16;  // Hardware limit to 16 channel
-  static const uint8_t MUX_PORT_ADDRESS = 21;   // PORT name value: (port 21 to 24 = pin 9 to pin 6)
+  static const uint8_t MUX_PORT_ADDRESS = 21; // PORT name value: (port 21 to 24 = pin 9 to pin 6)
 
   if (max_channel <= MUX_MAX_CHANNEL) {
     //adc_disable_all_channel(ADC);   // Keep commented if you want more speed

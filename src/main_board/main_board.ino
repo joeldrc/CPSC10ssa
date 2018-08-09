@@ -155,7 +155,7 @@ static const uint8_t MONOSTABLE_OUT = 69;
 /* -------------------- End I/O pin assignment -------------------- */
 
 
-/* -------------------- Software constant -------------------- */
+/* -------------------- Software constant definition -------------------- */
 
 /* SOFTWARE CONSTANT for the setup. */
 static const uint8_t VGATE_TOTAL_NUMBER = 18;             // Max phisical number of single mosfets to regulate bias (!do not change this value!)
@@ -205,7 +205,7 @@ static const uint32_t CHECK_ERRORS_DELAY = 10;            // Time to wait (1 to 
 
 static const uint32_t BUTTON_DELAY_TO_CHANGE_MENU = 5;    // Time to wait (1 to 4095) (seconds)
 
-/* -------------------- End software constant -------------------- */
+/* -------------------- End software constant definition -------------------- */
 
 
 /* -------------------- Global variables -------------------- */
@@ -215,6 +215,9 @@ int32_t vgate_value[VGATE_TOTAL_NUMBER] = {};
 int32_t imon_value[VGATE_TOTAL_NUMBER] = {};
 int32_t vgate_set_value[VGATE_TOTAL_NUMBER] = {};
 uint8_t power_module_status[VGATE_TOTAL_NUMBER] = {};
+
+bool vdvr_ok = false;
+bool vfin_ok = false;
 
 /* Vgate. */
 int32_t VGATE_FUSE_REF = 20;                              // Fuse reference (0,1V) (0 to 4095 [bit]) (5.37 mV/bit)
@@ -229,8 +232,8 @@ int32_t imon_dvr_channel = 0;
 int32_t imon_fin_channel = 0;
 int32_t selector_channel = 0;
 
-uint16_t pt1000_value = 0;
-bool measure_select_st = true;
+uint16_t pt1000_value = 0;                                // Reset PT1000 value
+bool measure_select_st = true;                            // Set measure to internal (PT1000)
 
 /* Button interrupt. */
 volatile uint8_t btn_val = NONE_BUTTON;
@@ -411,7 +414,7 @@ void loop() {
           power_module_status[FIN_PHISICAL_POSITION[i]] = MOSFET_NOT_SETTED;
         }
 
-        /* Reset Vgate array, set all Vgate CTL to MIN. */
+        /* Reset Vgate array, set all Vgate CTL to OFF. */
         reset_all_vgate(VGATE_ADJ_MAX);
 
         /* Reset digitals outputs. */
@@ -426,13 +429,14 @@ void loop() {
         /* Reset front pannel leds. */
         digitalWrite(LED_C, HIGH);                          // Card operational
         digitalWrite(LED_B, LOW);                           // Bias ready
-        digitalWrite(LED_A, LOW);
+        digitalWrite(LED_A, LOW);                           // RF ctl
         //digitalWrite(LED_E, false);
-        digitalWrite(LED_F, LOW);
+        digitalWrite(LED_F, LOW);                           // RLY st
         digitalWrite(LED_D, LOW);
 
         /* Reset variables. */
         fin_cnt = 0;                                        // Reset final counter variable
+        cell_st_ok = false;
 
         programIndex = SETUP_PROGRAM;
       }
@@ -480,7 +484,7 @@ void loop() {
             power_module_status[FIN_PHISICAL_POSITION[fin_cnt]] = MOSFET_SETUP_OK;  // Set mosfet ok
           }
 
-          if (power_module_status[FIN_PHISICAL_POSITION[fin_cnt]] != MOSFET_NOT_SETTED) {
+          if (power_module_status[FIN_PHISICAL_POSITION[fin_cnt]] == MOSFET_SETUP_OK /* != MOSFET_NOT_SETTED */) {
             if (fin_cnt == (FIN_TOTAL_NUMBER - 1)) {
               /* Set all Vgate CTL to OFF. */
               all_vgate_off(VGATE_BIAS_OFF);
@@ -507,9 +511,12 @@ void loop() {
 
     case BIAS_LOOP: {
         bool trigger_val = external_trigger();
-        digitalWrite(LED_D, trigger_val);
+        bool rly_status = digitalRead(OPEN_RLY_CMD);
 
-        if ((trigger_val == true) && (cell_st_ok == false)) {
+        digitalWrite(LED_D, trigger_val);
+        digitalWrite(LED_F, !rly_status);
+
+        if (((trigger_val == true) && (cell_st_ok == false)) && (rly_status == false)) {
           if (check_errors_routine() == 0) {
             /* Set the bias voltage for the first time, without correcting it. */
             for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i++) {
@@ -529,19 +536,17 @@ void loop() {
             for (uint8_t i = 0; i < FIN_TOTAL_NUMBER; i++) {
               bias_setting_routine(FIN_PHISICAL_POSITION[i], IFIN_REF, IFIN_DELTA, CORRECTION_ON);
             }
+
+            digitalWrite(RF_CTL, HIGH);
+            digitalWrite(LED_A, HIGH);
+
+            cell_st_ok = true;
           }
           else {
             programIndex = RESET_PROGRAM;
           }
-
-          //if (digitalRead(RLY_CTL == HIGH)) {
-          //  digitalWrite(RF_CTL, HIGH);
-          //  cell_st_ok = true;
-          //}
-
-          cell_st_ok = true; // Bypass cell_st_ok
         }
-        else if ((trigger_val == false) && (cell_st_ok == true)) {
+        else if ((trigger_val == false) || (rly_status == true)) {
 
 #ifdef _DATA_LOGGER
           /* Store vgate & imon value for USB sending */
@@ -554,9 +559,12 @@ void loop() {
           all_vgate_off(VGATE_BIAS_OFF);
 
           digitalWrite(RF_CTL, LOW);
+          digitalWrite(LED_A, LOW);
+
           cell_st_ok = false;
         }
-        else if (softwareDelay(CHECK_ERRORS_DELAY) == true) {
+
+        if (softwareDelay(CHECK_ERRORS_DELAY) == true) {
           if (check_errors_routine() != 0) {
             programIndex = RESET_PROGRAM;
           }
@@ -575,7 +583,7 @@ void loop() {
     digitalWrite(LED_BUILTIN, enable);
 
     /* Read PT1000 value. */
-    pt1000_value = analogRead_tempSensor(measure_select_st, 0);
+    pt1000_value = analogRead_tempSensor(measure_select_st, selector_channel);
 
     if (ctrl_button(BUTTON_DELAY_TO_CHANGE_MENU) == true) {
       /* Control and verify if btn status is changed & display on lcd screen the mosfet setting page. */
