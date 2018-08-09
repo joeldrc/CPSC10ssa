@@ -224,8 +224,8 @@ int32_t VGATE_FUSE_REF = 20;                              // Fuse reference (0,1
 int32_t VGATE_TEMP_REF = 225;                             // Temp reference (1,2V) (0 to 4095 [bit]) (5.37 mV/bit)
 
 /* Imon. */
-int32_t IDVR_REF = 95;                                    // Idrv ref (10.3 mA/bit) (0 to 4095 [bit]) (12.8 A/V) (single mosfet)
-int32_t IFIN_REF = 190;                                   // Ifin ref (10.3 mA/bit) (0 to 4095 [bit]) (12.8 A/V) (double mosfet)
+int32_t IDVR_REF = 95;                                    // Idrv rest current (10.3 mA/bit) (0 to 4095 [bit]) (12.8 A/V) (single mosfet)
+int32_t IFIN_REF = 190;                                   // Ifin rest current (10.3 mA/bit) (0 to 4095 [bit]) (12.8 A/V) (double mosfet)
 
 /* External screen. */
 int32_t imon_dvr_channel = 0;
