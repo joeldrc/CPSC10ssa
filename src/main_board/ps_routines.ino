@@ -57,9 +57,9 @@ void vgate_measure_routine() {
     else if (vgate_value[FIN_PHISICAL_POSITION[i]] < VGATE_TEMP_REF) {
       power_module_status[FIN_PHISICAL_POSITION[i]] = MOSFET_TEMP_ERROR;
     }
-    else if ((power_module_status[FIN_PHISICAL_POSITION[i]] != MOSFET_SETUP_OK) && (power_module_status[FIN_PHISICAL_POSITION[i]] != MOSFET_UNABLE_TO_SET)) {
-      power_module_status[FIN_PHISICAL_POSITION[i]] = MOSFET_NOT_SETTED;
-    }
+    //else if ((power_module_status[FIN_PHISICAL_POSITION[i]] != MOSFET_SETUP_OK) && (power_module_status[FIN_PHISICAL_POSITION[i]] != MOSFET_UNABLE_TO_SET)) {
+    //  power_module_status[FIN_PHISICAL_POSITION[i]] = MOSFET_NOT_SETTED;
+    //}
   }
 
   for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i++) {
@@ -69,9 +69,9 @@ void vgate_measure_routine() {
     else if (vgate_value[DVR_PHISICAL_POSITION[i]] < VGATE_TEMP_REF) {
       power_module_status[DVR_PHISICAL_POSITION[i]] = MOSFET_TEMP_ERROR;
     }
-    else if ((power_module_status[DVR_PHISICAL_POSITION[i]] != MOSFET_SETUP_OK) && (power_module_status[DVR_PHISICAL_POSITION[i]] != MOSFET_UNABLE_TO_SET)) {
-      power_module_status[DVR_PHISICAL_POSITION[i]] = MOSFET_NOT_SETTED;
-    }
+    //else if ((power_module_status[DVR_PHISICAL_POSITION[i]] != MOSFET_SETUP_OK) && (power_module_status[DVR_PHISICAL_POSITION[i]] != MOSFET_UNABLE_TO_SET)) {
+    //  power_module_status[DVR_PHISICAL_POSITION[i]] = MOSFET_NOT_SETTED;
+    //}
   }
 }
 
@@ -123,6 +123,8 @@ void imon_measure_routine() {
 uint8_t check_errors_routine() {
 
   imon_measure_routine();
+
+  // Add (digitalRead(CELL_OFF_CMD) == HIGH)
 
   uint8_t val_ps_status_routine = ps_status_routine();
   if ((val_ps_status_routine != 0)) {
