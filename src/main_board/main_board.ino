@@ -216,6 +216,9 @@ int32_t imon_value[VGATE_TOTAL_NUMBER] = {};
 int32_t vgate_set_value[VGATE_TOTAL_NUMBER] = {};
 uint8_t power_module_status[VGATE_TOTAL_NUMBER] = {};
 
+bool vdvr_ok = false;
+bool vfin_ok = false;
+
 /* Vgate. */
 int32_t VGATE_FUSE_REF = 20;                              // Fuse reference (0,1V) (0 to 4095 [bit]) (5.37 mV/bit)
 int32_t VGATE_TEMP_REF = 225;                             // Temp reference (1,2V) (0 to 4095 [bit]) (5.37 mV/bit)
