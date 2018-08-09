@@ -162,7 +162,25 @@ void default_menu (bool enable) {
   for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
     LCD.print(power_module_status[i], DEC);
   }
-  LCD.println("     ");
+  //LCD.println("     ");
+  LCD.println("");
+
+
+  LCD.print(SCREEN_PRINT);
+  if (vdvr_ok == true) {
+    LCD.print("VD");
+  }
+  else {
+    LCD.print("  ");
+  }
+  LCD.print(" ");
+  if (vfin_ok == true) {
+    LCD.print("VF");
+  }
+  else {
+    LCD.print("  ");
+  }
+  LCD.println("");
 
 
   LCD.print(SCREEN_PRINT_COLOR);
