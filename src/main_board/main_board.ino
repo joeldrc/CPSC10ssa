@@ -391,14 +391,14 @@ void loop() {
   static bool cell_st_ok = false;
 
   /* Check if CELL is OFF. */
-  if (digitalRead(CELL_OFF_CMD) == LOW) {
-    if (programIndex != SETUP_PROGRAM) {
-      programIndex = RESET_PROGRAM;
-    }
-    else {
-      programIndex = SETUP_PROGRAM;
-    }
-  }
+  //if (digitalRead(CELL_OFF_CMD) == LOW) {
+  //  if (programIndex != SETUP_PROGRAM) {
+  //    programIndex = RESET_PROGRAM;
+  //  }
+  //  else {
+  //    programIndex = SETUP_PROGRAM;
+  //  }
+  //}
 
   switch (programIndex) {
 
@@ -444,7 +444,7 @@ void loop() {
 
     case SETUP_PROGRAM: {
         /* Check errors and CELL_OFF_CMD. */
-        if ((check_errors_routine() == 0) && (digitalRead(CELL_OFF_CMD) == HIGH)) {
+        if (check_errors_routine() == 0) {
           programIndex = SETUP_DVR;
         }
       }
