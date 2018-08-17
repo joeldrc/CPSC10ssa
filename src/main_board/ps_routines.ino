@@ -124,6 +124,8 @@ uint8_t check_errors_routine() {
 
   imon_measure_routine();
 
+  // Add (digitalRead(CELL_OFF_CMD) == HIGH)
+
   uint8_t val_ps_status_routine = ps_status_routine();
   if ((val_ps_status_routine != 0)) {
     return val_ps_status_routine;

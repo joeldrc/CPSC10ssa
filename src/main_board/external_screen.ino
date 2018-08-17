@@ -162,7 +162,6 @@ void default_menu (bool enable) {
   for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
     LCD.print(power_module_status[i], DEC);
   }
-  //LCD.println("     ");
   LCD.println("");
 
 
