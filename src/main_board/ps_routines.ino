@@ -13,7 +13,7 @@
   In the event of an error, it returns:
   - [1] if there is an error.
 */
-uint8_t ps_status_routine() {
+bool ps_status_routine() {
   uint32_t ps_vdvr = analogRead_single_channel(ADC_CHANNEL_4);  // Read A2 = ADC3 (25V)
   uint32_t ps_vfin = analogRead_single_channel(ADC_CHANNEL_5);  // Read A3 = ADC4 (40V)
 
@@ -32,10 +32,10 @@ uint8_t ps_status_routine() {
   }
 
   if ((vdvr_ok == true) && (vfin_ok == true)) {
-    return 0;
+    return true;
   }
   else {
-    return 1;
+    return false;
   }
 }
 
@@ -82,12 +82,12 @@ void vgate_measure_routine() {
   - writes the value on the microcontroller dac.
 */
 void imon_measure_routine() {
-  uint32_t imon_fin_total_val = 0;
-  uint32_t imon_dvr_total_val = 0;
-
   analogRead_mux(ADC_CHANNEL_1, imon_value, FIN_PHISICAL_POSITION, FIN_TOTAL_NUMBER); // Read 16 final value
   imon_value[16] = analogRead_single_channel(ADC_CHANNEL_3);                          // Read drivers value
   imon_value[17] = analogRead_single_channel(ADC_CHANNEL_2);                          // Read drivers value
+
+  uint32_t imon_fin_total_val = 0;
+  uint32_t imon_dvr_total_val = 0;
 
   for (uint8_t i = 0; i < DVR_TOTAL_NUMBER; i ++) {
     imon_dvr_total_val += imon_value[DVR_PHISICAL_POSITION[i]];
@@ -122,25 +122,32 @@ void imon_measure_routine() {
 */
 uint8_t check_errors_routine() {
 
+  // Read current
   imon_measure_routine();
 
-  // Add (digitalRead(CELL_OFF_CMD) == HIGH)
-
-  uint8_t val_ps_status_routine = ps_status_routine();
-  if ((val_ps_status_routine != 0)) {
-    return val_ps_status_routine;
+  // Check if the cell is off
+  if (digitalRead(CELL_OFF_CMD) == LOW) {
+    return 1;
   }
 
+  // Check if the alimentations are ON
+  if (ps_status_routine() != true) {
+    return 2;
+  }
+
+  // Measure the Vgate status
   vgate_measure_routine();
+
+  // Check if all vgate are OK
   for (uint8_t i = 0; i < VGATE_TOTAL_NUMBER; i++) {
     switch (power_module_status[i]) {
-      case MOSFET_OTHER_ERROR:
       case MOSFET_UNABLE_TO_SET:
-      case MOSFET_FUSE_ERROR:
-      case MOSFET_TEMP_ERROR: {
+      case MOSFET_OTHER_ERROR:
+      case MOSFET_TEMP_ERROR:
+      case MOSFET_FUSE_ERROR: {
           reset_single_vgate(i, VGATE_BIAS_OFF);
 
-          return 2; // This return is enabled if you want to stop the system when there is one error
+          return 3; // This return is enabled if you want to stop the system when there is one error
         }
         break;
     }
@@ -257,7 +264,8 @@ uint16_t analogRead_tempSensor(bool relay_status, uint8_t channel) {
     }
   }
 
-  // Add code ++
+  // Add code
+  channel = 0;
 
   return analogRead_single_channel(ADC_CHANNEL_7);  // ADC n. 0
 }
@@ -268,6 +276,7 @@ uint16_t analogRead_tempSensor(bool relay_status, uint8_t channel) {
 */
 void pulse_monostable() {
   digitalWrite(MONOSTABLE_OUT, HIGH);
+  delayMicroseconds(0);
   digitalWrite(MONOSTABLE_OUT, LOW);
 }
 
