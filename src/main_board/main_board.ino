@@ -390,16 +390,6 @@ void loop() {
   static uint8_t fin_cnt = 0;
   static bool cell_st_ok = false;
 
-  /* Check if CELL is OFF. */
-  //if (digitalRead(CELL_OFF_CMD) == LOW) {
-  //  if (programIndex != SETUP_PROGRAM) {
-  //    programIndex = RESET_PROGRAM;
-  //  }
-  //  else {
-  //    programIndex = SETUP_PROGRAM;
-  //  }
-  //}
-
   switch (programIndex) {
 
     case RESET_PROGRAM: {
