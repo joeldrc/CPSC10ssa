@@ -37,7 +37,7 @@ SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP492
 
 /* Comment these definitions if you want to disable them. */
 #define _DATA_LOGGER
-//#define _WATCHDOG               1000  // Time to wait (1 to 10000) (milliSeconds)
+#define _WATCHDOG               1000  // Time to wait (1 to 10000) (milliSeconds)
 
 
 /* Other defines. */
