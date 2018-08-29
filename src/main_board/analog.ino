@@ -13,14 +13,18 @@
 void adc_init_setup() {
   /* Initialize onboard adc's registers (1Msps). */
   pmc_enable_periph_clk(ID_ADC);                                  // Power management controller told to turn on adc
+
   adc_init(ADC, SystemCoreClock, ADC_FREQ_MAX, ADC_STARTUP_FAST); // Initialize, set maximum posibble speed
   adc_configure_timing(ADC, 0, ADC_SETTLING_TIME_3, 1);           // Set timings - standard values
   adc_set_resolution(ADC, ADC_12_BITS);                           // Set 12 bits resolution
+
   adc_configure_power_save(ADC, 0, 0);                            // Disable sleep
   adc_set_bias_current(ADC, 1);                                   // Bias current - maximum performance over current consumption
   adc_stop_sequencer(ADC);                                        // Not using it
+
   //adc_enable_interrupt(ADC, ADC_IER_DRDY);                      // Enable interrupts
   adc_disable_interrupt(ADC, 0xFFFFFFFF);                         // Disable interrupts
+
   //adc_configure_trigger(ADC, ADC_TRIG_SW, ADC_MR_FREERUN_ON);   // Triggering from software, freerunning mode
   adc_configure_trigger(ADC, ADC_TRIG_SW, ADC_MR_FREERUN_OFF);    // Triggering from software, not freerunning mode
 
@@ -39,10 +43,6 @@ void adc_init_setup() {
   //adc_enable_channel(ADC, ADC_CHANNEL_10);                      // Channel enabled A8
   //adc_enable_channel(ADC, ADC_CHANNEL_11);                      // Channel enabled A9
   //adc_enable_channel(ADC, ADC_CHANNEL_12);                      // Channel enabled A10
-
-  //ADC->ADC_MR = ADC_MR_TRGEN_DIS
-  //              | ADC_MR_FREERUN_OFF
-  //              | ADC_MR_PRESCAL(1);
 
   adc_start(ADC);
 }
