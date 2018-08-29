@@ -37,7 +37,7 @@ SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP492
 
 /* Comment these definitions if you want to disable them. */
 #define _DATA_LOGGER
-//#define _WATCHDOG               1000  // Time to wait (1 to 10000) (milliSeconds)
+#define _WATCHDOG               1000  // Time to wait (1 to 10000) (milliSeconds)
 
 
 /* Other defines. */
@@ -390,16 +390,6 @@ void loop() {
   static uint8_t fin_cnt = 0;
   static bool cell_st_ok = false;
 
-  /* Check if CELL is OFF. */
-  if (digitalRead(CELL_OFF_CMD) == LOW) {
-    if (programIndex != SETUP_PROGRAM) {
-      programIndex = RESET_PROGRAM;
-    }
-    else {
-      programIndex = SETUP_PROGRAM;
-    }
-  }
-
   switch (programIndex) {
 
     case RESET_PROGRAM: {
@@ -444,7 +434,7 @@ void loop() {
 
     case SETUP_PROGRAM: {
         /* Check errors and CELL_OFF_CMD. */
-        if ((check_errors_routine() == 0) && (digitalRead(CELL_OFF_CMD) == HIGH)) {
+        if (check_errors_routine() == 0) {
           programIndex = SETUP_DVR;
         }
       }
