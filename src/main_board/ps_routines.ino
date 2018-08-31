@@ -125,13 +125,13 @@ uint8_t check_errors_routine() {
   // Read current
   imon_measure_routine();
 
-  // Check if the cell is off
-  if (digitalRead(CELL_OFF_CMD) == LOW) {
+  // Check if the alimentations are ON
+  if (ps_status_routine() != true) {
     return 1;
   }
 
-  // Check if the alimentations are ON
-  if (ps_status_routine() != true) {
+  // Check if the cell is off
+  if (digitalRead(CELL_OFF_CMD) == LOW) {
     return 2;
   }
 
