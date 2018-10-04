@@ -25,60 +25,14 @@
  ******************************************************************************
 */
 
+/* Inlude configuration file. */
+#include "CONFIG.h"
 
 /* Including the SPI (Serial Peripheral Interface) library. */
 #include "SPI.h"
 
 /* Sets the values to start communication with the devices connected to the SPI. */
 SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP4922 (frequency in Hz, bit order, SPI mode)
-
-
-/* -------------------- Defines -------------------- */
-
-/* Comment these definitions if you want to disable them. */
-#define _DATA_LOGGER
-#define _WATCHDOG               1000  // Time to wait (1 to 10000) (milliSeconds)
-
-
-/* Other defines. */
-#define LCD                     Serial3
-#define USB                     SerialUSB
-#define CORRECTION_ON           true
-#define CORRECTION_OFF          false
-
-/* ProgramIndex. */
-#define RESET_PROGRAM           0
-#define SETUP_PROGRAM           1
-#define SETUP_DVR               2
-#define SETUP_FIN               3
-#define BIAS_LOOP               4
-
-/* Mosfet status code. */
-#define MOSFET_NOT_SETTED       0     // White
-#define MOSFET_SETUP_OK         1     // Green
-#define MOSFET_TEMP_ERROR       2     // Yellow
-#define MOSFET_FUSE_ERROR       3     // Red
-#define MOSFET_UNABLE_TO_SET    4     // Blue
-#define MOSFET_OTHER_ERROR      5     // Purple
-#define MOSFET_NONE             6     // No color
-
-/* External screen. */
-#define SCREEN_PRINT_SERIAL     'a'
-#define SCREEN_PRINT_COLOR      'b'
-#define SCREEN_PRINT_BIG        'c'
-#define SCREEN_PRINT            'd'
-#define SCREEN_PRINT_LN         'e'
-#define CLEAR_SCREEN            'f'   // Clear screen
-#define RESET_SCREEN_POSITION   'g'   // Reset screen position
-
-/* Button code */
-#define NONE_BUTTON              0
-#define UP_BUTTON                1
-#define ENT_BUTTON               2
-#define DWN_BUTTON               3
-
-/* -------------------- End Defines -------------------- */
-
 
 /* -------------------- I/O pin assignment -------------------- */
 
