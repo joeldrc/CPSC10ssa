@@ -95,6 +95,26 @@ void send_usb_data (float *v_value, float *i_value, uint32_t sizeOf) {
     USB.print(val);
     USB.print(',');
   }
+
   USB.println();
 }
 
+
+/**
+  This function is used to debug the system, when is called the program will be blocked and you need to send 'y' on the serial monitor to continue.
+*/
+boolean external_CR() {
+  char commandData = 0;
+  SerialUSB.println("Press Y to continue");
+  while (1) {
+    if (SerialUSB.available ()) {
+      commandData = SerialUSB.read();
+    }
+    if (commandData == 'y' || commandData == 'Y' ) {
+      return true;
+    }
+    else if (commandData == 'n' || commandData == 'N') {
+      return false;
+    }
+  }
+}
