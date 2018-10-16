@@ -28,7 +28,7 @@ void load_save_table_data() {
     table = new Table();  
   }
      
-  //if the file il blank
+  //if the file is blank
   if (table.getColumnCount() == 0) {
     table.addColumn("num");
     table.addColumn("date");  
@@ -44,16 +44,14 @@ void load_save_table_data() {
   
   newRow.setInt("num", table.getRowCount());   
   newRow.setString("date", day() + "/" + month() + "/" + year() + " " + hour() + ":" + minute() + ":" + second());
-  
-  //  println(dataString);
-  
+    
   for(int i = 0; i < 18; i++) {
-    newRow.setString("Vgate" + i, "" + dataString[i]); 
+    newRow.setString("Vgate" + i, "" + dataString[i]);
   }  
   for(int i = 0; i < 18; i++) {
     newRow.setString("Imon" + i, "" + dataString[i + 18]); 
-  }
-    
+  }  
+  
   saveTable(table, tableName);  
 }
 

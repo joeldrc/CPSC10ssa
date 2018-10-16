@@ -41,7 +41,7 @@ Serial myPort = null;     //the serial port
 String serialList;        //list of serial ports
 int serialListIndex = 0;  //currently selected serial port 
 
-String[] dataString = null;
+String[] dataString = new String[100]; //Test (only 36 used)
 
 long previusMillis = 0;
 
