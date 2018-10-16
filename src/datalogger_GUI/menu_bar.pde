@@ -8,6 +8,7 @@
  ******************************************************************************
  */
 
+/*
 class myMenuListener implements ActionListener, ItemListener{
  
  myMenuListener(){
@@ -128,3 +129,4 @@ void menu_setup(){
   PSurfaceAWT.SmoothCanvas smoothCanvas = (PSurfaceAWT.SmoothCanvas)awtSurface.getNative();
   smoothCanvas.getFrame().setMenuBar(myMenu);
 }
+*/

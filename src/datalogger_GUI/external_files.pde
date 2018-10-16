@@ -9,7 +9,6 @@
  */
 
 Table table;
-
 String tableName;
  
 void load_save_table_data() {
@@ -19,7 +18,7 @@ void load_save_table_data() {
    
   // Load CSV file into a Table object
   // "header" option indicates the file has a header row
-  //println(fileExists(tableName));
+  // println(fileExists(tableName));
   
   if (fileExists(tableName)) {
     table = loadTable(tableName, "header");  
