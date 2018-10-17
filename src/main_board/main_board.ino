@@ -26,13 +26,14 @@
 */
 
 /* Inlude configuration file. */
-#include "CONFIG.h"
+#include "user_config.h"
 
 /* Including the SPI (Serial Peripheral Interface) library. */
 #include "SPI.h"
 
 /* Sets the values to start communication with the devices connected to the SPI. */
 SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP4922 (frequency in Hz, bit order, SPI mode)
+
 
 /* -------------------- I/O pin assignment -------------------- */
 
@@ -111,53 +112,29 @@ static const uint8_t MONOSTABLE_OUT = 69;
 
 /* -------------------- Software constant definition -------------------- */
 
-/* SOFTWARE CONSTANT for the setup. */
-static const uint8_t VGATE_TOTAL_NUMBER = 18;             // Max phisical number of single mosfets to regulate bias (!do not change this value!)
+static uint8_t DVR_PHISICAL_POSITION[2] = {   // Use 16 and 17
+  16,
+  17
+};
 
-static const uint8_t DVR_TOTAL_NUMBER = 2;                // Max number of DVR channels (2 is the minimum value)
-static const uint8_t FIN_TOTAL_NUMBER = 4;                // Max number of FIN channels (0 to 15)
-
-static uint8_t DVR_PHISICAL_POSITION[DVR_TOTAL_NUMBER] = { 16, 17 };                                                      // Use 16 and 17
-static uint8_t FIN_PHISICAL_POSITION[FIN_TOTAL_NUMBER] = { 0, 1, 2, 3 /*, 4, 5, 6, 7, 8 , 9, 10, 11, 12, 13, 14, 15 */};  // Use 0 to 15
-
-static const uint8_t EXT_RLY_MUX_TOTAL_NUMBER = 24;       // Max phisical number of external relay multiplexer (!do not change this value!)
-
-/* Vgate reference (external DAC). */
-static const uint16_t VGATE_BIAS_OFF = 2130;              // Vgate minumum value (0 to 4095 [bit]) (1,3V * 4095)/(DAC Vref = 2,5V)
-static const uint16_t VGATE_ADJ_MAX = 1638;               // Vgate max value (0 to 4095 [bit]) (1V * 4095)/(DAC Vref = 2,5V)
-static const uint16_t VGATE_ADJ_MIN = 4095;               // Vgate min value
-
-static const uint16_t VGATE_CORRECTION = 1;               // Number of bits to increase/decrease each step (0 to 4095 [bit])
-
-/* Imon reference. */
-static const uint16_t IDVR_DELTA = VGATE_CORRECTION * 3;  // Idrv delta (0 to 4095 [bit])
-static const uint16_t IFIN_DELTA = VGATE_CORRECTION * 3;  // Ifin delta (0 to 4095 [bit])
-
-/* Alimentation. */
-static const uint16_t PS_VDVR_MIN = 1960;                 // Vdrv min (0 to 4095 [bit]) (0.0122 V/bit) (24V)
-static const uint16_t PS_VDVR_MAX = 2460;                 // Vdrv max (0 to 4095 [bit]) (0.0122 V/bit) (30V)
-static const uint16_t PS_VFIN_MIN = 2460;                 // Vfin min (0 to 4095 [bit]) (0.0122 V/bit) (30V)
-static const uint16_t PS_VFIN_MAX = 3690;                 // Vfin max (0 to 4095 [bit]) (0.0122 V/bit) (45V)
-
-/* Hardware constant. */
-static const uint16_t RESISTANCE_RATIO = 3;               // Hardware number of voltage divider
-
-/* Convertion bit to V & bit to A. */
-static const float VGATE_CONVERTION_VALUE = 0.00537 / RESISTANCE_RATIO;   // Vgate (5.37 mV/bit / 3) (Voltage divider on board)
-static const float IMON_CONVERTION_VALUE = 0.00488 * 2;                   // Imon (4.88 mA/bit)
-
-static const float IMON_TOT_SCALING = 0.128;              // Scaling for DAC out (12.8 A/V to 100 A/V)
-static const float IMON_SCALING = 1.28;                   // Scaling for DAC out (12.8 A/V to 10 A/V)
-
-/* Software delay. */
-static const uint32_t VGATE_DVR_DELAY = 5000;             // Time to wait (1 to 4095) (microSeconds) - between adjustment step at amplifier pwr-on
-static const uint32_t VGATE_FIN_DELAY = 5000;             // Time to wait (1 to 4095) (microSeconds) - between adjustment step at amplifier pwr-on
-static const uint32_t VGATE_BIAS_DELAY = 50000;           // Time to wait (1 to 4095) (microSeconds) - RF blank time
-
-static const uint32_t LCD_SCREEN_DELAY = 750;             // Time to wait (1 to 4095) (milliSeconds)
-static const uint32_t CHECK_ERRORS_DELAY = 10;            // Time to wait (1 to 4095) (milliSeconds)
-
-static const uint32_t BUTTON_DELAY_TO_CHANGE_MENU = 5;    // Time to wait (1 to 4095) (seconds)
+static uint8_t FIN_PHISICAL_POSITION[16] = {  // Use 0 to 15
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15
+};
 
 /* -------------------- End software constant definition -------------------- */
 
@@ -174,12 +151,12 @@ bool vdvr_ok = false;
 bool vfin_ok = false;
 
 /* Vgate. */
-int32_t VGATE_FUSE_REF = 20;                              // Fuse reference (0,1V) (0 to 4095 [bit]) (5.37 mV/bit)
-int32_t VGATE_TEMP_REF = 225;                             // Temp reference (1,2V) (0 to 4095 [bit]) (5.37 mV/bit)
+int32_t VGATE_FUSE_REF = FUSE_REF_VALUE;                  // Setted in config.h
+int32_t VGATE_TEMP_REF = TEMP_REF_VALUE;                  // Setted in config.h
 
 /* Imon. */
-int32_t IDVR_REF = 95;                                    // Idrv rest current (10.3 mA/bit) (0 to 4095 [bit]) (12.8 A/V) (single mosfet)
-int32_t IFIN_REF = 190;                                   // Ifin rest current (10.3 mA/bit) (0 to 4095 [bit]) (12.8 A/V) (double mosfet)
+int32_t IDVR_REF = IDVR_REF_VALUE;                        // Setted in config.h
+int32_t IFIN_REF = IFIN_REF_VALUE;                        // Setted in config.h
 
 /* External screen. */
 int32_t imon_dvr_channel = 0;
@@ -202,12 +179,53 @@ float imon_stored_value[VGATE_TOTAL_NUMBER] = {};         // Stored data to log
 /* -------------------- End Global variables -------------------- */
 
 
+/* -------------------- Function's prototypes -------------------- */
+
+void adc_init_setup();
+void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead, uint8_t *channel_position, uint8_t max_channel);
+uint32_t analogRead_single_channel(enum adc_channel_num_t adc_ch);
+void analogWrite_external_dac(uint8_t num, uint16_t value);
+void set_external_dac_output();
+void analogWrite_internal_dac(uint8_t num, uint32_t value);
+
+void btn_up();
+void btn_ent();
+void btn_dwn();
+uint8_t check_pressed_button();
+bool ctrl_button(uint32_t button_delay);
+void default_menu (bool enable);
+void setup_menu(bool enable);
+void space_corrector(uint32_t val);
+void selector_increase(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta);
+void selector_decrease(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta);
+
+bool refresh_routine (uint32_t mSeconds);
+bool softwareDelay (uint32_t mSeconds);
+void delay_with_current_measure(uint32_t delay_us);
+void copyArray (int32_t *from, float *to, uint16_t sizeOf, float correction);
+void send_usb_data (float *v_value, float *i_value, uint32_t sizeOf);
+boolean external_CR();
+
+bool ps_status_routine();
+void vgate_measure_routine();
+void imon_measure_routine();
+uint8_t check_errors_routine();
+void reset_single_vgate(uint8_t i, uint16_t reference);
+void reset_all_vgate(uint16_t reference);
+void all_vgate_off(uint16_t reference);
+uint8_t bias_setting_routine(uint8_t i, uint16_t ref_value, uint16_t delta_value, bool correction_enabled);
+bool external_trigger();
+uint16_t analogRead_tempSensor(bool relay_status, uint8_t channel);
+void pulse_monostable();
+
 /**
   This function is used to call the whatchdog function.
 */
 #ifdef _WATCHDOG
 void watchdogSetup() {} //this function has to be present, otherwise watchdog won't work
 #endif
+
+/* -------------------- End function's prototypes -------------------- */
 
 
 /**
@@ -555,4 +573,3 @@ void loop() {
   watchdogReset();
 #endif
 }
-
