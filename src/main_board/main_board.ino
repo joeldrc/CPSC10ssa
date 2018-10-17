@@ -511,10 +511,12 @@ void loop() {
         else if ((trigger_val == false) || (rly_status == true)) {
 
 #ifdef _DATA_LOGGER
-          /* Store vgate & imon value for USB sending */
-          copyArray(vgate_value, vgate_stored_value, VGATE_TOTAL_NUMBER, VGATE_CONVERTION_VALUE);
-          copyArray(imon_value, imon_stored_value, VGATE_TOTAL_NUMBER, IMON_CONVERTION_VALUE);
-          data_to_send = true;
+          if (cell_st_ok == true) {
+            /* Store vgate & imon value for USB sending */
+            copyArray(vgate_value, vgate_stored_value, VGATE_TOTAL_NUMBER, VGATE_CONVERTION_VALUE);
+            copyArray(imon_value, imon_stored_value, VGATE_TOTAL_NUMBER, IMON_CONVERTION_VALUE);
+            data_to_send = true;
+          }
 #endif
 
           /* Set all Vgate CTL to OFF. */
