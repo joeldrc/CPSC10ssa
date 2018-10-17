@@ -58,7 +58,19 @@ static const uint8_t DAC_1 = DAC1;
 
 /* DAC external phisical position & setting. */
 static const uint8_t TOTAL_DAC_NUMBER = 9;
-static const uint8_t CS_DAC[TOTAL_DAC_NUMBER] = { 25, 27, 29, 31, 33, 35, 37, 39, 41 };
+
+static const uint8_t CS_DAC[TOTAL_DAC_NUMBER] = {
+  25,
+  27,
+  29,
+  31,
+  33,
+  35,
+  37,
+  39,
+  41
+};
+
 static const uint8_t LDAC = 30;
 static const uint8_t SHDN_DAC = 32;
 
@@ -422,7 +434,9 @@ void loop() {
             /* If the procedure was successful. */
             power_module_status[DVR_PHISICAL_POSITION[0]] = MOSFET_SETUP_OK;  // set mosfet ok
             power_module_status[DVR_PHISICAL_POSITION[1]] = MOSFET_SETUP_OK;  // set mosfet ok
+          }
 
+          if ((power_module_status[DVR_PHISICAL_POSITION[0]] != MOSFET_NOT_SETTED) && (power_module_status[DVR_PHISICAL_POSITION[1]] != MOSFET_NOT_SETTED)) {
             /* Set all Vgate CTL to OFF. */
             all_vgate_off(VGATE_BIAS_OFF);
 
@@ -446,7 +460,7 @@ void loop() {
             power_module_status[FIN_PHISICAL_POSITION[fin_cnt]] = MOSFET_SETUP_OK;  // Set mosfet ok
           }
 
-          if (power_module_status[FIN_PHISICAL_POSITION[fin_cnt]] == MOSFET_SETUP_OK /* != MOSFET_NOT_SETTED */) {
+          if (power_module_status[FIN_PHISICAL_POSITION[fin_cnt]] != MOSFET_NOT_SETTED /* == MOSFET_SETUP_OK */) {
             if (fin_cnt == (FIN_TOTAL_NUMBER - 1)) {
               /* Set all Vgate CTL to OFF. */
               all_vgate_off(VGATE_BIAS_OFF);
@@ -473,7 +487,7 @@ void loop() {
 
     case BIAS_LOOP: {
         bool trigger_val = external_trigger();
-        bool rly_status = digitalRead(OPEN_RLY_CMD);
+        bool rly_status = false;  // digitalRead(OPEN_RLY_CMD);   /* Enable if you want add the relay CMD */
 
         digitalWrite(LED_D, trigger_val);
         digitalWrite(LED_F, !rly_status);

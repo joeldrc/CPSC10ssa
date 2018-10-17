@@ -147,7 +147,7 @@ uint8_t check_errors_routine() {
       case MOSFET_FUSE_ERROR: {
           reset_single_vgate(i, VGATE_BIAS_OFF);
 
-          return 3; // This return is enabled if you want to stop the system when there is one error
+          //return 3; // This return is enabled if you want to stop the system when there is one error
         }
         break;
     }
@@ -279,4 +279,3 @@ void pulse_monostable() {
   delayMicroseconds(0);
   digitalWrite(MONOSTABLE_OUT, LOW);
 }
-
