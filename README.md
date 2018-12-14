@@ -2,27 +2,27 @@
 
 ![Alt text](3d-model.jpg?raw=true "3D model")
 
-## Requirements
-
-### Hardware
+## Hardware
 
 ...
 
-### Software
+## Software
 
 ...
 
-### Supporting Documents
+## Supporting Documents
 
 ...
 
-### Installing
+## Installing
 
 ...
 
-### Serial datalogger
+## Serial datalogger
 
 ![Alt text](datalogger.jpg?raw=true "Datalogger")
+
+...
 
 ### Author(s)
 
