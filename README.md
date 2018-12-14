@@ -10,9 +10,7 @@
 
 ### Software
 
-## Datalogger
-
-![Alt text](datalogger.jpg?raw=true "Datalogger")
+...
 
 ### Supporting Documents
 
@@ -21,6 +19,10 @@
 ### Installing
 
 ...
+
+### Serial datalogger
+
+![Alt text](datalogger.jpg?raw=true "Datalogger")
 
 ### Author(s)
 
