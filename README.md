@@ -10,7 +10,9 @@
 
 ### Software
 
-...
+## Datalogger
+
+![Alt text](datalogger.jpg?raw=true "Datalogger")
 
 ### Supporting Documents
 
