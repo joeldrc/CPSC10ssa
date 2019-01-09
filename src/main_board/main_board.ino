@@ -25,8 +25,11 @@
  ******************************************************************************
 */
 
+
 /* Inlude configuration file. */
 #include "user_config.h"
+#include "analog_interface.h"
+#include "external_screen.h"
 
 /* Including the SPI (Serial Peripheral Interface) library. */
 #include "SPI.h"
@@ -37,29 +40,7 @@ SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP492
 
 /* -------------------- I/O pin assignment -------------------- */
 
-/* SPI phisical position. */
-static const uint8_t CS_MASTER = 23;
-
-/* ADC phisical position. */
-static const uint8_t ADC_1 = A0;
-static const uint8_t ADC_2 = A1;
-static const uint8_t ADC_3 = A2;
-static const uint8_t ADC_4 = A3;
-static const uint8_t ADC_5 = A4;
-static const uint8_t ADC_6 = A5;
-static const uint8_t ADC_7 = A6;
-static const uint8_t ADC_8 = A7;
-static const uint8_t ADC_9 = A8;
-static const uint8_t ADC_10 = A9;
-
-/* DAC internal phisical position. */
-static const uint8_t DAC_0 = DAC0;
-static const uint8_t DAC_1 = DAC1;
-
-/* DAC external phisical position & setting. */
-static const uint8_t TOTAL_DAC_NUMBER = 9;
-
-static const uint8_t CS_DAC[TOTAL_DAC_NUMBER] = {
+static uint8_t CS_DAC[TOTAL_DAC_NUMBER] = {
   25,
   27,
   29,
@@ -70,54 +51,6 @@ static const uint8_t CS_DAC[TOTAL_DAC_NUMBER] = {
   39,
   41
 };
-
-static const uint8_t LDAC = 30;
-static const uint8_t SHDN_DAC = 32;
-
-/* BUTTON phisical position. */
-static const uint8_t BUTTON_A = 19;
-static const uint8_t BUTTON_B = 18;
-static const uint8_t BUTTON_C = 22;
-
-/* LED phisical position. */
-static const uint8_t LED_A = 12;
-static const uint8_t LED_B = 3;
-static const uint8_t LED_C = 4;
-static const uint8_t LED_D = 5;
-static const uint8_t LED_E = 24;
-static const uint8_t LED_F = 26;
-
-/* DIGITAL INPUT phisical position. */
-static const uint8_t  LOC_BIAS_ON_FRONT_NEGATIVE = 36;
-static const uint8_t  LOC_BIAS_ON_FRONT_POSITIVE = 38;
-static const uint8_t  OPEN_RLY_CMD = 40;
-static const uint8_t  RLY_ST = 42;
-static const uint8_t  BIAS_ON_CMD = 43;
-static const uint8_t  CELL_OFF_CMD = 52;
-
-/* DIGITAL OUTPUT phisical position. */
-static const uint8_t  CELL_ST_OK = 44;
-static const uint8_t  CARD_ST_OK = 45;
-static const uint8_t  BIAS_RDY = 46;
-static const uint8_t  RF_CTL = 47;
-static const uint8_t  RLY_CTL = 50;
-static const uint8_t  SEL_CTL = 51;
-static const uint8_t  MEASURE_SEL = 53;
-
-/* LCD phisical position. */
-static const uint8_t LCD1 = 28;
-static const uint8_t RESET_LCD = 2;
-
-/* MUX phisical position. */
-static const uint8_t MUX_S0 = 9;
-static const uint8_t MUX_S1 = 8;
-static const uint8_t MUX_S2 = 7;
-static const uint8_t MUX_S3 = 6;
-static const uint8_t MUX_EN1 = 10;
-static const uint8_t MUX_EN2 = 11;
-
-/* External monostable. */
-static const uint8_t MONOSTABLE_OUT = 69;
 
 /* -------------------- End I/O pin assignment -------------------- */
 
@@ -178,9 +111,6 @@ int32_t selector_channel = 0;
 uint16_t pt1000_value = 0;                                // Reset PT1000 value
 bool measure_select_st = true;                            // Set measure to internal (PT1000)
 
-/* Button interrupt. */
-volatile uint8_t btn_val = NONE_BUTTON;
-
 /* Datalogger. */
 #ifdef _DATA_LOGGER
 bool data_to_send = false;                                // If there are data to send at datalogger
@@ -192,13 +122,6 @@ float imon_stored_value[VGATE_TOTAL_NUMBER] = {};         // Stored data to log
 
 
 /* -------------------- Function's prototypes -------------------- */
-
-void adc_init_setup();
-void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead, uint8_t *channel_position, uint8_t max_channel);
-uint32_t analogRead_single_channel(enum adc_channel_num_t adc_ch);
-void analogWrite_external_dac(uint8_t num, uint16_t value);
-void set_external_dac_output();
-void analogWrite_internal_dac(uint8_t num, uint32_t value);
 
 void btn_up();
 void btn_ent();

@@ -6,6 +6,9 @@
  ******************************************************************************
 */
 
+#ifndef __USER_CONFIG_H
+#define __USER_CONFIG_H
+
 
 /* Comment these definitions if you want to disable them. */
 #define _DATA_LOGGER
@@ -56,7 +59,7 @@
 #define HARDWARE_FIN_NUMBER           16    // (!do not change this value!) Max phisical number of single mosfets to regulate bias
 
 #define MUX_MAX_CHANNEL               16    // (!do not change this value!) Hardware limit to 16 channel
-#define MUX_PORT_ADDRESS              21    // (!do not change this value!) PORT name value: (port 21 to 24 = pin 9 to pin 6)
+#define MUX_PORT_ADDRESS              21    // (!do not change this value!) PORT name value: (port 21 to 24  pin 9 to pin 6)
 
 #define EXT_RLY_MUX_TOTAL_NUMBER      24    // (!do not change this value!) Max phisical number of external relay multiplexer 
 
@@ -66,8 +69,8 @@
 #define FIN_TOTAL_NUMBER              2     // Max number of FIN channels USED (0 to 16)
 
 /* Vgate reference (external DAC). */
-#define VGATE_BIAS_OFF                2130  // Vgate minumum value (0 to 4095 [bit]) (1,3V * 4095)/(DAC Vref = 2,5V)
-#define VGATE_ADJ_MAX                 1638  // Vgate max value (0 to 4095 [bit]) (1V * 4095)/(DAC Vref = 2,5V)
+#define VGATE_BIAS_OFF                2130  // Vgate minumum value (0 to 4095 [bit]) (1,3V * 4095)/(DAC Vref  2,5V)
+#define VGATE_ADJ_MAX                 1638  // Vgate max value (0 to 4095 [bit]) (1V * 4095)/(DAC Vref  2,5V)
 #define VGATE_ADJ_MIN                 4095  // Vgate min value
 #define VGATE_CORRECTION              1     // Number of bits to increase/decrease each step (0 to 4095 [bit])
 
@@ -105,3 +108,74 @@
 #define BUTTON_DELAY_TO_CHANGE_MENU   5     // Time to wait (1 to 4095) (seconds)
 
 
+/* SPI phisical position. */
+#define CS_MASTER                     23
+
+/* ADC phisical position. */
+#define ADC_1                         A0
+#define ADC_2                         A1
+#define ADC_3                         A2
+#define ADC_4                         A3
+#define ADC_5                         A4
+#define ADC_6                         A5
+#define ADC_7                         A6
+#define ADC_8                         A7
+#define ADC_9                         A8
+#define ADC_10                        A9
+
+/* DAC internal phisical position. */
+#define DAC_0                         DAC0
+#define DAC_1                         DAC1
+
+/* DAC external phisical position & setting. */
+#define TOTAL_DAC_NUMBER  9
+#define LDAC                          30
+#define SHDN_DAC                      32
+
+/* BUTTON phisical position. */
+#define BUTTON_A                      19
+#define BUTTON_B                      18
+#define BUTTON_C                      22
+
+/* LED phisical position. */
+#define LED_A                         12
+#define LED_B                         3
+#define LED_C                         4
+#define LED_D                         5
+#define LED_E                         24
+#define LED_F                         26
+
+/* DIGITAL INPUT phisical position. */
+#define  LOC_BIAS_ON_FRONT_NEGATIVE   36
+#define  LOC_BIAS_ON_FRONT_POSITIVE   38
+#define  OPEN_RLY_CMD                 40
+#define  RLY_ST                       42
+#define  BIAS_ON_CMD                  43
+#define  CELL_OFF_CMD                 52
+
+/* DIGITAL OUTPUT phisical position. */
+#define  CELL_ST_OK                   44
+#define  CARD_ST_OK                   45
+#define  BIAS_RDY                     46
+#define  RF_CTL                       47
+#define  RLY_CTL                      50
+#define  SEL_CTL                      51
+#define  MEASURE_SEL                  53
+
+/* LCD phisical position. */
+#define LCD1                          28
+#define RESET_LCD                     2
+
+/* MUX phisical position. */
+#define MUX_S0                        9
+#define MUX_S1                        8
+#define MUX_S2                        7
+#define MUX_S3                        6
+#define MUX_EN1                       10
+#define MUX_EN2                       11
+
+/* External monostable. */
+#define MONOSTABLE_OUT                69
+
+
+#endif
