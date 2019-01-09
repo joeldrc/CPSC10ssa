@@ -6,6 +6,10 @@
  ******************************************************************************
 */
 
+#include "Arduino.h"
+#include "user_config.h"
+#include "SPI.h"
+
 
 /**
   This function is used to make the initial setup of the ADC present on the microprocessor.
@@ -84,7 +88,7 @@ uint32_t analogRead_single_channel(enum adc_channel_num_t adc_ch) {
   - number of the selected channel;
   - value to write.
 */
-void analogWrite_external_dac(uint8_t num, uint16_t value) {
+void analogWrite_external_dac(uint8_t num, uint16_t value, uint8_t *CS_DAC) {
   /**
     Bitmasking for setting options in a MCP4922 dac:
 
