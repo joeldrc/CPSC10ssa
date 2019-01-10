@@ -43,7 +43,7 @@ uint32_t analogRead_single_channel(enum adc_channel_num_t adc_ch);
   - number of the selected channel;
   - value to write.
 */
-void analogWrite_external_dac(uint8_t num, uint16_t value, uint8_t *CS_DAC);
+void analogWrite_external_dac(uint8_t num, uint16_t value);
 
 
 /**
