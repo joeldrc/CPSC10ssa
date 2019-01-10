@@ -116,6 +116,22 @@ void imon_measure_routine() {
 
 
 /**
+  This function is used to create a software delay using a micros() function,
+  you can wait and at the same time execute the imon_routine().
+
+  The parameter is the time to set (in microseconds).
+*/
+void delay_with_current_measure(uint32_t delay_us) {
+  uint32_t previusTime = micros();
+  uint32_t currentTime = previusTime;
+  while ((currentTime - previusTime) < delay_us) {
+    imon_measure_routine();
+    currentTime = micros();
+  }
+}
+
+
+/**
   This function checks if there are no errors in the functions ps_status_routine() and vgate_measure_routine ().
   If there were no errors proceed with the call of the imon_measure_routine() and return [0].
   In the event of an error, it reports the error value of the failed function.

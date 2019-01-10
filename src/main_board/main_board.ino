@@ -32,6 +32,9 @@
 /* Include custom analog library */
 #include "analog_interface.h"
 
+/* Include other Functions */
+#include "other_functions.h"
+
 /* Including SPI (Serial Peripheral Interface) library. */
 #include "SPI.h"
 
@@ -88,16 +91,10 @@ void space_corrector(uint32_t val);
 void selector_increase(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta);
 void selector_decrease(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta);
 
-bool refresh_routine (uint32_t mSeconds);
-bool softwareDelay (uint32_t mSeconds);
-void delay_with_current_measure(uint32_t delay_us);
-void copyArray (int32_t *from, float *to, uint16_t sizeOf, float correction);
-void send_usb_data (float *v_value, float *i_value, uint32_t sizeOf);
-boolean external_CR();
-
 bool ps_status_routine();
 void vgate_measure_routine();
 void imon_measure_routine();
+void delay_with_current_measure(uint32_t delay_us);
 uint8_t check_errors_routine();
 void reset_single_vgate(uint8_t i, uint16_t reference);
 void reset_all_vgate(uint16_t reference);

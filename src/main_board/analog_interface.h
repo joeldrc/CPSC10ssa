@@ -6,7 +6,6 @@
  ******************************************************************************
 */
 
-#include "Arduino.h"
 
 #ifndef __ANALOG_INTERFACE_H
 #define __ANALOG_INTERFACE_H
