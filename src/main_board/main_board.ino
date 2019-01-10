@@ -28,65 +28,20 @@
 
 /* Inlude configuration file. */
 #include "user_config.h"
-#include "analog_interface.h"
-#include "external_screen.h"
 
-/* Including the SPI (Serial Peripheral Interface) library. */
+/* Include custom analog library */
+#include "analog_interface.h"
+
+/* Including SPI (Serial Peripheral Interface) library. */
 #include "SPI.h"
 
 /* Sets the values to start communication with the devices connected to the SPI. */
 SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP4922 (frequency in Hz, bit order, SPI mode)
 
 
-/* -------------------- I/O pin assignment -------------------- */
-
-static uint8_t CS_DAC[TOTAL_DAC_NUMBER] = {
-  25,
-  27,
-  29,
-  31,
-  33,
-  35,
-  37,
-  39,
-  41
-};
-
-/* -------------------- End I/O pin assignment -------------------- */
-
-
-/* -------------------- Software constant definition -------------------- */
-
-static uint8_t DVR_PHISICAL_POSITION[2] = {   // Use 16 and 17
-  16,
-  17
-};
-
-static uint8_t FIN_PHISICAL_POSITION[16] = {  // Use 0 to 15
-  0,
-  1,
-  2,
-  3,
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-  10,
-  11,
-  12,
-  13,
-  14,
-  15
-};
-
-/* -------------------- End software constant definition -------------------- */
-
-
 /* -------------------- Global variables -------------------- */
 
-/* Ps routines. */
+/* PS routines. */
 int32_t vgate_value[VGATE_TOTAL_NUMBER] = {};
 int32_t imon_value[VGATE_TOTAL_NUMBER] = {};
 int32_t vgate_set_value[VGATE_TOTAL_NUMBER] = {};
@@ -95,15 +50,14 @@ uint8_t power_module_status[VGATE_TOTAL_NUMBER] = {};
 bool vdvr_ok = false;
 bool vfin_ok = false;
 
-/* Vgate. */
+/* External screen. */
+volatile uint8_t btn_val;
+
 int32_t VGATE_FUSE_REF = FUSE_REF_VALUE;                  // Setted in config.h
 int32_t VGATE_TEMP_REF = TEMP_REF_VALUE;                  // Setted in config.h
-
-/* Imon. */
 int32_t IDVR_REF = IDVR_REF_VALUE;                        // Setted in config.h
 int32_t IFIN_REF = IFIN_REF_VALUE;                        // Setted in config.h
 
-/* External screen. */
 int32_t imon_dvr_channel = 0;
 int32_t imon_fin_channel = 0;
 int32_t selector_channel = 0;
@@ -153,9 +107,6 @@ bool external_trigger();
 uint16_t analogRead_tempSensor(bool relay_status, uint8_t channel);
 void pulse_monostable();
 
-/**
-  This function is used to call the whatchdog function.
-*/
 #ifdef _WATCHDOG
 void watchdogSetup() {} //this function has to be present, otherwise watchdog won't work
 #endif
@@ -508,7 +459,6 @@ void loop() {
   pulse_monostable();
 
 #ifdef _WATCHDOG
-  /* Reset watchdog timer. */
-  watchdogReset();
+  watchdogReset();  // Reset watchdog timer.
 #endif
 }

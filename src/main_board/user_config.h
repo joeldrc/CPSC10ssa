@@ -178,4 +178,50 @@
 #define MONOSTABLE_OUT                69
 
 
+/* -------------------- I/O pin assignment -------------------- */
+
+static uint8_t CS_DAC[TOTAL_DAC_NUMBER] = {
+  25,
+  27,
+  29,
+  31,
+  33,
+  35,
+  37,
+  39,
+  41
+};
+
+/* -------------------- End I/O pin assignment -------------------- */
+
+
+/* -------------------- Software constant definition -------------------- */
+
+static uint8_t DVR_PHISICAL_POSITION[2] = {   // Use 16 and 17
+  16,
+  17
+};
+
+static uint8_t FIN_PHISICAL_POSITION[16] = {  // Use 0 to 15
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15
+};
+
+/* -------------------- End software constant definition -------------------- */
+
+
 #endif
