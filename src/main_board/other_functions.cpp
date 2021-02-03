@@ -83,6 +83,7 @@ void send_usb_data (float *v_value, float *i_value, uint32_t sizeOf) {
     USB.print(val);
     USB.print(',');
   }
+
   USB.println();
 }
 
@@ -90,7 +91,10 @@ void send_usb_data (float *v_value, float *i_value, uint32_t sizeOf) {
 /**
   This function is used to debug the system, when is called the program will be blocked and you need to send 'y' on the serial monitor to continue.
 */
+<<<<<<< HEAD:src/main_board/other_functions.cpp
 #ifdef _DEBUG
+=======
+>>>>>>> master:src/main_board/other_functions.ino
 boolean external_CR() {
   char commandData = 0;
   SerialUSB.println("Press Y to continue");
@@ -106,4 +110,7 @@ boolean external_CR() {
     }
   }
 }
+<<<<<<< HEAD:src/main_board/other_functions.cpp
 #endif
+=======
+>>>>>>> master:src/main_board/other_functions.ino
