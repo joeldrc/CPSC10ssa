@@ -26,191 +26,25 @@
 */
 
 
-/* Including the SPI (Serial Peripheral Interface) library. */
+/* Inlude configuration file. */
+#include "user_config.h"
+
+/* Include custom analog library */
+#include "analog_interface.h"
+
+/* Include other Functions */
+#include "other_functions.h"
+
+/* Including SPI (Serial Peripheral Interface) library. */
 #include "SPI.h"
 
 /* Sets the values to start communication with the devices connected to the SPI. */
 SPISettings settingA (20000000, MSBFIRST, SPI_MODE0); // 20 Mhz freq. max MCP4922 (frequency in Hz, bit order, SPI mode)
 
 
-/* -------------------- Defines -------------------- */
-
-/* Comment these definitions if you want to disable them. */
-#define _DATA_LOGGER
-#define _WATCHDOG               1000  // Time to wait (1 to 10000) (milliSeconds)
-
-
-/* Other defines. */
-#define LCD                     Serial3
-#define USB                     SerialUSB
-#define CORRECTION_ON           true
-#define CORRECTION_OFF          false
-
-/* ProgramIndex. */
-#define RESET_PROGRAM           0
-#define SETUP_PROGRAM           1
-#define SETUP_DVR               2
-#define SETUP_FIN               3
-#define BIAS_LOOP               4
-
-/* Mosfet status code. */
-#define MOSFET_NOT_SETTED       0     // White
-#define MOSFET_SETUP_OK         1     // Green
-#define MOSFET_TEMP_ERROR       2     // Yellow
-#define MOSFET_FUSE_ERROR       3     // Red
-#define MOSFET_UNABLE_TO_SET    4     // Blue
-#define MOSFET_OTHER_ERROR      5     // Purple
-#define MOSFET_NONE             6     // No color
-
-/* External screen. */
-#define SCREEN_PRINT_SERIAL     'a'
-#define SCREEN_PRINT_COLOR      'b'
-#define SCREEN_PRINT_BIG        'c'
-#define SCREEN_PRINT            'd'
-#define SCREEN_PRINT_LN         'e'
-#define CLEAR_SCREEN            'f'   // Clear screen
-#define RESET_SCREEN_POSITION   'g'   // Reset screen position
-
-/* Button code */
-#define NONE_BUTTON              0
-#define UP_BUTTON                1
-#define ENT_BUTTON               2
-#define DWN_BUTTON               3
-
-/* -------------------- End Defines -------------------- */
-
-
-/* -------------------- I/O pin assignment -------------------- */
-
-/* SPI phisical position. */
-static const uint8_t CS_MASTER = 23;
-
-/* ADC phisical position. */
-static const uint8_t ADC_1 = A0;
-static const uint8_t ADC_2 = A1;
-static const uint8_t ADC_3 = A2;
-static const uint8_t ADC_4 = A3;
-static const uint8_t ADC_5 = A4;
-static const uint8_t ADC_6 = A5;
-static const uint8_t ADC_7 = A6;
-static const uint8_t ADC_8 = A7;
-static const uint8_t ADC_9 = A8;
-static const uint8_t ADC_10 = A9;
-
-/* DAC internal phisical position. */
-static const uint8_t DAC_0 = DAC0;
-static const uint8_t DAC_1 = DAC1;
-
-/* DAC external phisical position & setting. */
-static const uint8_t TOTAL_DAC_NUMBER = 9;
-static const uint8_t CS_DAC[TOTAL_DAC_NUMBER] = { 25, 27, 29, 31, 33, 35, 37, 39, 41 };
-static const uint8_t LDAC = 30;
-static const uint8_t SHDN_DAC = 32;
-
-/* BUTTON phisical position. */
-static const uint8_t BUTTON_A = 19;
-static const uint8_t BUTTON_B = 18;
-static const uint8_t BUTTON_C = 22;
-
-/* LED phisical position. */
-static const uint8_t LED_A = 12;
-static const uint8_t LED_B = 3;
-static const uint8_t LED_C = 4;
-static const uint8_t LED_D = 5;
-static const uint8_t LED_E = 24;
-static const uint8_t LED_F = 26;
-
-/* DIGITAL INPUT phisical position. */
-static const uint8_t  LOC_BIAS_ON_FRONT_NEGATIVE = 36;
-static const uint8_t  LOC_BIAS_ON_FRONT_POSITIVE = 38;
-static const uint8_t  OPEN_RLY_CMD = 40;
-static const uint8_t  RLY_ST = 42;
-static const uint8_t  BIAS_ON_CMD = 43;
-static const uint8_t  CELL_OFF_CMD = 52;
-
-/* DIGITAL OUTPUT phisical position. */
-static const uint8_t  CELL_ST_OK = 44;
-static const uint8_t  CARD_ST_OK = 45;
-static const uint8_t  BIAS_RDY = 46;
-static const uint8_t  RF_CTL = 47;
-static const uint8_t  RLY_CTL = 50;
-static const uint8_t  SEL_CTL = 51;
-static const uint8_t  MEASURE_SEL = 53;
-
-/* LCD phisical position. */
-static const uint8_t LCD1 = 28;
-static const uint8_t RESET_LCD = 2;
-
-/* MUX phisical position. */
-static const uint8_t MUX_S0 = 9;
-static const uint8_t MUX_S1 = 8;
-static const uint8_t MUX_S2 = 7;
-static const uint8_t MUX_S3 = 6;
-static const uint8_t MUX_EN1 = 10;
-static const uint8_t MUX_EN2 = 11;
-
-/* External monostable. */
-static const uint8_t MONOSTABLE_OUT = 69;
-
-/* -------------------- End I/O pin assignment -------------------- */
-
-
-/* -------------------- Software constant definition -------------------- */
-
-/* SOFTWARE CONSTANT for the setup. */
-static const uint8_t VGATE_TOTAL_NUMBER = 18;             // Max phisical number of single mosfets to regulate bias (!do not change this value!)
-
-static const uint8_t DVR_TOTAL_NUMBER = 2;                // Max number of DVR channels (2 is the minimum value)
-static const uint8_t FIN_TOTAL_NUMBER = 4;                // Max number of FIN channels (0 to 15)
-
-static uint8_t DVR_PHISICAL_POSITION[DVR_TOTAL_NUMBER] = { 16, 17 };                                                      // Use 16 and 17
-static uint8_t FIN_PHISICAL_POSITION[FIN_TOTAL_NUMBER] = { 0, 1, 2, 3 /*, 4, 5, 6, 7, 8 , 9, 10, 11, 12, 13, 14, 15 */};  // Use 0 to 15
-
-static const uint8_t EXT_RLY_MUX_TOTAL_NUMBER = 24;       // Max phisical number of external relay multiplexer (!do not change this value!)
-
-/* Vgate reference (external DAC). */
-static const uint16_t VGATE_BIAS_OFF = 2130;              // Vgate minumum value (0 to 4095 [bit]) (1,3V * 4095)/(DAC Vref = 2,5V)
-static const uint16_t VGATE_ADJ_MAX = 1638;               // Vgate max value (0 to 4095 [bit]) (1V * 4095)/(DAC Vref = 2,5V)
-static const uint16_t VGATE_ADJ_MIN = 4095;               // Vgate min value
-
-static const uint16_t VGATE_CORRECTION = 1;               // Number of bits to increase/decrease each step (0 to 4095 [bit])
-
-/* Imon reference. */
-static const uint16_t IDVR_DELTA = VGATE_CORRECTION * 3;  // Idrv delta (0 to 4095 [bit])
-static const uint16_t IFIN_DELTA = VGATE_CORRECTION * 3;  // Ifin delta (0 to 4095 [bit])
-
-/* Alimentation. */
-static const uint16_t PS_VDVR_MIN = 1960;                 // Vdrv min (0 to 4095 [bit]) (0.0122 V/bit) (24V)
-static const uint16_t PS_VDVR_MAX = 2460;                 // Vdrv max (0 to 4095 [bit]) (0.0122 V/bit) (30V)
-static const uint16_t PS_VFIN_MIN = 2460;                 // Vfin min (0 to 4095 [bit]) (0.0122 V/bit) (30V)
-static const uint16_t PS_VFIN_MAX = 3690;                 // Vfin max (0 to 4095 [bit]) (0.0122 V/bit) (45V)
-
-/* Hardware constant. */
-static const uint16_t RESISTANCE_RATIO = 3;               // Hardware number of voltage divider
-
-/* Convertion bit to V & bit to A. */
-static const float VGATE_CONVERTION_VALUE = 0.00537 / RESISTANCE_RATIO;   // Vgate (5.37 mV/bit / 3) (Voltage divider on board)
-static const float IMON_CONVERTION_VALUE = 0.00488 * 2;                   // Imon (4.88 mA/bit)
-
-static const float IMON_TOT_SCALING = 0.128;              // Scaling for DAC out (12.8 A/V to 100 A/V)
-static const float IMON_SCALING = 1.28;                   // Scaling for DAC out (12.8 A/V to 10 A/V)
-
-/* Software delay. */
-static const uint32_t VGATE_DVR_DELAY = 5000;             // Time to wait (1 to 4095) (microSeconds) - between adjustment step at amplifier pwr-on
-static const uint32_t VGATE_FIN_DELAY = 5000;             // Time to wait (1 to 4095) (microSeconds) - between adjustment step at amplifier pwr-on
-static const uint32_t VGATE_BIAS_DELAY = 50000;           // Time to wait (1 to 4095) (microSeconds) - RF blank time
-
-static const uint32_t LCD_SCREEN_DELAY = 750;             // Time to wait (1 to 4095) (milliSeconds)
-static const uint32_t CHECK_ERRORS_DELAY = 10;            // Time to wait (1 to 4095) (milliSeconds)
-
-static const uint32_t BUTTON_DELAY_TO_CHANGE_MENU = 5;    // Time to wait (1 to 4095) (seconds)
-
-/* -------------------- End software constant definition -------------------- */
-
-
 /* -------------------- Global variables -------------------- */
 
-/* Ps routines. */
+/* PS routines. */
 int32_t vgate_value[VGATE_TOTAL_NUMBER] = {};
 int32_t imon_value[VGATE_TOTAL_NUMBER] = {};
 int32_t vgate_set_value[VGATE_TOTAL_NUMBER] = {};
@@ -219,24 +53,20 @@ uint8_t power_module_status[VGATE_TOTAL_NUMBER] = {};
 bool vdvr_ok = false;
 bool vfin_ok = false;
 
-/* Vgate. */
-int32_t VGATE_FUSE_REF = 20;                              // Fuse reference (0,1V) (0 to 4095 [bit]) (5.37 mV/bit)
-int32_t VGATE_TEMP_REF = 225;                             // Temp reference (1,2V) (0 to 4095 [bit]) (5.37 mV/bit)
-
-/* Imon. */
-int32_t IDVR_REF = 95;                                    // Idrv rest current (10.3 mA/bit) (0 to 4095 [bit]) (12.8 A/V) (single mosfet)
-int32_t IFIN_REF = 190;                                   // Ifin rest current (10.3 mA/bit) (0 to 4095 [bit]) (12.8 A/V) (double mosfet)
-
 /* External screen. */
+volatile uint8_t btn_val;
+
+int32_t VGATE_FUSE_REF = FUSE_REF_VALUE;                  // Setted in config.h
+int32_t VGATE_TEMP_REF = TEMP_REF_VALUE;                  // Setted in config.h
+int32_t IDVR_REF = IDVR_REF_VALUE;                        // Setted in config.h
+int32_t IFIN_REF = IFIN_REF_VALUE;                        // Setted in config.h
+
 int32_t imon_dvr_channel = 0;
 int32_t imon_fin_channel = 0;
 int32_t selector_channel = 0;
 
 uint16_t pt1000_value = 0;                                // Reset PT1000 value
 bool measure_select_st = true;                            // Set measure to internal (PT1000)
-
-/* Button interrupt. */
-volatile uint8_t btn_val = NONE_BUTTON;
 
 /* Datalogger. */
 #ifdef _DATA_LOGGER
@@ -248,12 +78,37 @@ float imon_stored_value[VGATE_TOTAL_NUMBER] = {};         // Stored data to log
 /* -------------------- End Global variables -------------------- */
 
 
-/**
-  This function is used to call the whatchdog function.
-*/
+/* -------------------- Function's prototypes -------------------- */
+
+void btn_up();
+void btn_ent();
+void btn_dwn();
+uint8_t check_pressed_button();
+bool ctrl_button(uint32_t button_delay);
+void default_menu (bool enable);
+void setup_menu(bool enable);
+void space_corrector(uint32_t val);
+void selector_increase(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta);
+void selector_decrease(int32_t *var_to_modify, int32_t min_value, int32_t max_value, int32_t delta);
+
+bool ps_status_routine();
+void vgate_measure_routine();
+void imon_measure_routine();
+void delay_with_current_measure(uint32_t delay_us);
+uint8_t check_errors_routine();
+void reset_single_vgate(uint8_t i, uint16_t reference);
+void reset_all_vgate(uint16_t reference);
+void all_vgate_off(uint16_t reference);
+uint8_t bias_setting_routine(uint8_t i, uint16_t ref_value, uint16_t delta_value, bool correction_enabled);
+bool external_trigger();
+uint16_t analogRead_tempSensor(bool relay_status, uint8_t channel);
+void pulse_monostable();
+
 #ifdef _WATCHDOG
 void watchdogSetup() {} //this function has to be present, otherwise watchdog won't work
 #endif
+
+/* -------------------- End function's prototypes -------------------- */
 
 
 /**
@@ -450,7 +305,9 @@ void loop() {
             /* If the procedure was successful. */
             power_module_status[DVR_PHISICAL_POSITION[0]] = MOSFET_SETUP_OK;  // set mosfet ok
             power_module_status[DVR_PHISICAL_POSITION[1]] = MOSFET_SETUP_OK;  // set mosfet ok
+          }
 
+          if ((power_module_status[DVR_PHISICAL_POSITION[0]] != MOSFET_NOT_SETTED) && (power_module_status[DVR_PHISICAL_POSITION[1]] != MOSFET_NOT_SETTED)) {
             /* Set all Vgate CTL to OFF. */
             all_vgate_off(VGATE_BIAS_OFF);
 
@@ -474,7 +331,7 @@ void loop() {
             power_module_status[FIN_PHISICAL_POSITION[fin_cnt]] = MOSFET_SETUP_OK;  // Set mosfet ok
           }
 
-          if (power_module_status[FIN_PHISICAL_POSITION[fin_cnt]] == MOSFET_SETUP_OK /* != MOSFET_NOT_SETTED */) {
+          if (power_module_status[FIN_PHISICAL_POSITION[fin_cnt]] != MOSFET_NOT_SETTED /* == MOSFET_SETUP_OK */) {
             if (fin_cnt == (FIN_TOTAL_NUMBER - 1)) {
               /* Set all Vgate CTL to OFF. */
               all_vgate_off(VGATE_BIAS_OFF);
@@ -501,7 +358,7 @@ void loop() {
 
     case BIAS_LOOP: {
         bool trigger_val = external_trigger();
-        bool rly_status = digitalRead(OPEN_RLY_CMD);
+        bool rly_status = false;  // digitalRead(OPEN_RLY_CMD);   /* Enable if you want add the relay CMD */
 
         digitalWrite(LED_D, trigger_val);
         digitalWrite(LED_F, !rly_status);
@@ -599,7 +456,6 @@ void loop() {
   pulse_monostable();
 
 #ifdef _WATCHDOG
-  /* Reset watchdog timer. */
-  watchdogReset();
+  watchdogReset();  // Reset watchdog timer.
 #endif
 }

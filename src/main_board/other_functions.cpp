@@ -7,6 +7,10 @@
 */
 
 
+#include "Arduino.h"
+#include "user_config.h"
+
+
 /**
   This function is used to create another thread so as not to block the program (adding "delays"),
   but use a timing scanned by internal timers (millis).
@@ -54,22 +58,6 @@ bool softwareDelay (uint32_t mSeconds) {
 
 
 /**
-  This function is used to create a software delay using a micros() function,
-  you can wait and at the same time execute the imon_routine().
-
-  The parameter is the time to set (in microseconds).
-*/
-void delay_with_current_measure(uint32_t delay_us) {
-  uint32_t previusTime = micros();
-  uint32_t currentTime = previusTime;
-  while ((currentTime - previusTime) < delay_us) {
-    imon_measure_routine();
-    currentTime = micros();
-  }
-}
-
-
-/**
   This function is used to copy an array into another.
 */
 void copyArray (int32_t *from, float *to, uint16_t sizeOf, float correction) {
@@ -103,6 +91,10 @@ void send_usb_data (float *v_value, float *i_value, uint32_t sizeOf) {
 /**
   This function is used to debug the system, when is called the program will be blocked and you need to send 'y' on the serial monitor to continue.
 */
+<<<<<<< HEAD:src/main_board/other_functions.cpp
+#ifdef _DEBUG
+=======
+>>>>>>> master:src/main_board/other_functions.ino
 boolean external_CR() {
   char commandData = 0;
   SerialUSB.println("Press Y to continue");
@@ -118,3 +110,7 @@ boolean external_CR() {
     }
   }
 }
+<<<<<<< HEAD:src/main_board/other_functions.cpp
+#endif
+=======
+>>>>>>> master:src/main_board/other_functions.ino

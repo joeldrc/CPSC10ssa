@@ -7,42 +7,27 @@
 */
 
 
+#include "Arduino.h"
+#include "user_config.h"
+#include "SPI.h"
+
+
 /**
   This function is used to make the initial setup of the ADC present on the microprocessor.
 */
 void adc_init_setup() {
-  /* Initialize onboard adc's registers (1Msps). */
   pmc_enable_periph_clk(ID_ADC);                                  // Power management controller told to turn on adc
-
   adc_init(ADC, SystemCoreClock, ADC_FREQ_MAX, ADC_STARTUP_FAST); // Initialize, set maximum posibble speed
   adc_configure_timing(ADC, 0, ADC_SETTLING_TIME_3, 1);           // Set timings - standard values
   adc_set_resolution(ADC, ADC_12_BITS);                           // Set 12 bits resolution
-
   adc_configure_power_save(ADC, 0, 0);                            // Disable sleep
   adc_set_bias_current(ADC, 1);                                   // Bias current - maximum performance over current consumption
   adc_stop_sequencer(ADC);                                        // Not using it
-
-  //adc_enable_interrupt(ADC, ADC_IER_DRDY);                      // Enable interrupts
   adc_disable_interrupt(ADC, 0xFFFFFFFF);                         // Disable interrupts
-
-  //adc_configure_trigger(ADC, ADC_TRIG_SW, ADC_MR_FREERUN_ON);   // Triggering from software, freerunning mode
   adc_configure_trigger(ADC, ADC_TRIG_SW, ADC_MR_FREERUN_OFF);    // Triggering from software, not freerunning mode
-
   adc_disable_tag(ADC);                                           // It has to do with sequencer, not using it
   adc_disable_ts(ADC);                                            // Disable temperature sensor
   adc_disable_all_channel(ADC);                                   // Disable all channels
-
-  //adc_enable_channel(ADC, ADC_CHANNEL_7);                       // Channel enabled A0
-  //adc_enable_channel(ADC, ADC_CHANNEL_6);                       // Channel enabled A1
-  //adc_enable_channel(ADC, ADC_CHANNEL_5);                       // Channel enabled A2
-  //adc_enable_channel(ADC, ADC_CHANNEL_4);                       // Channel enabled A3
-  //adc_enable_channel(ADC, ADC_CHANNEL_3);                       // Channel enabled A4
-  //adc_enable_channel(ADC, ADC_CHANNEL_2);                       // Channel enabled A5
-  //adc_enable_channel(ADC, ADC_CHANNEL_1);                       // Channel enabled A6
-  //adc_enable_channel(ADC, ADC_CHANNEL_0);                       // Channel enabled A7
-  //adc_enable_channel(ADC, ADC_CHANNEL_10);                      // Channel enabled A8
-  //adc_enable_channel(ADC, ADC_CHANNEL_11);                      // Channel enabled A9
-  //adc_enable_channel(ADC, ADC_CHANNEL_12);                      // Channel enabled A10
 
   adc_start(ADC);
 }
@@ -57,11 +42,7 @@ void adc_init_setup() {
   - max number of channel to read
 */
 void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead, uint8_t *channel_position, uint8_t max_channel) {
-  static const uint8_t MUX_MAX_CHANNEL = 16;  // Hardware limit to 16 channel
-  static const uint8_t MUX_PORT_ADDRESS = 21; // PORT name value: (port 21 to 24 = pin 9 to pin 6)
-
   if (max_channel <= MUX_MAX_CHANNEL) {
-    //adc_disable_all_channel(ADC);   // Keep commented if you want more speed
     adc_enable_channel(ADC, adc_ch);  // Enable adc channel
 
     for (uint8_t i = 0; i < max_channel; i++) {
@@ -70,7 +51,6 @@ void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead, uint8_t *
       REG_PIOC_ODSR = channel_position[i] << MUX_PORT_ADDRESS;      // Write value on port 21 until port 24 (port 21 to 24 = pin 9 to pin 6)
 
       /* Wait untill the signal is stabilized. */
-      //delayMicroseconds(2);
       asm volatile(".rept 100\n\tNOP\n\t.endr"); // No operation (20 ns. at cycle)
 
       /* ADC start reading value. */
@@ -90,15 +70,12 @@ void analogRead_mux(enum adc_channel_num_t adc_ch, int32_t *valueRead, uint8_t *
   - enum of the selected adc channel.
 */
 uint32_t analogRead_single_channel(enum adc_channel_num_t adc_ch) {
-  uint32_t valueRead;
-
-  //adc_disable_all_channel(ADC);   // To comment if you want more speed
   adc_enable_channel(ADC, adc_ch);  // ADC start reading
 
   /* ADC start reading value. */
   adc_start(ADC);
   while ((adc_get_status(ADC) & ADC_ISR_DRDY) != ADC_ISR_DRDY);  // Wait the end of conversion
-  valueRead = adc_get_latest_value(ADC);
+  uint32_t valueRead = adc_get_latest_value(ADC);
 
   adc_disable_channel(ADC, adc_ch); // Disable adc selected
 
@@ -139,7 +116,8 @@ void analogWrite_external_dac(uint8_t num, uint16_t value) {
     bit 11 down to bit 0
   */
 
-  static const uint16_t dac_channel_A = 0b0111000000000000, dac_channel_B = 0b1111000000000000;
+  static const uint16_t dac_channel_A = 0b0111000000000000;
+  static const uint16_t dac_channel_B = 0b1111000000000000;
   uint16_t data = 0;
   uint8_t csPin = CS_DAC[num / 2];
 
@@ -198,4 +176,3 @@ void analogWrite_internal_dac(uint8_t num, uint32_t value) {
   dacc_set_channel_selection(DACC_INTERFACE, num);
   dacc_write_conversion_data(DACC_INTERFACE, value);
 }
-
