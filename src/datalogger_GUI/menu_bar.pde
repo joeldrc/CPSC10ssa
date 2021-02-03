@@ -6,6 +6,7 @@
    @date    01-March-2018
    @brief   menu bar class
  ******************************************************************************
+<<<<<<< HEAD
 */
 
 /*
@@ -70,6 +71,72 @@ class myMenuListener implements ActionListener, ItemListener {
 
 
     }
+=======
+ */
+
+/*
+class myMenuListener implements ActionListener, ItemListener{
+ 
+ myMenuListener(){
+ 
+ }
+ 
+ public void actionPerformed(ActionEvent e) {
+   MenuItem source = (MenuItem)(e.getSource());
+   String s = "Action event detected."
+     + "    Event source: " + source.getLabel()
+     + " (an instance of " + getClassName(source) + ")";
+   println(s);
+ 
+   //this part changes the background colour
+   if(source.equals(fileLoad)){
+     println("Load a layer");
+   }
+   else if(source.equals(fileSave)){
+     println("Save a layer");
+   }
+   else if(source.getLabel().equals("View Open")){
+     println(" Open view window");
+   }
+   else if(source.getLabel().equals("View Close")){
+     println("Close view window");
+   }
+   else if(source.getLabel().equals("Flip View")){
+     println("Flip view window");
+   }
+   else println(" etc. etc..");
+ 
+ }
+    
+  public void itemStateChanged(ItemEvent e) {
+ 
+  MenuItem source = (MenuItem)(e.getSource());
+   String s = "Action event detected."
+     + "    Event source: " + source.getLabel()
+     + " (an instance of " + getClassName(source) + ")";
+   println(s);
+ 
+   //this part changes the background colour
+   if(source.getLabel().equals("Load Layer")){
+     println("Load a layer");
+   }
+   else if(source.getLabel().equals("Save Layer")){
+     println("Save a layer");
+   }
+   else if(source.getLabel().equals("View Open")){
+     println(" Open view window");
+   }
+   else if(source.getLabel().equals("View Close")){
+     println("Close view window");
+   }
+   else if(source.getLabel().equals("Flip View")){
+     println("Flip view window");
+   }
+   else println(" etc. etc..");
+ 
+ 
+  } 
+>>>>>>> master
 }
 
 protected String getClassName(Object o) {
