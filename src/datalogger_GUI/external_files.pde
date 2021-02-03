@@ -12,16 +12,31 @@ Table table;
 String tableName;
 
 void load_save_table_data() {
+<<<<<<< HEAD
 
   tableName = dataPath("saved files/data" + "_" + hour() + "_" + day() + "_" + month() + "_" + year() + ".csv");
 
+=======
+  
+  tableName = dataPath("saved files/data" + "_" + hour() + "_" + day() + "_" + month() + "_" + year() + ".csv");  
+  //println(tableName);
+   
+  // Load CSV file into a Table object
+  // "header" option indicates the file has a header row
+  // println(fileExists(tableName));
+  
+>>>>>>> master
   if (fileExists(tableName)) {
     table = loadTable(tableName, "header");
   }
   else {
     table = new Table();
   }
+<<<<<<< HEAD
 
+=======
+     
+>>>>>>> master
   //if the file is blank
   if (table.getColumnCount() == 0) {
     table.addColumn("num");
@@ -38,6 +53,7 @@ void load_save_table_data() {
 
   newRow.setInt("num", table.getRowCount());
   newRow.setString("date", day() + "/" + month() + "/" + year() + " " + hour() + ":" + minute() + ":" + second());
+<<<<<<< HEAD
 
   for (int i = 0; i < 18; i++) {
     newRow.setString("Vgate" + i, "" + dataString[i]);
@@ -47,6 +63,17 @@ void load_save_table_data() {
   }
 
   saveTable(table, tableName);
+=======
+    
+  for(int i = 0; i < 18; i++) {
+    newRow.setString("Vgate" + i, "" + dataString[i]);
+  }  
+  for(int i = 0; i < 18; i++) {
+    newRow.setString("Imon" + i, "" + dataString[i + 18]); 
+  }  
+  
+  saveTable(table, tableName);  
+>>>>>>> master
 }
 
 void savedFileMsg() {
