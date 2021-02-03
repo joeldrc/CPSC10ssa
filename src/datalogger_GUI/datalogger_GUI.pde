@@ -29,8 +29,16 @@ import processing.awt.PSurfaceAWT.SmoothCanvas;
 import javax.swing.JFrame;
 import java.awt.Dimension;
 
+<<<<<<< HEAD
 //serial
 import processing.serial.*;
+=======
+PImage backGround;
+String bgName = dataPath("bg.png");
+
+static int screenX = 600;
+static int screenY = 640;
+>>>>>>> master
 
 Serial myPort = null;     //the serial port
 String serialList;        //list of serial ports
@@ -39,11 +47,15 @@ int serialListIndex = 0;  //currently selected serial port
 String[] dataString = new String[100]; //Test (only 36 used)
 
 
+<<<<<<< HEAD
 PImage backGround;
 String bgName = dataPath("bg.png");
 
 static int screenX = 600;
 static int screenY = 640;
+=======
+String[] dataString = new String[100]; //Test (only 36 used)
+>>>>>>> master
 
 long previusMillis = 0;
 
@@ -71,10 +83,17 @@ Button btnDisconnect;
 Button btnSave;
 
 MenuBar myMenu;
+<<<<<<< HEAD
 Menu fileMenu, viewMenu, freqMenu, freqSMenu;
 MenuItem fileLoad, fileSave, viewOpen, viewClose, viewFlip, freqSplit, freqJoin;
 CheckboxMenuItem  splitBlur, splitMed;
 
+=======
+Menu fileMenu,viewMenu,freqMenu,freqSMenu;
+MenuItem fileLoad,fileSave,viewOpen,viewClose,viewFlip,freqSplit, freqJoin;
+CheckboxMenuItem  splitBlur,splitMed;
+ 
+>>>>>>> master
 //myMenuListener menuListen;
 
 void settings() {
@@ -89,8 +108,14 @@ void setup() {
   Dimension d = new Dimension(400, 460);
   jf.setMinimumSize(d);
   getSurface().setResizable(true);
+<<<<<<< HEAD
 
   //menu_setup();
+=======
+  
+  //menu_setup();
+  
+>>>>>>> master
   //noCursor();
 
   setupScreen();
@@ -138,17 +163,26 @@ void setupScreen() {
   btnConnect = new Button(percent(canvasWidth, 35), percent(canvasHeight, 5), percent(canvasWidth, 10), percent(canvasWidth, 5), btnColor, btnTextColor, "CONN.");
   btnDisconnect = new Button(percent(canvasWidth, 45), percent(canvasHeight, 5), percent(canvasWidth, 10), percent(canvasWidth, 5), btnColor, btnTextColor, "DISC.");
   btnSave = new Button(percent(canvasWidth, 90), percent(canvasHeight, 5), percent(canvasWidth, 15), percent(canvasWidth, 5), btnColor, btnTextColor, "SAVE");
+<<<<<<< HEAD
 
   if (fileExists(bgName)) {
     backGround = loadImage("data/bg.png");
     backGround.resize(percent(canvasWidth, 100), percent(canvasHeight, 100));
   }
+=======
+    
+  if(fileExists(bgName)){
+    backGround = loadImage("data/bg.png");
+    backGround.resize(percent(canvasWidth, 100), percent(canvasHeight, 100));
+  } 
+>>>>>>> master
 }
 
 
 void draw() {
 
   background(#E0F1FF);
+<<<<<<< HEAD
 
   if (fileExists(bgName)) {
     imageMode(CENTER);
@@ -156,6 +190,16 @@ void draw() {
     tint(255, 80);                        // Apply transparency without changing color
   }
 
+=======
+  
+  if(fileExists(bgName)){
+    //background(backGround);
+    imageMode(CENTER);
+    image(backGround, width/2, height/2);
+    tint(255, 80);                        // Apply transparency without changing color
+  }
+  
+>>>>>>> master
   // se cambia dimensione schermo
   if (width != oldWidth || height != oldHeight) {
     setupScreen();
